@@ -113,7 +113,8 @@ async function startServer() {
         const isWheelchair = tags.wheelchair === "yes";
         const hasDiaper = tags.diaper === "yes" || tags.changing_table === "yes";
         const hasWashlet = tags.washlet === "yes";
-        const isFree = tags.fee === "no" || !tags.fee;
+        // タグ欠落時は楽観的に true にしない（#5）。fee は明示的有料のみ false
+        const isFree = tags.fee !== "yes";
         const isOpen24h = tags.opening_hours === "24/7";
         const isOstomate = tags.ostomate === "yes";
 
@@ -176,8 +177,12 @@ async function startServer() {
           lat: itemLat,
           lng: itemLng,
           address: tags["addr:full"] || tags["addr:street"] || "周辺道路・公園内",
+          // 実測レビュー0件のため、設備推定値を表示用にも入れる。
+          // UIは reviewCount===0 を「未評価」として扱う（isEvaluated参照）
           cleanlinessGrade: grade,
           cleanlinessScore: score,
+          equipmentGrade: grade,
+          equipmentScore: score,
           subScores: {
             cleanliness: score,
             odor: score,
@@ -193,7 +198,7 @@ async function startServer() {
             hasOstomate: isOstomate,
             isFree,
             isOpen24h,
-            hasSoap: tags.soap !== "no",
+            hasSoap: tags.soap === "yes",
             hasAlcohol: tags.hand_disinfectant === "yes",
             hasPaperTowelOrDryer: tags.hand_dryer === "yes",
             toiletStyle: (tags["toilets:position"] === "seated" ? "western" : "both") as "western" | "both",
@@ -207,7 +212,7 @@ async function startServer() {
           facilitySummary: isTheTokyoToilet
             ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
             : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
-          aiSummary: isTheTokyoToilet
+          facilityNote: isTheTokyoToilet
             ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
             : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
           pros,

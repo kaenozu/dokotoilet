@@ -4,7 +4,7 @@ import {
   CleanlinessGrade,
   DataSourceType,
 } from '../types';
-import { getGradeColor } from './ToiletMap';
+import { getGradeColor, isEvaluated } from './ToiletMap';
 import {
   Sparkles,
   MapPin,
@@ -39,7 +39,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   onClose,
   onOpenReviewModal,
 }) => {
-  const gradeColor = getGradeColor(toilet.cleanlinessGrade);
+  // 実測レビュー0件は設備推定値しかないため「未評価」表示にする
+  const evaluated = isEvaluated(toilet);
+  const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
+  // 旧バージョンの保存データ互換（aiSummary → facilityNote 改名対応）
+  const legacyNote = (toilet as unknown as { aiSummary?: string }).aiSummary;
+  const facilityNote = toilet.facilitySummary || toilet.facilityNote || legacyNote;
 
   const getSourceBadge = (source: DataSourceType) => {
     switch (source) {
@@ -116,7 +121,9 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
             <div
               className={`w-14 h-14 rounded-2xl ${gradeColor.bg} text-white flex flex-col items-center justify-center shadow-lg`}
             >
-              <span className="text-2xl font-black leading-none">{toilet.cleanlinessGrade}</span>
+              <span className="text-2xl font-black leading-none">
+                {evaluated ? toilet.cleanlinessGrade : '–'}
+              </span>
               <span className="text-[10px] font-semibold tracking-tighter uppercase">GRADE</span>
             </div>
             <div>
@@ -130,7 +137,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                     <Star
                       key={i}
                       className={`w-3.5 h-3.5 ${
-                        i < Math.round(toilet.cleanlinessScore)
+                        evaluated && i < Math.round(toilet.cleanlinessScore)
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-[#333333]'
                       }`}
@@ -139,10 +146,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                 </div>
               </div>
               <p className={`text-xs font-medium ${gradeColor.text}`}>
-                {gradeColor.label}
+                {evaluated ? gradeColor.label : '未評価（設備からの推定値）'}
               </p>
               <p className="text-[11px] text-[#888888] mt-0.5">
-                口コミ・評価 {toilet.reviewCount}件
+                {evaluated
+                  ? `口コミ・評価 ${toilet.reviewCount}件`
+                  : `口コミ募集中・設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`}
               </p>
             </div>
           </div>
@@ -339,7 +348,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
       </div>
 
       {/* Facility Summary Card */}
-      {(toilet.facilitySummary || toilet.aiSummary) && (
+      {facilityNote && (
         <div className="p-4 sm:p-5 border-b border-[#222222] bg-[#161616]">
           <div className="flex items-center gap-2 mb-2">
             <ShieldCheck className="w-4 h-4 text-[#00d1b2]" />
@@ -348,7 +357,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
             </h3>
           </div>
           <p className="text-xs text-[#d0d0d0] leading-relaxed bg-[#1c1c1c] p-3 rounded-lg border border-[#2a2a2a]">
-            {toilet.facilitySummary || toilet.aiSummary}
+            {facilityNote}
           </p>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToiletFacility } from '../types';
-import { getGradeColor } from './ToiletMap';
+import { getGradeColor, isEvaluated } from './ToiletMap';
 import {
   Sparkles,
   MapPin,
@@ -73,7 +73,8 @@ export const ToiletList: React.FC<ToiletListProps> = ({
           </div>
         ) : (
           toilets.map((toilet) => {
-            const gradeColor = getGradeColor(toilet.cleanlinessGrade);
+            const evaluated = isEvaluated(toilet);
+            const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
             const isSelected = selectedToilet?.id === toilet.id;
 
             return (
@@ -107,11 +108,14 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     </p>
                   </div>
 
-                  {/* Cleanliness Grade Box */}
+                  {/* Cleanliness Grade Box（未評価は推定値を出さない） */}
                   <div
                     className={`w-9 h-9 rounded-xl ${gradeColor.bg} text-white flex flex-col items-center justify-center shrink-0 shadow-xs`}
+                    title={evaluated ? gradeColor.label : '未評価（口コミ募集中）'}
                   >
-                    <span className="text-base font-black leading-none">{toilet.cleanlinessGrade}</span>
+                    <span className="text-base font-black leading-none">
+                      {evaluated ? toilet.cleanlinessGrade : '–'}
+                    </span>
                     <span className="text-[7px] font-bold">GRADE</span>
                   </div>
                 </div>
@@ -120,7 +124,11 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#222222] text-[11px]">
                   <div className="flex items-center gap-1 text-[#e0e0e0]">
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span className="font-bold">{toilet.cleanlinessScore.toFixed(1)}</span>
+                    <span className="font-bold">
+                      {evaluated
+                        ? toilet.cleanlinessScore.toFixed(1)
+                        : `推定 ${toilet.equipmentScore.toFixed(1)}`}
+                    </span>
                     <span className="text-[#666666]">({toilet.reviewCount})</span>
                   </div>
 
