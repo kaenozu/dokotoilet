@@ -15,23 +15,21 @@ export const DATA_SOURCES_INFO: DataSourceComparison[] = [
   {
     id: 'google',
     name: 'Google Maps Platform (Places API New)',
-    badge: '最有力・最も網羅的',
+    badge: '不採用（有料のため）',
     coverage: '日本全国・全世界（商業施設・駅・コンビニ・飲食店・公園）',
-    cost: '毎月$200の無料枠あり / 従量課金制（Maps Demo Keyで試用可能）',
+    cost: '毎月$200の無料枠あり / 従量課金制',
     cleanlinessDataLevel: 'High',
     pros: [
       '施設数・座標精度が圧倒的（百貨店、コンビニ、駅ナカ、カフェをすべて網羅）',
-      '利用者の口コミ数が膨大で、「トイレが綺麗」「ウォシュレット付き」「化粧室が広い」といった清潔度情報が自然言語で豊富に含まれる',
-      '写真、営業時間、リアルタイム混雑情報、ルート検索と連携可能',
-      'Places API (New) による最新施設情報の取得',
+      '利用者の口コミ数が膨大で、清潔度情報が自然言語で豊富に含まれる',
     ],
     cons: [
-      '無料枠超過時に従量費用が発生する（APIキーの保護・リファラー制限が必須）',
+      '従量課金制のため本アプリでは不採用（無料枠超過で課金が発生するリスク）',
       'Google利用規約により、口コミテキストや場所情報の長期ローカル保存（30日超）に制限がある',
       '「トイレ」そのもののオブジェクトではなく、「施設」の口コミから清潔度を抽出・判定する工夫が必要',
     ],
     apiSpec: 'Places API (New) searchNearby, searchByText, Place.fetchFields, Maps JavaScript API',
-    recommendedRole: '「主要な商業施設・コンビニ・駅」のベースデータおよび口コミからのきれい度情報抽出',
+    recommendedRole: '不採用。地図はOSM/国土地理院タイル、きれい度はユーザー投稿でまかなう方針',
   },
   {
     id: 'osm',

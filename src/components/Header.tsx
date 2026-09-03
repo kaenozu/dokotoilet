@@ -4,7 +4,6 @@ import {
   MapPin,
   PlusCircle,
   Database,
-  Key,
   Navigation,
   Filter,
   CheckCircle2,
@@ -17,12 +16,8 @@ import { CITY_PRESETS } from '../data/toilets';
 interface HeaderProps {
   filter: FilterState;
   setFilter: React.Dispatch<React.SetStateAction<FilterState>>;
-  mapMode: 'leaflet' | 'google';
-  setMapMode: (mode: 'leaflet' | 'google') => void;
-  hasGoogleKey: boolean;
   onOpenAddModal: () => void;
   onOpenDataSourcesModal: () => void;
-  onOpenApiKeyModal: () => void;
   onCitySelect: (city: CityPreset) => void;
   onLocateUser: () => void;
   isLocating: boolean;
@@ -31,12 +26,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   filter,
   setFilter,
-  mapMode,
-  setMapMode,
-  hasGoogleKey,
   onOpenAddModal,
   onOpenDataSourcesModal,
-  onOpenApiKeyModal,
   onCitySelect,
   onLocateUser,
   isLocating,
@@ -65,43 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Map Engine Selector & Quick Actions */}
+        {/* Quick Actions */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Map Engine Toggle */}
-          <div className="flex items-center bg-[#1a1a1a] p-1 rounded-lg border border-[#2a2a2a] text-xs">
-            <button
-              type="button"
-              onClick={() => setMapMode('leaflet')}
-              className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                mapMode === 'leaflet'
-                  ? 'bg-[#282828] text-[#f5f5f5] shadow-xs'
-                  : 'text-[#888888] hover:text-[#e0e0e0]'
-              }`}
-            >
-              OpenStreetMap
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!hasGoogleKey) {
-                  onOpenApiKeyModal();
-                } else {
-                  setMapMode('google');
-                }
-              }}
-              className={`px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 ${
-                mapMode === 'google'
-                  ? 'bg-[#00d1b2] text-[#0a0a0a] shadow-xs'
-                  : 'text-[#888888] hover:text-[#e0e0e0]'
-              }`}
-            >
-              Google Maps
-              {!hasGoogleKey && (
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" title="APIキー未設定" />
-              )}
-            </button>
-          </div>
-
           {/* Action Buttons */}
           <button
             type="button"
@@ -121,15 +77,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>きれい度を投稿</span>
           </button>
 
-          <button
-            type="button"
-            onClick={onOpenApiKeyModal}
-            aria-label="Google Maps APIキー設定"
-            className="p-1.5 text-[#888888] hover:text-[#e0e0e0] bg-[#1a1a1a] hover:bg-[#242424] border border-[#2a2a2a] rounded-lg transition-colors"
-            title="Google Maps API設定 (※OSM利用時はキー不要)"
-          >
-            <Key className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
@@ -262,9 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="bg-[#1a1a1a] border border-[#2a2a2a] text-[#e0e0e0] rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-[#00d1b2] focus:outline-none"
             >
               <option value="all">全データ元</option>
-              <option value="google">Google Maps</option>
               <option value="osm">OpenStreetMap</option>
-              <option value="opendata">自治体オープンデータ</option>
               <option value="community">ユーザー投稿</option>
             </select>
           </div>
