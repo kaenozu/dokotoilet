@@ -1,4 +1,6 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
@@ -8,16 +10,49 @@ async function startServer() {
   // Cloud Run / AI Studio は PORT 環境変数を注入する
   const PORT = parseInt(process.env.PORT || "3000", 10) || 3000;
 
-  app.use(express.json());
+  // Cloud Runはリバースプロキシ配下のため、rate-limitのIP判定用に1段だけ信頼する
+  app.set("trust proxy", 1);
+  app.use(helmet());
+  app.use(express.json({ limit: "100kb" }));
+  // OSMプロキシの踏み台化を防ぐ（/api/配下は1分60リクエスト/IP）
+  const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 60,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+  });
+  app.use("/api/", apiLimiter);
 
   // Health check
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  // In-memory cache for live OpenStreetMap Overpass queries (15-minute TTL)
+  // In-memory cache for live OpenStreetMap Overpass queries (15-minute TTL, LRU cap)
   const osmCache = new Map<string, { timestamp: number; data: any }>();
   const OSM_CACHE_TTL = 15 * 60 * 1000;
+  const OSM_CACHE_MAX = 200;
+
+  function osmCacheSet(key: string, data: any) {
+    // 挿入順を最新にするため既存キーは入れ直す
+    if (osmCache.has(key)) osmCache.delete(key);
+    // 上限超過分は古いものから捨てる
+    while (osmCache.size >= OSM_CACHE_MAX) {
+      const oldest = osmCache.keys().next();
+      if (oldest.done) break;
+      osmCache.delete(oldest.value);
+    }
+    osmCache.set(key, { timestamp: Date.now(), data });
+  }
+
+  // TTL切れエントリの定期掃除（5分毎）。タイマーはプロセス終了を妨げない
+  const cacheSweeper = setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of osmCache) {
+      if (now - entry.timestamp >= OSM_CACHE_TTL) osmCache.delete(key);
+    }
+  }, 5 * 60 * 1000);
+  (cacheSweeper as unknown as { unref?: () => void }).unref?.();
 
   // OpenStreetMap Overpass API Proxy for live real toilets
   app.get("/api/osm/toilets", async (req, res) => {
@@ -36,11 +71,11 @@ async function startServer() {
       // Lightweight and indexed node query for public restrooms (completes in ~1.5s vs 10s+ for polygons)
       const overpassQuery = `[out:json][timeout:6];node["amenity"="toilets"](around:${radius},${lat},${lng});out body 45;`;
 
-      // Fast, resilient mirrors
+      // Fast, resilient mirrors（高速・安定な順）
       const mirrors = [
-        "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
         "https://overpass.kumi.systems/api/interpreter",
         "https://overpass-api.de/api/interpreter",
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
       ];
 
       let rawElements: any[] = [];
@@ -56,7 +91,8 @@ async function startServer() {
             body: "data=" + encodeURIComponent(overpassQuery),
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              "User-Agent": "CleanToiletMap/1.0",
+              // Overpass利用ポリシー: 連絡可能なUA必須
+              "User-Agent": "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
             },
             signal: controller.signal,
           });
@@ -232,7 +268,7 @@ async function startServer() {
       };
 
       if (toilets.length > 0) {
-        osmCache.set(cacheKey, { timestamp: Date.now(), data: responsePayload });
+        osmCacheSet(cacheKey, responsePayload);
       }
 
       res.json(responsePayload);
