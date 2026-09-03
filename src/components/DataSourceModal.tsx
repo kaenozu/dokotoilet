@@ -35,7 +35,7 @@ export const DataSourceModal: React.FC<DataSourceModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-[#f5f5f5]">
-                トイレきれい度マップのデータ元 徹底比較ガイド
+                きれいトイレのデータ元 徹底比較ガイド
               </h2>
               <p className="text-xs text-[#888888]">
                 Google Maps以外のデータソースと、それぞれの特徴・ライセンス・きれい度抽出手法
