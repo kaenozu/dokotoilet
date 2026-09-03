@@ -6,6 +6,7 @@ import {
   ToiletReview,
 } from './types';
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
+import { gradeForScore } from './lib/scoring';
 import { Header } from './components/Header';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
@@ -327,13 +328,7 @@ export default function App() {
         // Recalculate average cleanliness score
         const totalRating = updatedReviews.reduce((sum, r) => sum + r.rating, 0);
         const newScore = parseFloat((totalRating / newCount).toFixed(1));
-
-        let newGrade: any = 'B';
-        if (newScore >= 4.6) newGrade = 'S';
-        else if (newScore >= 4.0) newGrade = 'A';
-        else if (newScore >= 3.0) newGrade = 'B';
-        else if (newScore >= 2.0) newGrade = 'C';
-        else newGrade = 'D';
+        const newGrade = gradeForScore(newScore);
 
         const updated = {
           ...item,

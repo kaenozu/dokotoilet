@@ -6,3 +6,5 @@ coverage/
 *.log
 .env*
 !.env.example
+# シード生成用の一時スクリプト・中間ファイルは管理外（手順は README 参照）
+tmp/

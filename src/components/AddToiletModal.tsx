@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import {
   ToiletFacility,
   FacilityCategory,
-  CleanlinessGrade,
 } from '../types';
+import { gradeForScore } from '../lib/scoring';
 import { PlusCircle, MapPin, Sparkles, Building2 } from 'lucide-react';
 
 interface AddToiletModalProps {
@@ -33,19 +33,11 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
 
   if (!isOpen) return null;
 
-  const calculateGrade = (score: number): CleanlinessGrade => {
-    if (score >= 4.6) return 'S';
-    if (score >= 4.0) return 'A';
-    if (score >= 3.0) return 'B';
-    if (score >= 2.0) return 'C';
-    return 'D';
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    const grade = calculateGrade(cleanlinessScore);
+    const grade = gradeForScore(cleanlinessScore);
 
     const newFacility: ToiletFacility = {
       id: `toilet-user-${crypto.randomUUID()}`,
@@ -211,7 +203,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
                 きれい度スコア: <strong className="text-[#00d1b2] text-sm">{cleanlinessScore}</strong>
               </span>
               <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#00d1b2]/20 text-[#00d1b2] border border-[#00d1b2]/40">
-                Grade {calculateGrade(cleanlinessScore)}
+                Grade {gradeForScore(cleanlinessScore)}
               </span>
             </div>
             <input
