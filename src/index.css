@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    overflow: hidden;
+  }
+
+  /* Custom dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d0d0d;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #262626;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+}
+
+/* Custom leaflet tweaks */
+.leaflet-container {
+  background-color: #0d0d0d !important;
+  font-family: inherit;
+}
+
+/* Safe CSS dark filter for official OpenStreetMap tiles (100% free, no external Carto watermark) */
+.leaflet-dark-tiles .leaflet-tile-pane {
+  filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+.leaflet-bar {
+  border: 1px solid #2a2a2a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+.leaflet-bar a {
+  background-color: #161616 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #262626 !important;
+}
+.leaflet-bar a:hover {
+  background-color: #222222 !important;
+  color: #00d1b2 !important;
+}
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(15, 15, 15, 0.8) !important;
+  color: #666666 !important;
+  font-size: 10px;
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: #888888 !important;
+}
+
+/* Custom dark popups */
+.leaflet-popup-content-wrapper {
+  background: #181818 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #2e2e2e !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7) !important;
+}
+.leaflet-popup-tip {
+  background: #181818 !important;
+}
+.leaflet-popup-content {
+  margin: 12px !important;
+  line-height: 1.4 !important;
+}
+
+
