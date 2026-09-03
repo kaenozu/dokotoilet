@@ -63,8 +63,13 @@ export interface ToiletFacility {
   lng: number;
   address: string;
   floorInfo?: string;
+  // 実測レビュー平均のランク・スコア。reviewCount === 0 の場合は設備推定値を
+  // 表示用に入れるが、UI上は「未評価」として扱うこと（isEvaluated参照）
   cleanlinessGrade: CleanlinessGrade;
   cleanlinessScore: number; // 1.0 - 5.0
+  // 設備タグからの推定ランク・スコア（実測ではない）
+  equipmentGrade: CleanlinessGrade;
+  equipmentScore: number; // 1.0 - 5.0
   subScores: SubScores;
   attributes: ToiletAttributes;
   openingHours: string;
@@ -74,7 +79,8 @@ export interface ToiletFacility {
   reviewCount: number;
   reviews: ToiletReview[];
   facilitySummary?: string;
-  aiSummary?: string;
+  // 施設メモ。旧aiSummary（AIが生成したものではないため改名）
+  facilityNote?: string;
   pros?: string[];
   cons?: string[];
   tips?: string;

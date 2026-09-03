@@ -23,7 +23,7 @@ const facilities = list.map(el => {
   const isWheelchair = tags.wheelchair === "yes";
   const hasDiaper = tags.diaper === "yes" || tags.changing_table === "yes";
   const hasWashlet = tags.washlet === "yes";
-  const isFree = tags.fee === "no" || !tags.fee;
+  const isFree = tags.fee !== "yes";
   const isOpen24h = tags.opening_hours === "24/7";
   const isOstomate = tags.ostomate === "yes";
 
@@ -81,6 +81,8 @@ const facilities = list.map(el => {
     address: tags["addr:full"] || tags["addr:street"] || "周辺道路・公園内",
     cleanlinessGrade: grade,
     cleanlinessScore: score,
+    equipmentGrade: grade,
+    equipmentScore: score,
     subScores: {
       cleanliness: score,
       odor: score,
@@ -96,7 +98,7 @@ const facilities = list.map(el => {
       hasOstomate: isOstomate,
       isFree,
       isOpen24h,
-      hasSoap: tags.soap !== "no",
+      hasSoap: tags.soap === "yes",
       hasAlcohol: tags.hand_disinfectant === "yes",
       hasPaperTowelOrDryer: tags.hand_dryer === "yes",
       toiletStyle: tags["toilets:position"] === "seated" ? "western" : "both",
@@ -105,7 +107,7 @@ const facilities = list.map(el => {
     description: "OpenStreetMap (Node/Way ID: " + el.id + ") に登録されている実在の公衆トイレです。" + (tags.description ? tags.description : ""),
     reviewCount: 0,
     reviews: [],
-    aiSummary: isTheTokyoToilet
+    facilityNote: isTheTokyoToilet
       ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
       : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
     pros,

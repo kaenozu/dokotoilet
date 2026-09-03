@@ -69,6 +69,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
       floorInfo: floorInfo.trim() || undefined,
       cleanlinessGrade: grade,
       cleanlinessScore,
+      // ユーザー報告が初回レビューとして付くため、設備推定＝実測扱い
+      equipmentGrade: grade,
+      equipmentScore: cleanlinessScore,
       subScores: {
         cleanliness: cleanlinessScore,
         odor: Math.min(5, cleanlinessScore + 0.1),
@@ -106,7 +109,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
           helpfulCount: 1,
         },
       ],
-      aiSummary: 'ユーザー報告に基づく新規登録トイレ情報。',
+      facilityNote: 'ユーザー報告に基づく新規登録トイレ情報。',
     };
 
     onAddToilet(newFacility);

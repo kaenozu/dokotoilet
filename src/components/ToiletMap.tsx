@@ -82,7 +82,11 @@ interface ToiletMapProps {
   isLoadingOsm: boolean;
 }
 
-export const getGradeColor = (grade: CleanlinessGrade) => {
+// 実測レビューが1件でもあるか。無い場合は設備推定値しかないため「未評価」扱い
+export const isEvaluated = (toilet: { reviewCount: number }) =>
+  toilet.reviewCount > 0;
+
+export const getGradeColor = (grade: CleanlinessGrade | null | undefined) => {
   switch (grade) {
     case 'S':
       return {
@@ -225,7 +229,9 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
     toilets.forEach((toilet) => {
       const isSelected = selectedToilet?.id === toilet.id;
-      const colorInfo = getGradeColor(toilet.cleanlinessGrade);
+      const evaluated = isEvaluated(toilet);
+      const colorInfo = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
+      const gradeLetter = evaluated ? toilet.cleanlinessGrade : '–';
 
       const customIcon = L.divIcon({
         className: 'custom-toilet-marker',
@@ -240,7 +246,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
             ? 'ring-[#00d1b2] ring-offset-2 ring-offset-[#0a0a0a] shadow-[0_0_12px_rgba(0,209,178,0.4)]'
             : 'ring-[#1a1a1a]'
         }">
-              ${toilet.cleanlinessGrade}
+              ${gradeLetter}
             </div>
             <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 ${
               colorInfo.bg

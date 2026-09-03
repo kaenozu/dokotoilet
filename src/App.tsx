@@ -197,6 +197,8 @@ export default function App() {
               address: tags['addr:full'] || '周辺道路・公園内',
               cleanlinessGrade: 'B' as const,
               cleanlinessScore: 3.4,
+              equipmentGrade: 'B' as const,
+              equipmentScore: 3.4,
               subScores: { cleanliness: 3.4, odor: 3.3, supplies: 3.5, comfort: 3.4 },
               attributes: {
                 hasWashlet: tags.washlet === 'yes',
@@ -205,9 +207,9 @@ export default function App() {
                 hasNursingRoom: false,
                 hasPowderRoom: false,
                 hasOstomate: tags.ostomate === 'yes',
-                isFree: tags.fee === 'no' || !tags.fee,
+                isFree: tags.fee !== 'yes',
                 isOpen24h: tags.opening_hours === '24/7',
-                hasSoap: true,
+                hasSoap: tags.soap === 'yes',
                 hasAlcohol: false,
                 hasPaperTowelOrDryer: false,
                 toiletStyle: 'both' as const,
@@ -216,7 +218,7 @@ export default function App() {
               description: `OpenStreetMap登録の実在公衆便所。`,
               reviewCount: 0,
               reviews: [],
-              aiSummary: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
+              facilityNote: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
             };
           })
           .filter(Boolean) as ToiletFacility[];
