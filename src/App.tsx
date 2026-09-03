@@ -112,6 +112,46 @@ export default function App() {
     }
   }, [toilets]);
 
+  // 投票済みレビューID（localStorage。サーバー側はIPハッシュで重複防止）
+  const [votedReviewIds, setVotedReviewIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('kirei-toilet-voted-reviews');
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem('kirei-toilet-voted-reviews', JSON.stringify(votedReviewIds));
+    } catch {
+      /* ignore */
+    }
+  }, [votedReviewIds]);
+
+  // Fetch shared community toilets from the server (fail-soft: static hosting etc.)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/community/toilets');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!Array.isArray(data.toilets)) return;
+        const serverItems = data.toilets as ToiletFacility[];
+        if (serverItems.length === 0) return;
+        setToilets((prev) => {
+          const serverIds = new Set(serverItems.map((t) => t.id));
+          // サーバー側を正とし、サーバーに無いローカル分（オフライン投稿等）は残す
+          const localOnly = prev.filter((t) => !serverIds.has(t.id));
+          return [...serverItems, ...localOnly];
+        });
+      } catch {
+        /* offline / static hosting: local-only mode */
+      }
+    })();
+  }, []);
+
   // Filtered Toilets List
   const filteredToilets = useMemo(() => {
     return toilets.filter((item) => {
@@ -316,8 +356,7 @@ export default function App() {
     );
   };
 
-  // Submit new review
-  const handleSubmitReview = (toiletId: string, newReview: ToiletReview) => {
+  const applyLocalReview = (toiletId: string, newReview: ToiletReview) => {
     setToilets((prev) =>
       prev.map((item) => {
         if (item.id !== toiletId) return item;
@@ -348,12 +387,124 @@ export default function App() {
     );
   };
 
-  // Add new toilet
-  const handleAddToilet = (newFacility: ToiletFacility) => {
+  // Submit new review (server first, local fallback for offline/static hosting)
+  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview) => {
+    try {
+      const res = await fetch(`/api/community/toilets/${encodeURIComponent(toiletId)}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review: newReview }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.toilet) {
+          const updated = data.toilet as ToiletFacility;
+          setToilets((prev) => prev.map((t) => (t.id === toiletId ? updated : t)));
+          if (selectedToilet?.id === toiletId) setSelectedToilet(updated);
+          return;
+        }
+      } else {
+        const err = await res.json().catch(() => null);
+        if (err?.error) showToast(`投稿できませんでした: ${err.error}`);
+      }
+    } catch {
+      /* offline: fall through to local */
+    }
+    applyLocalReview(toiletId, newReview);
+  };
+
+  // Add new toilet (server first, local fallback)
+  const handleAddToilet = async (newFacility: ToiletFacility) => {
     setToilets((prev) => [newFacility, ...prev]);
     setSelectedToilet(newFacility);
     setMapCenter({ lat: newFacility.lat, lng: newFacility.lng });
     setMapZoom(16);
+    try {
+      const res = await fetch('/api/community/toilets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: newFacility.id,
+          name: newFacility.name,
+          category: newFacility.category,
+          address: newFacility.address,
+          floorInfo: newFacility.floorInfo,
+          cleanlinessScore: newFacility.cleanlinessScore,
+          description: newFacility.description,
+          lat: newFacility.lat,
+          lng: newFacility.lng,
+          attributes: {
+            hasWashlet: newFacility.attributes.hasWashlet,
+            hasMultipurpose: newFacility.attributes.hasMultipurpose,
+            hasBabyTable: newFacility.attributes.hasBabyTable,
+            hasPowderRoom: newFacility.attributes.hasPowderRoom,
+            isOpen24h: newFacility.attributes.isOpen24h,
+          },
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        if (err?.error) showToast(`共有登録できませんでした: ${err.error}（この端末のみに保存）`);
+      }
+    } catch {
+      /* offline: local-only */
+    }
+  };
+
+  // Helpful vote (once per browser; server enforces once per IP)
+  const handleVoteHelpful = async (toiletId: string, reviewId: string) => {
+    if (votedReviewIds.includes(reviewId)) return;
+    setVotedReviewIds((prev) => [...prev, reviewId]);
+    setToilets((prev) =>
+      prev.map((t) =>
+        t.id === toiletId
+          ? {
+              ...t,
+              reviews: t.reviews.map((r) =>
+                r.id === reviewId ? { ...r, helpfulCount: r.helpfulCount + 1 } : r
+              ),
+            }
+          : t
+      )
+    );
+    try {
+      const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/helpful`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setToilets((prev) =>
+          prev.map((t) =>
+            t.id === toiletId
+              ? {
+                  ...t,
+                  reviews: t.reviews.map((r) =>
+                    r.id === reviewId ? { ...r, helpfulCount: data.helpfulCount } : r
+                  ),
+                }
+              : t
+          )
+        );
+      }
+    } catch {
+      /* offline: local count only */
+    }
+  };
+
+  // Report a review (moderation queue on the server)
+  const handleReportReview = async (toiletId: string, reviewId: string) => {
+    const reason = window.prompt('通報理由を入力してください（不適切な内容・いたずら等）');
+    if (!reason || !reason.trim()) return;
+    try {
+      const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toiletId, reason: reason.trim() }),
+      });
+      showToast(res.ok ? '通報を受け付けました。確認します。' : '通報できませんでした。');
+    } catch {
+      showToast('通報できませんでした（オフライン）。');
+    }
   };
 
   return (
@@ -418,6 +569,9 @@ export default function App() {
               toilet={selectedToilet}
               onClose={() => setSelectedToilet(null)}
               onOpenReviewModal={() => setIsReviewModalOpen(true)}
+              onVoteHelpful={handleVoteHelpful}
+              onReportReview={handleReportReview}
+              votedReviewIds={votedReviewIds}
             />
           </div>
         )}
