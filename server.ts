@@ -68,8 +68,10 @@ async function startServer() {
         return;
       }
 
-      // Lightweight and indexed node query for public restrooms (completes in ~1.5s vs 10s+ for polygons)
-      const overpassQuery = `[out:json][timeout:6];node["amenity"="toilets"](around:${radius},${lat},${lng});out body 45;`;
+      // nwr query: nodes + ways + relations (buildings etc.) with center coords.
+      // Limit 100 covers dense areas (e.g. Shibuya ~98 hits); ways surface only
+      // if the limit is not truncated, hence > 45.
+      const overpassQuery = `[out:json][timeout:10];nwr["amenity"="toilets"](around:${radius},${lat},${lng});out center 100;`;
 
       // Fast, resilient mirrors（高速・安定な順）
       const mirrors = [
@@ -84,7 +86,7 @@ async function startServer() {
       for (const mirrorUrl of mirrors) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 4500);
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
 
           const osmResponse = await fetch(mirrorUrl, {
             method: "POST",
@@ -201,6 +203,8 @@ async function startServer() {
             : undefined;
 
         return {
+          // node/way/relationでID空間は別だが、同一半径内の数値衝突は無視できるため
+          // 従来形式（osm-<id>）を維持する（保存データとの互換性優先）
           id: `osm-${el.id}`,
           name,
           facilityType: isTheTokyoToilet
