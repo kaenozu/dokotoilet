@@ -5,7 +5,8 @@ import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  // Cloud Run / AI Studio は PORT 環境変数を注入する
+  const PORT = parseInt(process.env.PORT || "3000", 10) || 3000;
 
   app.use(express.json());
 
@@ -155,6 +156,13 @@ async function startServer() {
         if (!hasWashlet) cons.push("ウォシュレット非対応または未登録");
         if (tags.wheelchair === "no") cons.push("車椅子非対応の構造");
 
+        // OSMは誰でも編集できるため、contact:websiteはhttp(s)のみ許可する
+        const rawContact = tags["contact:website"];
+        const safeContact =
+          typeof rawContact === "string" && /^https?:\/\/[^\\"'\s]+$/i.test(rawContact.trim())
+            ? rawContact.trim()
+            : undefined;
+
         return {
           id: `osm-${el.id}`,
           name,
@@ -204,7 +212,7 @@ async function startServer() {
             : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
           pros,
           cons,
-          tips: tags["contact:website"] ? `公式情報: ${tags["contact:website"]}` : undefined,
+          tips: safeContact ? `公式情報: ${safeContact}` : undefined,
           officialOpenDataId: `osm-${el.id}`,
           googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
         };

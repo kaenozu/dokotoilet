@@ -48,7 +48,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
     const grade = calculateGrade(cleanlinessScore);
 
     const newFacility: ToiletFacility = {
-      id: `toilet-user-${Date.now()}`,
+      id: `toilet-user-${crypto.randomUUID()}`,
       name: name.trim(),
       facilityType:
         category === 'department'
@@ -62,8 +62,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
           : 'その他施設',
       category,
       dataSource: 'community',
-      lat: defaultLocation.lat + (Math.random() - 0.5) * 0.002, // slight jitter if exact center
-      lng: defaultLocation.lng + (Math.random() - 0.5) * 0.002,
+      // 地図中心の正確な位置で登録する（ずらさない）
+      lat: defaultLocation.lat,
+      lng: defaultLocation.lng,
       address: address.trim() || '現在地周辺',
       floorInfo: floorInfo.trim() || undefined,
       cleanlinessGrade: grade,
@@ -94,7 +95,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
       lastCleaned: '本日登録',
       reviews: [
         {
-          id: `rev-init-${Date.now()}`,
+          id: `rev-init-${crypto.randomUUID()}`,
           userName: '情報登録者',
           rating: Math.round(cleanlinessScore),
           cleanlinessScore: Math.round(cleanlinessScore),
