@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg sm:text-xl font-bold text-[#f5f5f5] tracking-tight">
-                トイレきれい度マップ
+                きれいトイレ
               </h1>
               <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#059669]/20 text-[#34d399] border border-[#059669]/40">
                 <CheckCircle2 className="w-3.5 h-3.5" /> 実在データ (OSM & 口コミ)
