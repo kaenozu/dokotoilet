@@ -13,7 +13,6 @@ import { ToiletDetails } from './components/ToiletDetails';
 import { DataSourceModal } from './components/DataSourceModal';
 import { ReviewModal } from './components/ReviewModal';
 import { AddToiletModal } from './components/AddToiletModal';
-import { ApiKeyModal } from './components/ApiKeyModal';
 import {
   List,
   Map as MapIcon,
@@ -24,7 +23,6 @@ import {
 
 const STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v3';
 const LEGACY_STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v2';
-const STORAGE_KEY_API_KEY = 'toilet_map_google_api_key_v1';
 // types.ts の DataSourceType と対応。不明な値も保持するため列挙しておく
 const KNOWN_DATA_SOURCES = new Set(['google', 'osm', 'opendata', 'community']);
 
@@ -61,24 +59,6 @@ export default function App() {
     return INITIAL_TOILETS;
   });
 
-  // Google Maps API Key from env or user storage
-  const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>(() => {
-    const envKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY;
-    if (envKey && envKey !== 'MY_GOOGLE_MAPS_API_KEY') {
-      return envKey;
-    }
-    try {
-      return localStorage.getItem(STORAGE_KEY_API_KEY) || '';
-    } catch {
-      return '';
-    }
-  });
-
-  const [mapMode, setMapMode] = useState<'leaflet' | 'google'>(() => {
-    const envKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY;
-    return envKey ? 'google' : 'leaflet';
-  });
-
   const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(
     INITIAL_TOILETS[0]
   );
@@ -97,7 +77,6 @@ export default function App() {
   const [isDataSourcesModalOpen, setIsDataSourcesModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   // Non-blocking toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -131,18 +110,6 @@ export default function App() {
       console.warn('Failed to save toilets:', e);
     }
   }, [toilets]);
-
-  const handleSaveApiKey = (key: string) => {
-    setGoogleMapsApiKey(key);
-    try {
-      localStorage.setItem(STORAGE_KEY_API_KEY, key);
-    } catch (e) {
-      console.warn('Failed to save API key:', e);
-    }
-    if (key) {
-      setMapMode('google');
-    }
-  };
 
   // Filtered Toilets List
   const filteredToilets = useMemo(() => {
@@ -398,12 +365,8 @@ export default function App() {
       <Header
         filter={filter}
         setFilter={setFilter}
-        mapMode={mapMode}
-        setMapMode={setMapMode}
-        hasGoogleKey={Boolean(googleMapsApiKey)}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onOpenDataSourcesModal={() => setIsDataSourcesModalOpen(true)}
-        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         onCitySelect={handleCitySelect}
         onLocateUser={handleLocateUser}
         isLocating={isLocating}
@@ -446,9 +409,6 @@ export default function App() {
             }}
             center={mapCenter}
             zoom={mapZoom}
-            mapMode={mapMode}
-            setMapMode={setMapMode}
-            googleMapsApiKey={googleMapsApiKey}
             onFetchOsmNearCenter={handleFetchOsmNearCenter}
             isLoadingOsm={isLoadingOsm}
           />
@@ -518,14 +478,6 @@ export default function App() {
         onClose={() => setIsAddModalOpen(false)}
         onAddToilet={handleAddToilet}
         defaultLocation={mapCenter}
-      />
-
-      <ApiKeyModal
-        isOpen={isApiKeyModalOpen}
-        onClose={() => setIsApiKeyModalOpen(false)}
-        apiKey={googleMapsApiKey}
-        onSaveKey={handleSaveApiKey}
-        onSwitchToLeaflet={() => setMapMode('leaflet')}
       />
 
       {/* Toast Notification */}

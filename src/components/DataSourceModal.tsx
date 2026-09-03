@@ -38,7 +38,7 @@ export const DataSourceModal: React.FC<DataSourceModalProps> = ({
                 きれいトイレのデータ元 徹底比較ガイド
               </h2>
               <p className="text-xs text-[#888888]">
-                Google Maps以外のデータソースと、それぞれの特徴・ライセンス・きれい度抽出手法
+                各データソースの特徴・ライセンス・きれい度抽出手法（Google Mapsは有料のため不採用）
               </p>
             </div>
           </div>
@@ -61,8 +61,8 @@ export const DataSourceModal: React.FC<DataSourceModalProps> = ({
             </div>
             <p className="text-[#c7f5ee] leading-relaxed">
               「きれい度」を正確に評価するマップを作る場合、単一のデータ元だけに頼るのではなく、
-              <strong className="text-white">「Google Maps（商業施設・口コミの自然言語解析）」＋「OpenStreetMap（街頭・公園の無料オープンデータ）」＋「ユーザーのリアルタイム評価投稿（CGM）」</strong>
-              を組み合わせるハイブリッド構成が最も費用対効果と鮮度が高くなります。本アプリでもこの3層構造を標準実装しています。
+              <strong className="text-white">「OpenStreetMap（街頭・公園の無料オープンデータ）」＋「ユーザーのリアルタイム評価投稿（CGM）」</strong>
+              を組み合わせる構成が最も費用対効果と鮮度が高くなります。本アプリではGoogle Maps（有料）を採用せず、この2層構造を標準実装しています。
             </p>
           </div>
 
@@ -146,9 +146,9 @@ export const DataSourceModal: React.FC<DataSourceModalProps> = ({
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
               <div className="bg-[#1c1c1c] p-3 rounded-lg border border-[#2a2a2a]">
-                <h4 className="font-bold text-[#f5f5f5] mb-1">1. 口コミ自然言語解析 (AI)</h4>
+                <h4 className="font-bold text-[#f5f5f5] mb-1">1. ユーザー口コミの集計</h4>
                 <p className="text-[#a0a0a0] leading-relaxed">
-                  Google Maps等の口コミから「綺麗」「掃除」「におい」「汚い」「ピカピカ」「ペーパー切れ」等の語句をGemini等のLLMで感情分析し、1.0〜5.0点にスコア化。
+                  アプリ内のきれい度評価投稿（清潔さ・におい・備品の3軸＋コメント）を集計し、1.0〜5.0点にスコア化。将来的にLLMによる自然言語解析の導入も検討中。
                 </p>
               </div>
 

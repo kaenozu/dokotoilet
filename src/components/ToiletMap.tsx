@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ToiletFacility, CleanlinessGrade } from '../types';
-import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 import {
   RefreshCw,
   Layers,
@@ -79,9 +78,6 @@ interface ToiletMapProps {
   onSelectToilet: (toilet: ToiletFacility) => void;
   center: { lat: number; lng: number };
   zoom: number;
-  mapMode: 'leaflet' | 'google';
-  setMapMode: (mode: 'leaflet' | 'google') => void;
-  googleMapsApiKey: string;
   onFetchOsmNearCenter: (lat: number, lng: number) => void;
   isLoadingOsm: boolean;
 }
@@ -145,9 +141,6 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   onSelectToilet,
   center,
   zoom,
-  mapMode,
-  setMapMode,
-  googleMapsApiKey,
   onFetchOsmNearCenter,
   isLoadingOsm,
 }) => {
@@ -161,7 +154,6 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
   // Initialize Leaflet Map
   useEffect(() => {
-    if (mapMode !== 'leaflet') return;
     if (!leafletContainerRef.current) return;
 
     if (!leafletMapRef.current) {
@@ -181,17 +173,17 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
     }
 
     return () => {
-      // モード切替・アンマウント時に破棄しないとインスタンスが残存する
+      // アンマウント時に破棄しないとインスタンスが残存する
       leafletMapRef.current?.remove();
       leafletMapRef.current = null;
       markersGroupRef.current = null;
       currentTileLayerRef.current = null;
     };
-  }, [mapMode]);
+  }, []);
 
   // Handle TileLayer switching (100% Free - Official OSM & GSI Japan)
   useEffect(() => {
-    if (mapMode !== 'leaflet' || !leafletMapRef.current) return;
+    if (!leafletMapRef.current) return;
     const config =
       TILE_STYLES.find((s) => s.id === currentTileStyle) || TILE_STYLES[0];
 
@@ -215,7 +207,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
         leafletContainerRef.current.classList.remove('leaflet-dark-tiles');
       }
     }
-  }, [currentTileStyle, mapMode]);
+  }, [currentTileStyle]);
 
   // Update center when prop changes
   useEffect(() => {
@@ -272,48 +264,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
   return (
     <div className="relative w-full h-full min-h-[420px] bg-[#0a0a0a] overflow-hidden">
-      {mapMode === 'google' && googleMapsApiKey ? (
-        <APIProvider apiKey={googleMapsApiKey} language="ja" region="JP">
-          <Map
-            defaultCenter={center}
-            defaultZoom={zoom}
-            center={center}
-            zoom={zoom}
-            mapId="DEMO_MAP_ID"
-            internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
-            style={{ width: '100%', height: '100%' }}
-            gestureHandling="greedy"
-            disableDefaultUI={false}
-          >
-            {toilets.map((toilet) => {
-              const colorInfo = getGradeColor(toilet.cleanlinessGrade);
-              const isSelected = selectedToilet?.id === toilet.id;
-              return (
-                <AdvancedMarker
-                  key={toilet.id}
-                  position={{ lat: toilet.lat, lng: toilet.lng }}
-                  onClick={() => onSelectToilet(toilet)}
-                  title={toilet.name}
-                  zIndex={isSelected ? 100 : 10}
-                >
-                  <Pin
-                    background={colorInfo.hex}
-                    borderColor={isSelected ? '#00d1b2' : '#222222'}
-                    glyphColor="#ffffff"
-                    scale={isSelected ? 1.25 : 1.0}
-                  >
-                    <span className="text-white font-bold text-xs">
-                      {toilet.cleanlinessGrade}
-                    </span>
-                  </Pin>
-                </AdvancedMarker>
-              );
-            })}
-          </Map>
-        </APIProvider>
-      ) : (
-        <div ref={leafletContainerRef} className="w-full h-full" />
-      )}
+      <div ref={leafletContainerRef} className="w-full h-full" />
 
       {/* Floating Map Controls & Overlays */}
       <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
@@ -345,8 +296,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
         </button>
 
         {/* Tile Style Selector (100% Free & No API Key) */}
-        {mapMode === 'leaflet' && (
-          <div className="pointer-events-auto relative">
+        <div className="pointer-events-auto relative">
             <button
               type="button"
               onClick={() => setShowTileSelector(!showTileSelector)}
@@ -403,8 +353,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
                 })}
               </div>
             )}
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Grade Legend in Bottom Left */}
