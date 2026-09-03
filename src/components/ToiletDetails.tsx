@@ -32,12 +32,18 @@ interface ToiletDetailsProps {
   toilet: ToiletFacility;
   onClose: () => void;
   onOpenReviewModal: () => void;
+  onVoteHelpful?: (toiletId: string, reviewId: string) => void;
+  onReportReview?: (toiletId: string, reviewId: string) => void;
+  votedReviewIds?: string[];
 }
 
 export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   toilet,
   onClose,
   onOpenReviewModal,
+  onVoteHelpful,
+  onReportReview,
+  votedReviewIds = [],
 }) => {
   // 実測レビュー0件は設備推定値しかないため「未評価」表示にする
   const evaluated = isEvaluated(toilet);
@@ -459,6 +465,31 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                   <span className="text-[11px] text-[#666666]">{rev.createdAt}</span>
                 </div>
                 <p className="text-[#d0d0d0] leading-relaxed">{rev.comment}</p>
+                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#222222]">
+                  <button
+                    type="button"
+                    disabled={votedReviewIds.includes(rev.id)}
+                    onClick={() => onVoteHelpful?.(toilet.id, rev.id)}
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-colors ${
+                      votedReviewIds.includes(rev.id)
+                        ? 'bg-[#00d1b2]/15 text-[#00d1b2] cursor-default'
+                        : 'bg-[#1a1a1a] text-[#a0a0a0] hover:text-[#f5f5f5] hover:bg-[#242424] border border-[#2a2a2a]'
+                    }`}
+                  >
+                    <ThumbsUp className="w-3 h-3" />
+                    <span>
+                      役に立った ({rev.helpfulCount})
+                      {votedReviewIds.includes(rev.id) ? ' ✓' : ''}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onReportReview?.(toilet.id, rev.id)}
+                    className="ml-auto text-[11px] text-[#666666] hover:text-[#f87171] transition-colors"
+                  >
+                    通報
+                  </button>
+                </div>
               </div>
             ))}
           </div>

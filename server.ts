@@ -2,8 +2,14 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import path from "path";
+import crypto from "node:crypto";
 import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
+import {
+  CommunityStore,
+  createCommunityRouter,
+  defaultStorePath,
+} from "./server/community";
 
 async function startServer() {
   const app = express();
@@ -22,6 +28,11 @@ async function startServer() {
     legacyHeaders: false,
   });
   app.use("/api/", apiLimiter);
+
+  // コミュニティ投稿API（ファイルストア。 ephemeral FS では再起動で消える点に注意）
+  const communityStore = new CommunityStore(defaultStorePath());
+  const communitySalt = process.env.COMMUNITY_SALT || crypto.randomUUID();
+  app.use("/api/community", createCommunityRouter(communityStore, communitySalt));
 
   // Health check
   app.get("/api/health", (_req, res) => {
