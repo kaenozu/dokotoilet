@@ -22,22 +22,37 @@ import {
   Info,
 } from 'lucide-react';
 
-const STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v2';
+const STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v3';
+const LEGACY_STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v2';
 const STORAGE_KEY_API_KEY = 'toilet_map_google_api_key_v1';
+// types.ts の DataSourceType と対応。不明な値も保持するため列挙しておく
+const KNOWN_DATA_SOURCES = new Set(['google', 'osm', 'opendata', 'community']);
 
 export default function App() {
   // Persistence for user reviews and newly added toilets (Strictly real data only, no mock samples)
   const [toilets, setToilets] = useState<ToiletFacility[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY_TOILETS);
+      // v3が無ければv2から移行する（v2は残し、保存はv3へ）
+      const saved =
+        localStorage.getItem(STORAGE_KEY_TOILETS) ??
+        localStorage.getItem(LEGACY_STORAGE_KEY_TOILETS);
       if (saved) {
-        const parsed: ToiletFacility[] = JSON.parse(saved);
-        // Exclude any legacy mock sample records from previous versions
-        const realOnly = parsed.filter(
-          (t) => t.id.startsWith('osm-') || t.dataSource === 'community'
-        );
-        if (realOnly.length > 0) {
-          return realOnly;
+        const parsed: unknown = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // 将来の dataSource（google/opendata等）を黙って捨てない。
+          // 旧v2のモック除外ルールも維持する
+          const migrated = (parsed as ToiletFacility[]).filter(
+            (t) =>
+              t &&
+              typeof t.id === 'string' &&
+              (t.id.startsWith('osm-') ||
+                t.id.startsWith('toilet-user-') ||
+                (typeof t.dataSource === 'string' &&
+                  KNOWN_DATA_SOURCES.has(t.dataSource)))
+          );
+          if (migrated.length > 0) {
+            return migrated;
+          }
         }
       }
     } catch (e) {

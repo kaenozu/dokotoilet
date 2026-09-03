@@ -38,7 +38,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     if (!comment.trim()) return;
 
     const newReview: ToiletReview = {
-      id: `rev-${Date.now()}`,
+      id: `rev-${crypto.randomUUID()}`,
       userName: userName.trim() || '匿名の利用者',
       rating,
       cleanlinessScore,

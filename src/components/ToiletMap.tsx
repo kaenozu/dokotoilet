@@ -181,7 +181,11 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
     }
 
     return () => {
-      // Cleanup on unmount if needed
+      // モード切替・アンマウント時に破棄しないとインスタンスが残存する
+      leafletMapRef.current?.remove();
+      leafletMapRef.current = null;
+      markersGroupRef.current = null;
+      currentTileLayerRef.current = null;
     };
   }, [mapMode]);
 
