@@ -39,7 +39,8 @@ describe("convertItems", () => {
     expect(f.attributes.hasWashlet).toBe(true);
     expect(f.attributes.hasBabyTable).toBe(false); // null -> false
     expect(f.reviewCount).toBe(1);
-    expect(f.reviews[0].userName).toBe("Google口コミより引用");
+    expect(f.reviews[0].userName).toBe("口コミ引用");
+    expect(f.reviews[0].source).toBeUndefined();
     expect(f.reviews[0].createdAt).toBe("2026-09-04");
   });
 
@@ -106,6 +107,23 @@ describe("convertItems", () => {
     expect(facilities[0].externalReviewCount).toBeUndefined();
     const zero = await convertItems([{ ...base, externalReviewCount: 0 }], { geocode: noGeo });
     expect(zero.facilities[0].externalReviewCount).toBe(0);
+  });
+
+  it("records excerpt source when Google-confirmed", async () => {
+    const { facilities } = await convertItems(
+      [
+        {
+          ...base,
+          reviewExcerpts: [
+            { text: "とても綺麗", rating: 5, source: "Google Maps" },
+            { text: "清潔だった", rating: 4, source: "  " },
+          ],
+        },
+      ],
+      { geocode: noGeo }
+    );
+    expect(facilities[0].reviews[0].source).toBe("Google Maps");
+    expect(facilities[0].reviews[1].source).toBeUndefined();
   });
 
   it("records coordSource in facilityNote", async () => {

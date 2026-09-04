@@ -39,6 +39,9 @@ export interface SubScores {
 export interface ToiletReview {
   id: string;
   userName: string;
+  // 引用の出所（例：「Google Maps」「Yahoo!マップ」）。取込データのみ。
+  // undefined＝出所未確認。Google確認分以外をGoogle表記してはならない
+  source?: string;
   userRole?: string;
   rating: number;             // 1-5
   cleanlinessScore: number;   // 1-5

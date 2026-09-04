@@ -460,7 +460,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               >
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#f5f5f5]">{rev.userName}</span>
+                    <span className="font-semibold text-[#f5f5f5]">
+                      {rev.userName}
+                      {rev.source && (
+                        <span className="ml-1.5 font-normal text-[#888888]">（{rev.source}より引用）</span>
+                      )}
+                    </span>
                     <div className="flex items-center text-amber-400">
                       {[...Array(5)].map((_, i) => (
                         <Star
