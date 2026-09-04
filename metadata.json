@@ -2,6 +2,6 @@
   "name": "きれいトイレ",
   "description": "Google Mapsやオープンデータ、利用者の清潔度レビュー・設備情報（ウォシュレット・多目的トイレ等）を統合したきれいトイレ",
   "requestFramePermissions": ["geolocation"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }
 
