@@ -6,7 +6,12 @@ import {
   ToiletReview,
 } from './types';
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
+import { GOOGLE_SEED } from './data/googleSeed';
 import { gradeForScore } from './lib/scoring';
+import { mergeSeedLists } from './lib/seed';
+
+// Google手動調査シードを優先し、OSM側の重複は設備フラグをOR統合して落とす
+const SEED_TOILETS = mergeSeedLists(GOOGLE_SEED, INITIAL_TOILETS);
 import { Header } from './components/Header';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
@@ -57,11 +62,11 @@ export default function App() {
     } catch (e) {
       console.warn('Failed to load saved toilets from localStorage:', e);
     }
-    return INITIAL_TOILETS;
+    return SEED_TOILETS;
   });
 
   const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(
-    INITIAL_TOILETS[0]
+    SEED_TOILETS[0]
   );
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
     lat: 35.6590,
