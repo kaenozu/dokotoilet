@@ -14,19 +14,23 @@ export type DataSourceType =
   | 'opendata'  // 自治体オープンデータ (東京都等)
   | 'community';// コミュニティ・ユーザー報告
 
+/** 設備の存在状態: true=あり / false=なし / null=未確認（不明）。
+ * 「設備がない」と「まだ調べていない」は明確に区別する（レビューP1対応）。 */
+export type TriState = boolean | null;
+
 export interface ToiletAttributes {
-  hasWashlet: boolean;            // 温水洗浄便座（ウォシュレット）
-  hasMultipurpose: boolean;       // 多機能・だれでもトイレ
-  hasBabyTable: boolean;          // おむつ交換台 / ベビーシート
-  hasNursingRoom: boolean;        // 授乳室
-  hasPowderRoom: boolean;         // パウダールーム・ドレッサー
-  hasOstomate: boolean;           // オストメイト対応
-  isFree: boolean;                // 無料で利用可能
-  isOpen24h: boolean;             // 24時間利用可能
-  hasSoap: boolean;               // ハンドソープあり
-  hasAlcohol: boolean;            // 除菌アルコール設置
-  hasPaperTowelOrDryer: boolean;  // ペーパータオルまたはハンドドライヤー
-  toiletStyle: 'western' | 'japanese' | 'both'; // 洋式・和式
+  hasWashlet: TriState;            // 温水洗浄便座（ウォシュレット）
+  hasMultipurpose: TriState;       // 多機能・だれでもトイレ
+  hasBabyTable: TriState;          // おむつ交換台 / ベビーシート
+  hasNursingRoom: TriState;        // 授乳室
+  hasPowderRoom: TriState;         // パウダールーム・ドレッサー
+  hasOstomate: TriState;           // オストメイト対応
+  isFree: TriState;                // 無料で利用可能
+  isOpen24h: TriState;             // 24時間利用可能
+  hasSoap: TriState;               // ハンドソープあり
+  hasAlcohol: TriState;            // 除菌アルコール設置
+  hasPaperTowelOrDryer: TriState;  // ペーパータオルまたはハンドドライヤー
+  toiletStyle: 'western' | 'japanese' | 'both' | null; // 洋式・和式（null=未確認）
 }
 
 export interface SubScores {
@@ -43,10 +47,16 @@ export interface ToiletReview {
   // undefined＝出所未確認。Google確認分以外をGoogle表記してはならない
   source?: string;
   userRole?: string;
-  rating: number;             // 1-5
-  cleanlinessScore: number;   // 1-5
-  odorScore: number;          // 1-5
-  suppliesScore: number;      // 1-5
+  /** 総合満足度 1-5（正式フィールド。旧データは無く rating のみ持つ） */
+  overallScore?: number;
+  /** 総合満足度 1-5 の旧名（overallScore 導入前の保存データ互換用の別名） */
+  rating: number;
+  /** 便器・床の清潔さ 1-5（独立に集計して cleanlinessScore へ） */
+  cleanlinessScore: number;
+  /** におい・換気状態 1-5（独立に集計） */
+  odorScore: number;
+  /** 備品（石鹸・ペーパー・除菌）1-5（独立に集計） */
+  suppliesScore: number;
   comment: string;
   createdAt: string;
   lastCleanedTime?: string;
@@ -66,13 +76,17 @@ export interface ToiletFacility {
   lng: number;
   address: string;
   floorInfo?: string;
-  // 実測レビュー平均のランク・スコア。reviewCount === 0 の場合は設備推定値を
-  // 表示用に入れるが、UI上は「未評価」として扱うこと（isEvaluated参照）
+  // 実測レビューの「清潔さ次元」平均のランク・スコア。reviewCount === 0 の場合は
+  // 設備推定値を表示用に入れるが、UI上は「未評価」として扱うこと（isEvaluated参照）
   cleanlinessGrade: CleanlinessGrade;
-  cleanlinessScore: number; // 1.0 - 5.0
+  cleanlinessScore: number; // 1.0 - 5.0（便器・床の清潔さの実測平均）
+  /** 総合満足度の実測平均（口コミ1件以上で設定。0件は未定義＝未評価） */
+  overallScore?: number;
   // 設備タグからの推定ランク・スコア（実測ではない）
   equipmentGrade: CleanlinessGrade;
   equipmentScore: number; // 1.0 - 5.0
+  // 設備推定の内訳（口コミ表示は reviews から次元別に導出。comfort は入力項目が
+  // ないため常にこの推定値）
   subScores: SubScores;
   attributes: ToiletAttributes;
   openingHours: string;
@@ -96,16 +110,12 @@ export interface ToiletFacility {
 }
 
 export interface FilterState {
-  category: string;
   dataSource: string;
-  minGrade: CleanlinessGrade | 'all';
+  onlyHighCleanliness: boolean; // Grade S & A (score >= 4.0)
   onlyWashlet: boolean;
   onlyMultipurpose: boolean;
-  onlyBabyTable: boolean;
   onlyPowderRoom: boolean;
   only24h: boolean;
-  onlyFree: boolean;
-  onlyHighCleanliness: boolean; // Grade S & A (score >= 4.0)
   searchQuery: string;
 }
 

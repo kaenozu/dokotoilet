@@ -80,6 +80,9 @@ interface ToiletMapProps {
   zoom: number;
   onFetchOsmNearCenter: (lat: number, lng: number) => void;
   isLoadingOsm: boolean;
+  /** 詳細パネル（drawer）が開いているか。開閉で地図コンテナ幅が変わるため
+   *  Leaflet に invalidateSize を伝える（灰色タイル欠けの防止） */
+  detailsOpen?: boolean;
 }
 
 // 実測レビューが1件でもあるか。無い場合は設備推定値しかないため「未評価」扱い
@@ -147,11 +150,16 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   zoom,
   onFetchOsmNearCenter,
   isLoadingOsm,
+  detailsOpen = false,
 }) => {
   const leafletContainerRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
   const markersGroupRef = useRef<L.LayerGroup | null>(null);
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
+  // 最新のハンドラを ref で保持（マーカー再構築を親の再レンダー毎に走らせない）
+  const onSelectToiletRef = useRef(onSelectToilet);
+  onSelectToiletRef.current = onSelectToilet;
+
   const [currentMapCenter, setCurrentMapCenter] = useState(center);
   const [currentTileStyle, setCurrentTileStyle] = useState<MapTileStyle>('osm');
   const [showTileSelector, setShowTileSelector] = useState(false);
@@ -243,8 +251,8 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
               colorInfo.bg
             } ring-2 ${
           isSelected
-            ? 'ring-[#00d1b2] ring-offset-2 ring-offset-[#0a0a0a] shadow-[0_0_12px_rgba(0,209,178,0.4)]'
-            : 'ring-[#1a1a1a]'
+            ? 'ring-accent ring-offset-2 ring-offset-white shadow-[0_2px_12px_rgba(27,40,33,0.35)]'
+            : 'ring-white'
         }">
               ${gradeLetter}
             </div>
@@ -259,17 +267,31 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
       const marker = L.marker([toilet.lat, toilet.lng], { icon: customIcon });
       marker.on('click', () => {
-        onSelectToilet(toilet);
+        // 最新のハンドラを使う（ref経由。effectの再実行を防ぐため deps に入れない）
+        onSelectToiletRef.current(toilet);
       });
       markersGroupRef.current?.addLayer(marker);
     });
-  }, [toilets, selectedToilet, onSelectToilet]);
+  }, [toilets, selectedToilet?.id]);
+
+  // 詳細パネル（drawer）開閉で地図コンテナ幅が変わる → Leaflet にサイズを伝える
+  useEffect(() => {
+    const map = leafletMapRef.current;
+    if (!map) return;
+    // レイアウト確定後に再計測（描画直後と少し遅らせての2回で欠けを防ぐ）
+    const raf = requestAnimationFrame(() => map.invalidateSize());
+    const timer = setTimeout(() => map.invalidateSize(), 250);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+    };
+  }, [detailsOpen]);
 
   const activeTileConfig =
     TILE_STYLES.find((s) => s.id === currentTileStyle) || TILE_STYLES[0];
 
   return (
-    <div className="relative w-full h-full min-h-[420px] bg-[#0a0a0a] overflow-hidden">
+    <div className="relative w-full h-full min-h-[420px] bg-canvas overflow-hidden">
       <div ref={leafletContainerRef} className="w-full h-full" />
 
       {/* Floating Map Controls & Overlays */}
@@ -287,10 +309,10 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
             onFetchOsmNearCenter(lat, lng);
           }}
           disabled={isLoadingOsm}
-          className="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#161616]/95 backdrop-blur-md text-[#f5f5f5] text-xs font-semibold shadow-xl border border-[#2e2e2e] hover:bg-[#222222] hover:border-[#3e3e3e] transition-all disabled:opacity-50"
+          className="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/95 backdrop-blur-md text-ink-soft text-xs font-semibold shadow-xl border border-line hover:bg-surface-2 hover:border-line-strong transition-all disabled:opacity-50"
         >
           <RefreshCw
-            className={`w-3.5 h-3.5 text-[#00d1b2] ${
+            className={`w-3.5 h-3.5 text-accent ${
               isLoadingOsm ? 'animate-spin' : ''
             }`}
           />
@@ -306,19 +328,19 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
             <button
               type="button"
               onClick={() => setShowTileSelector(!showTileSelector)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-[#161616]/95 backdrop-blur-md text-[#e0e0e0] text-xs font-medium shadow-xl border border-[#2e2e2e] hover:bg-[#222222] hover:border-[#3e3e3e] transition-all"
+              className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/95 backdrop-blur-md text-ink-soft text-xs font-medium shadow-xl border border-line hover:bg-surface-2 hover:border-line-strong transition-all"
               title="地図の種類を切り替え (すべて完全無料・APIキー不要)"
             >
-              <Layers className="w-3.5 h-3.5 text-[#38bdf8]" />
+              <Layers className="w-3.5 h-3.5 text-sky-500" />
               <span>{activeTileConfig.shortLabel}</span>
-              <ChevronDown className="w-3 h-3 text-[#888888]" />
+              <ChevronDown className="w-3 h-3 text-faint" />
             </button>
 
             {showTileSelector && (
-              <div className="absolute top-full left-0 mt-1.5 w-64 bg-[#141414] border border-[#2e2e2e] rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-1">
-                <div className="px-2 py-1 text-[10px] text-[#888888] font-medium border-b border-[#222222] flex items-center justify-between">
+              <div className="absolute top-full left-0 mt-1.5 w-64 bg-surface border border-line rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-1">
+                <div className="px-2 py-1 text-[10px] text-faint font-medium border-b border-line flex items-center justify-between">
                   <span>地図スタイル (キー不要・無料)</span>
-                  <span className="text-[#34d399]">No Key Needed</span>
+                  <span className="text-accent">No Key Needed</span>
                 </div>
                 {TILE_STYLES.map((style) => {
                   const isCurrent = style.id === currentTileStyle;
@@ -332,27 +354,27 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
                       }}
                       className={`w-full text-left px-2.5 py-2 rounded-lg transition-colors flex items-start justify-between gap-2 ${
                         isCurrent
-                          ? 'bg-[#00d1b2]/15 text-[#00d1b2] font-semibold'
-                          : 'text-[#d4d4d4] hover:bg-[#222222] hover:text-white'
+                          ? 'bg-accent-soft text-accent font-semibold'
+                          : 'text-ink-soft hover:bg-surface-2 hover:text-ink'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-1.5 text-xs">
-                          {style.id === 'osm' && <Globe className="w-3 h-3 text-[#38bdf8]" />}
+                          {style.id === 'osm' && <Globe className="w-3 h-3 text-sky-500" />}
                           {style.id.startsWith('gsi') && (
-                            <MapIcon className="w-3 h-3 text-[#34d399]" />
+                            <MapIcon className="w-3 h-3 text-emerald-600" />
                           )}
                           {style.id === 'osm_dark' && (
-                            <Moon className="w-3 h-3 text-[#c084fc]" />
+                            <Moon className="w-3 h-3 text-purple-500" />
                           )}
                           <span>{style.label}</span>
                         </div>
-                        <p className="text-[10px] text-[#888888] mt-0.5 font-normal leading-tight">
+                        <p className="text-[10px] text-faint mt-0.5 font-normal leading-tight">
                           {style.description}
                         </p>
                       </div>
                       {isCurrent && (
-                        <Check className="w-4 h-4 text-[#00d1b2] shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                       )}
                     </button>
                   );
@@ -363,41 +385,41 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       </div>
 
       {/* Grade Legend in Bottom Left */}
-      <div className="absolute bottom-4 left-3 z-10 pointer-events-auto bg-[#141414]/95 backdrop-blur-md border border-[#262626] rounded-xl p-2.5 shadow-xl text-xs">
-        <div className="text-[11px] font-bold text-[#e0e0e0] mb-1.5 flex items-center justify-between gap-2">
+      <div className="absolute bottom-4 left-3 z-10 pointer-events-auto bg-white/95 backdrop-blur-md border border-line rounded-xl p-2.5 shadow-xl text-xs">
+        <div className="text-[11px] font-bold text-ink-soft mb-1.5 flex items-center justify-between gap-2">
           <span>きれい度ランク判定</span>
-          <span className="text-[10px] text-[#888888] font-normal">基準</span>
+          <span className="text-[10px] text-faint font-normal">基準</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
               S
             </span>
-            <span className="text-[#cccccc] text-[11px]">極上 (4.6+)</span>
+            <span className="text-ink-soft text-[11px]">極上 (4.6+)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-sky-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
               A
             </span>
-            <span className="text-[#cccccc] text-[11px]">清潔 (4.0+)</span>
+            <span className="text-ink-soft text-[11px]">清潔 (4.0+)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
               B
             </span>
-            <span className="text-[#cccccc] text-[11px]">普通 (3.0+)</span>
+            <span className="text-ink-soft text-[11px]">普通 (3.0+)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-orange-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
               C
             </span>
-            <span className="text-[#cccccc] text-[11px]">要注意 (2.0+)</span>
+            <span className="text-ink-soft text-[11px]">要注意 (2.0+)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
               D
             </span>
-            <span className="text-[#cccccc] text-[11px]">緊急用 (&lt;2.0)</span>
+            <span className="text-ink-soft text-[11px]">緊急用 (&lt;2.0)</span>
           </div>
         </div>
       </div>

@@ -1,78 +1,167 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   きれいトイレ デザイントークン（「清掃点検サイン」ライトテーマ）
+   色・線・文字はすべてここ由来。コンポーネントの生hexは
+   このトークンへ置換していく（役割で読める名前を使う）。
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  /* 面 */
+  --color-canvas: #f2f5f2; /* ページ地（陶器っぽい冷白） */
+  --color-surface: #ffffff; /* カード・パネル */
+  --color-surface-2: #e9efe9; /* 一段沈んだ面（hover / inset） */
+
+  /* 線 */
+  --color-line: #d9e1db;
+  --color-line-strong: #c2cec5;
+
+  /* 文字（墨系） */
+  --color-ink: #1b2821; /* 主文 */
+  --color-ink-soft: #3e4e45; /* 準主文 */
+  --color-muted: #5f6e65; /* 補助 */
+  --color-faint: #8a978f; /* 弱い注記 */
+  --color-on-accent: #ffffff;
+
+  /* アクセント（認証緑・「検査済み」スタンプ） */
+  --color-accent: #0b6e52;
+  --color-accent-strong: #07563f; /* hover / 押下 */
+  --color-accent-soft: #e1f1e8; /* 選択状態の淡い地 */
+  --color-danger: #b3453f;
+
+  /* 書体 */
+  --font-sans: "Noto Sans JP", ui-sans-serif, system-ui, "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+  --font-display: "Zen Maru Gothic", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* 横スクロールのチップ列などでスクロールバーを隠す（Header等で使用） */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* モーダル開閉の簡易アニメーション（tailwindcss-animate 非導入のため自前実装） */
+.animate-in {
+  animation: modal-in 0.18s ease-out both;
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @layer base {
   html, body, #root {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #0a0a0a;
-    color: #e0e0e0;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     overflow: hidden;
+    font-family: var(--font-sans);
   }
 
-  /* Custom dark scrollbars */
+  /* ライト向けスクロールバー */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #0d0d0d;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #262626;
+    background: #c3cec6;
     border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a3a;
+    background: #a9b8ae;
+    background-clip: content-box;
+    border: 2px solid transparent;
+  }
+
+  select option {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
   }
 }
 
-/* Custom leaflet tweaks */
+/* ── Leaflet（ライト地図向け） ─────────────────────────── */
 .leaflet-container {
-  background-color: #0d0d0d !important;
+  background-color: #dfe6e0 !important; /* タイル読み込み前の地 */
   font-family: inherit;
 }
 
-/* Safe CSS dark filter for official OpenStreetMap tiles (100% free, no external Carto watermark) */
+/* 公式OSMタイルのダーク切替（従来機能は維持） */
 .leaflet-dark-tiles .leaflet-tile-pane {
   filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
 }
+
 .leaflet-bar {
-  border: 1px solid #2a2a2a !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid var(--color-line) !important;
+  box-shadow: 0 6px 16px rgba(27, 40, 33, 0.12) !important;
+  border-radius: 10px;
+  overflow: hidden;
 }
 .leaflet-bar a {
-  background-color: #161616 !important;
-  color: #e0e0e0 !important;
-  border-bottom: 1px solid #262626 !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-ink-soft) !important;
+  border-bottom: 1px solid var(--color-line) !important;
+  width: 32px;
+  height: 32px;
+  line-height: 30px;
 }
 .leaflet-bar a:hover {
-  background-color: #222222 !important;
-  color: #00d1b2 !important;
+  background-color: var(--color-accent-soft) !important;
+  color: var(--color-accent) !important;
 }
 .leaflet-container .leaflet-control-attribution {
-  background: rgba(15, 15, 15, 0.8) !important;
-  color: #666666 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: var(--color-faint) !important;
   font-size: 10px;
+  border-radius: 6px;
 }
 .leaflet-container .leaflet-control-attribution a {
-  color: #888888 !important;
+  color: var(--color-muted) !important;
 }
 
-/* Custom dark popups */
+/* ポップアップ（ライト） */
 .leaflet-popup-content-wrapper {
-  background: #181818 !important;
-  color: #e0e0e0 !important;
-  border: 1px solid #2e2e2e !important;
-  border-radius: 12px !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 14px 34px rgba(27, 40, 33, 0.18) !important;
 }
 .leaflet-popup-tip {
-  background: #181818 !important;
+  background: var(--color-surface) !important;
 }
 .leaflet-popup-content {
   margin: 12px !important;
   line-height: 1.4 !important;
 }
 
-
+/* ── シール（サイン要素） ─────────────────────────────── */
+/* グレード＝「検査済みスタンプ」。白抜き文字＋inner ring＋控えめな「押した」影 */
+.stamp-plate {
+  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.85),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.28),
+    0 2px 6px rgba(27, 40, 33, 0.18);
+}
+.stamp-unevaluated {
+  background: #c8d2cb;
+  color: #ffffff;
+}

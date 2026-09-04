@@ -1,13 +1,13 @@
-import type { FacilityCategory, ToiletFacility, ToiletReview } from "../../src/types";
+import type { FacilityCategory, ToiletFacility } from "../../src/types";
 import { gradeForScore } from "../../src/lib/scoring";
 
 // ChatGPT手動調査プロンプト（docs/manual-research-prompt.md）の出力形式
-export interface ManualExcerpt {
-  text: string;
-  rating: number;
-  // 引用の確認場所（例：「Google Maps」「Yahoo!マップ」）。Google確認分のみGoogle表記可
-  source?: string;
-}
+//
+// 規約: 口コミ本文（Google Maps 等のユーザー投稿の転載・ほぼ同一の書き換え）は
+//   一切取り込まない。規約上・プライバシー上の理由による（README「データ方針」参照）。
+//   取込対象は listing に表示される口コミ「件数」（externalReviewCount）と、
+//   調査者が自前の文章で書いた「要約・根拠」（scoreBasis）のみ。
+//   旧形式入力に reviewExcerpts（口コミ引用）が残っていても破棄し、warnings に記録する。
 
 export interface ManualEquipment {
   hasWashlet: boolean | null;
@@ -29,7 +29,6 @@ export interface ManualItem {
   scoreBasis: string;
   equipment: ManualEquipment;
   googleMapsUrl: string;
-  reviewExcerpts: ManualExcerpt[];
   geoQuery?: string;
   // listing上の口コミ総数（本文未取得でも件数だけ記録。「未取込」表示用）
   externalReviewCount?: number | null;
@@ -58,13 +57,13 @@ export type Geocoder = (target: GeoTarget) => Promise<{ lat: number; lng: number
 
 export interface ConvertOpts {
   geocode: Geocoder;
-  today?: string;
-  maxExcerpts?: number;
 }
 
 export interface Converted {
   facilities: ToiletFacility[];
   skipped: { name: string; reason: string }[];
+  // 取り込んだが規約上破棄したもの（旧形式の口コミ引用など）。run.ts がコンソールに出す
+  warnings: { name: string; reason: string }[];
 }
 
 const CATEGORIES: FacilityCategory[] = [
@@ -105,10 +104,9 @@ function slug(s: string): string {
 }
 
 export async function convertItems(items: ManualItem[], opts: ConvertOpts): Promise<Converted> {
-  const today = opts.today ?? new Date().toISOString().split("T")[0];
-  const maxExcerpts = opts.maxExcerpts ?? 5;
   const facilities: ToiletFacility[] = [];
   const skipped: { name: string; reason: string }[] = [];
+  const warnings: { name: string; reason: string }[] = [];
 
   for (const item of items) {
     const name = typeof item.name === "string" ? item.name.trim() : "";
@@ -124,6 +122,16 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     if (typeof item.googleMapsUrl !== "string" || !item.googleMapsUrl.startsWith("http")) {
       skipped.push({ name, reason: "googleMapsUrl 不正（実在確認不可）" });
       continue;
+    }
+
+    // 旧形式（口コミ引用つき）入力の防御: 本文は絶対に取り込まず、警告だけ残す
+    const legacyQuotes = (item as { reviewExcerpts?: unknown }).reviewExcerpts;
+    const quoteCount = Array.isArray(legacyQuotes) ? legacyQuotes.length : 0;
+    if (quoteCount > 0) {
+      warnings.push({
+        name,
+        reason: `reviewExcerpts（口コミ本文・転載禁止）を破棄（${quoteCount}件）。件数と要約のみ取り込むこと`,
+      });
     }
 
     // 座標: 調査値が無ければジオコーディング。ダメなら取込不可
@@ -162,29 +170,12 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     );
     const grade = gradeForScore(score);
     const eq: Partial<ManualEquipment> = item.equipment ?? {};
-    const bool = (v: unknown) => v === true;
+    // 調査値は3値（null=未確認）。null を false に潰さない
+    const bool = (v: unknown): boolean | null =>
+      v === true ? true : v === false ? false : null;
 
     const placeId = placeIdFromUrl(item.googleMapsUrl) ?? slug(name);
     const id = `google-${placeId}`.slice(0, 80);
-
-    const excerpts = Array.isArray(item.reviewExcerpts) ? item.reviewExcerpts.slice(0, maxExcerpts) : [];
-    const reviews: ToiletReview[] = excerpts
-      .filter((e) => e && typeof e.text === "string" && e.text.trim())
-      .map((e, i) => ({
-        id: `rev-gmaps-${placeId.slice(0, 20)}-${i}`,
-        // 出所未確認のため中立表記。Google確認分は source に記録して表示する
-        userName: "口コミ引用",
-        ...(typeof e.source === "string" && e.source.trim()
-          ? { source: e.source.trim().slice(0, 30) }
-          : {}),
-        rating: typeof e.rating === "number" ? e.rating : 3,
-        cleanlinessScore: typeof e.rating === "number" ? e.rating : 3,
-        odorScore: typeof e.rating === "number" ? e.rating : 3,
-        suppliesScore: typeof e.rating === "number" ? e.rating : 3,
-        comment: e.text.trim().slice(0, 200),
-        createdAt: today,
-        helpfulCount: 0,
-      }));
 
     const basis = typeof item.scoreBasis === "string" && item.scoreBasis ? item.scoreBasis : "根拠の記載なし";
     facilities.push({
@@ -205,21 +196,24 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
         hasWashlet: bool(eq.hasWashlet),
         hasMultipurpose: bool(eq.hasMultipurpose),
         hasBabyTable: bool(eq.hasBabyTable),
-        hasNursingRoom: false,
+        // 調査で確認していない項目は true/false と断定せず null（未確認）
+        hasNursingRoom: null,
         hasPowderRoom: bool(eq.hasPowderRoom),
-        hasOstomate: false,
-        isFree: true,
+        hasOstomate: null,
+        isFree: null,
         isOpen24h: bool(eq.isOpen24h),
-        hasSoap: false,
-        hasAlcohol: false,
-        hasPaperTowelOrDryer: false,
-        toiletStyle: "both",
+        hasSoap: null,
+        hasAlcohol: null,
+        hasPaperTowelOrDryer: null,
+        toiletStyle: null,
       },
       openingHours: item.openingHours || "営業時間不明",
       description:
         basis + (lowConfidence ? "（清潔さは判定不能のため中立値。要現地確認）" : ""),
-      reviewCount: reviews.length,
-      reviews,
+      // 口コミ本文を持たないため常に未評価（reviewCount: 0）。UIは
+      // externalReviewCount があれば「口コミ未取込」、なければ「口コミ募集中」と表示する
+      reviewCount: 0,
+      reviews: [],
       ...(typeof item.externalReviewCount === "number" &&
       Number.isInteger(item.externalReviewCount) &&
       item.externalReviewCount >= 0
@@ -231,11 +225,11 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
                 : "Google Maps",
           }
         : {}),
-      facilityNote: `Google口コミ・自治体調査に基づく手動調査データ（信頼度:${item.confidence || "不明"}）。${coordNote}`,
+      facilityNote: `Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:${item.confidence || "不明"}）。${coordNote}`,
       googleMapsUrl: item.googleMapsUrl,
       officialOpenDataId: `gmaps-${placeId}`.slice(0, 80),
     });
   }
 
-  return { facilities, skipped };
+  return { facilities, skipped, warnings };
 }

@@ -3,8 +3,8 @@ import rateLimit from "express-rate-limit";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import type { ToiletFacility, ToiletReview } from "../src/types";
-import { gradeForScore } from "../src/lib/scoring";
+import type { CleanlinessGrade, ToiletFacility, ToiletReview, TriState } from "../src/types";
+import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 
 // ── バリデーション（pure・単体テスト対象） ──
 
@@ -28,6 +28,9 @@ const CATEGORIES = [
 ] as const;
 
 const TOILET_ID_RE = /^toilet-user-[A-Za-z0-9-]{1,64}$/;
+// コミュニティ登録外の外部施設（OSM・Google手動調査・自治体OD）の施設ID形式（M5）
+// レビュー共有の対象はこの形式に一致する id すべて。形式不一致は 404 扱い（従来互換）
+const EXTERNAL_FACILITY_ID_RE = /^(osm|google|od)-[A-Za-z0-9_-]{1,80}$/;
 // スパム対策: コメント・通報文内のURLを拒否
 const URL_RE = /https?:\/\/|www\.[a-z0-9-]+\.[a-z]{2,}/i;
 
@@ -56,11 +59,12 @@ export interface ToiletInput {
   lat: number;
   lng: number;
   attributes: {
-    hasWashlet: boolean;
-    hasMultipurpose: boolean;
-    hasBabyTable: boolean;
-    hasPowderRoom: boolean;
-    isOpen24h: boolean;
+    // 設備は3値（null=未確認）。登録フォームで確認していない項目は null で送られる
+    hasWashlet: TriState;
+    hasMultipurpose: TriState;
+    hasBabyTable: TriState;
+    hasPowderRoom: TriState;
+    isOpen24h: TriState;
   };
 }
 
@@ -85,7 +89,8 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     return { ok: false, error: "invalid cleanlinessScore" };
   const a = body.attributes;
   for (const k of ["hasWashlet", "hasMultipurpose", "hasBabyTable", "hasPowderRoom", "isOpen24h"] as const) {
-    if (a !== undefined && a[k] !== undefined && typeof a[k] !== "boolean")
+    // true / false / null（未確認）の3値を受け付ける
+    if (a !== undefined && a[k] !== undefined && a[k] !== null && typeof a[k] !== "boolean")
       return { ok: false, error: `invalid attributes.${k}` };
   }
   return {
@@ -104,11 +109,12 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
       lat: body.lat,
       lng: body.lng,
       attributes: {
-        hasWashlet: a?.hasWashlet ?? false,
-        hasMultipurpose: a?.hasMultipurpose ?? false,
-        hasBabyTable: a?.hasBabyTable ?? false,
-        hasPowderRoom: a?.hasPowderRoom ?? false,
-        isOpen24h: a?.isOpen24h ?? false,
+        // 送信が無ければ「なし」ではなく「未確認(null)」として保存する
+        hasWashlet: a?.hasWashlet ?? null,
+        hasMultipurpose: a?.hasMultipurpose ?? null,
+        hasBabyTable: a?.hasBabyTable ?? null,
+        hasPowderRoom: a?.hasPowderRoom ?? null,
+        isOpen24h: a?.isOpen24h ?? null,
       },
     },
   };
@@ -116,7 +122,8 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
 
 export interface ReviewInput {
   userName: string;
-  rating: number;
+  /** 総合満足度（rating は旧名の別名。保存時は両方へ同じ値を書く） */
+  overallScore: number;
   cleanlinessScore: number;
   odorScore: number;
   suppliesScore: number;
@@ -127,7 +134,14 @@ export interface ReviewInput {
 export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
   if (!body || typeof body !== "object") return { ok: false, error: "invalid body" };
   const r = body.review ?? body;
-  if (!isInt1to5(r.rating)) return { ok: false, error: "invalid rating" };
+  // 総合満足度は overallScore（新）→ rating（旧データ互換）。両方あれば overallScore 優先
+  if (r.rating !== undefined && !isInt1to5(r.rating))
+    return { ok: false, error: "invalid rating" };
+  if (r.overallScore !== undefined && !isInt1to5(r.overallScore))
+    return { ok: false, error: "invalid overallScore" };
+  const overall = r.overallScore ?? r.rating;
+  if (!isInt1to5(overall))
+    return { ok: false, error: r.rating === undefined ? "invalid overallScore" : "invalid rating" };
   if (!isInt1to5(r.cleanlinessScore)) return { ok: false, error: "invalid cleanlinessScore" };
   if (!isInt1to5(r.odorScore)) return { ok: false, error: "invalid odorScore" };
   if (!isInt1to5(r.suppliesScore)) return { ok: false, error: "invalid suppliesScore" };
@@ -140,7 +154,7 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
     ok: true,
     value: {
       userName: typeof r.userName === "string" && r.userName.trim() ? r.userName.trim() : "匿名の利用者",
-      rating: r.rating,
+      overallScore: overall,
       cleanlinessScore: r.cleanlinessScore,
       odorScore: r.odorScore,
       suppliesScore: r.suppliesScore,
@@ -182,12 +196,14 @@ export interface ReviewKey {
 }
 
 export interface CommunityDB {
-  version: 1;
+  version: 2;
   toilets: ToiletFacility[];
   helpfulVotes: Record<string, string[]>;
   reports: StoredReport[];
   // 重複投稿ガード用（クライアントには返さない）
   reviewKeys: Record<string, ReviewKey>;
+  // コミュニティ登録外施設（OSM/Google/自治体OD）への共有レビュー。施設id → レビュー配列
+  externalReviews: Record<string, ToiletReview[]>;
 }
 
 // クライアント返却用に秘密情報（ipHash等）を落とす
@@ -201,7 +217,17 @@ export function publicToilets(toilets: ToiletFacility[]): ToiletFacility[] {
   }));
 }
 
-const EMPTY_DB: CommunityDB = { version: 1, toilets: [], helpfulVotes: {}, reports: [], reviewKeys: {} };
+const EMPTY_DB: CommunityDB = {
+  version: 2,
+  toilets: [],
+  helpfulVotes: {},
+  reports: [],
+  reviewKeys: {},
+  externalReviews: {},
+};
+
+// レビュー集計は src/lib/scoring.ts の summarizeReviews（次元別平均）を共有する。
+// 総合→overallScore / 清潔さ→cleanlinessScore+cleanlinessGrade を独立に算出。
 
 export class CommunityStore {
   private data: CommunityDB | null = null;
@@ -216,11 +242,15 @@ export class CommunityStore {
       const parsed = JSON.parse(raw) as CommunityDB;
       if (!Array.isArray(parsed.toilets)) throw new Error("corrupt db");
       this.data = {
-        version: 1,
+        version: 2,
         toilets: parsed.toilets,
         helpfulVotes: parsed.helpfulVotes ?? {},
         reports: parsed.reports ?? [],
         reviewKeys: parsed.reviewKeys ?? {},
+        externalReviews:
+          parsed.externalReviews && typeof parsed.externalReviews === "object"
+            ? (parsed.externalReviews as Record<string, ToiletReview[]>)
+            : {},
       };
     } catch (e: any) {
       if (e?.code !== "ENOENT") console.warn("community store load failed, starting empty:", e?.message);
@@ -252,26 +282,12 @@ export class CommunityStore {
     return { added: true };
   }
 
-  async addReview(
-    toiletId: string,
-    input: ReviewInput,
-    ipHash: string
-  ): Promise<{ toilet?: ToiletFacility; error?: "not_found" | "duplicate" }> {
-    const db = await this.load();
-    const t = db.toilets.find((x) => x.id === toiletId);
-    if (!t) return { error: "not_found" };
-    // 重複投稿ガード: 同一IP＋同一コメントが24h以内は拒否
-    const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    const dup = t.reviews.some((r) => {
-      const key = db.reviewKeys[r.id];
-      return key !== undefined && key.ipHash === ipHash && r.comment === input.comment && key.at >= dayAgo;
-    });
-    if (dup) return { error: "duplicate" };
-    const reviewId = `rev-${crypto.randomUUID()}`;
-    const review: ToiletReview = {
-      id: reviewId,
+  private buildReview(input: ReviewInput): ToiletReview {
+    return {
+      id: `rev-${crypto.randomUUID()}`,
       userName: input.userName,
-      rating: input.rating,
+      rating: input.overallScore, // 旧名（別名）として両方へ保存し旧クライアント互換を保つ
+      overallScore: input.overallScore,
       cleanlinessScore: input.cleanlinessScore,
       odorScore: input.odorScore,
       suppliesScore: input.suppliesScore,
@@ -281,18 +297,98 @@ export class CommunityStore {
       hasWashletConfirmed: input.hasWashletConfirmed,
       isCleanConfirmed: input.cleanlinessScore >= 4,
     };
-    db.reviewKeys[reviewId] = { ipHash, at: Date.now() };
-    const reviews = [review, ...t.reviews];
-    const avg = parseFloat(
-      (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-    );
-    t.reviews = reviews;
-    t.reviewCount = reviews.length;
-    t.cleanlinessScore = avg;
-    t.cleanlinessGrade = gradeForScore(avg);
-    t.lastCleaned = "たった今（利用者が確認）";
+  }
+
+  // 重複投稿ガード: 同一IP＋同一コメントが24h以内は拒否
+  private hasDuplicate(
+    db: CommunityDB,
+    reviews: ToiletReview[],
+    comment: string,
+    ipHash: string
+  ): boolean {
+    const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    return reviews.some((r) => {
+      const key = db.reviewKeys[r.id];
+      return key !== undefined && key.ipHash === ipHash && r.comment === comment && key.at >= dayAgo;
+    });
+  }
+
+  // コミュニティ登録トイレに加え、外部施設（OSM/Google/自治体OD）のレビューも共有対象（M5）
+  async addReview(
+    toiletId: string,
+    input: ReviewInput,
+    ipHash: string
+  ): Promise<{
+    error?: "not_found" | "duplicate";
+    toilet?: ToiletFacility;
+    facilityId?: string;
+    reviews?: ToiletReview[];
+    reviewCount?: number;
+    cleanlinessScore?: number;
+    cleanlinessGrade?: CleanlinessGrade;
+    overallScore?: number;
+  }> {
+    const db = await this.load();
+    const t = db.toilets.find((x) => x.id === toiletId);
+
+    if (t) {
+      if (this.hasDuplicate(db, t.reviews, input.comment, ipHash)) return { error: "duplicate" };
+      const review = this.buildReview(input);
+      db.reviewKeys[review.id] = { ipHash, at: Date.now() };
+      const reviews = [review, ...t.reviews];
+      const summary = summarizeReviews(reviews)!; // reviews.length >= 1
+      t.reviews = reviews;
+      t.reviewCount = reviews.length;
+      t.cleanlinessScore = summary.cleanlinessScore;
+      t.cleanlinessGrade = summary.cleanlinessGrade;
+      t.overallScore = summary.overallScore;
+      t.lastCleaned = "たった今（利用者が確認）";
+      await this.save();
+      return { toilet: t };
+    }
+
+    // コミュニティ登録外は施設ID形式（osm-* / google-* / od-*）でのみ受け付ける
+    if (!EXTERNAL_FACILITY_ID_RE.test(toiletId)) return { error: "not_found" };
+    const existing = db.externalReviews[toiletId] ?? [];
+    if (this.hasDuplicate(db, existing, input.comment, ipHash)) return { error: "duplicate" };
+    const review = this.buildReview(input);
+    db.reviewKeys[review.id] = { ipHash, at: Date.now() };
+    const reviews = [review, ...existing];
+    db.externalReviews[toiletId] = reviews;
+    const summary = summarizeReviews(reviews);
     await this.save();
-    return { toilet: t };
+    return {
+      facilityId: toiletId,
+      reviews,
+      reviewCount: reviews.length,
+      cleanlinessScore: summary?.cleanlinessScore,
+      cleanlinessGrade: summary?.cleanlinessGrade,
+      overallScore: summary?.overallScore,
+    };
+  }
+
+  // コミュニティ登録トイレ＋外部施設の両方からレビューを探す
+  private findReview(
+    db: CommunityDB,
+    reviewId: string
+  ): { review: ToiletReview } | null {
+    for (const t of db.toilets) {
+      const r = t.reviews.find((x) => x.id === reviewId);
+      if (r) return { review: r };
+    }
+    for (const list of Object.values(db.externalReviews)) {
+      const r = list.find((x) => x.id === reviewId);
+      if (r) return { review: r };
+    }
+    return null;
+  }
+
+  // 外部施設（OSM/Google/OD）への共有レビュー一覧（クライアントがシード施設に重ねる用）
+  async getExternalReviews(): Promise<Record<string, ToiletReview[]>> {
+    const db = await this.load();
+    return Object.fromEntries(
+      Object.entries(db.externalReviews).map(([k, v]) => [k, [...v]])
+    );
   }
 
   async voteHelpful(
@@ -300,18 +396,16 @@ export class CommunityStore {
     ipHash: string
   ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }> {
     const db = await this.load();
-    for (const t of db.toilets) {
-      const r = t.reviews.find((x) => x.id === reviewId);
-      if (!r) continue;
-      const voters = db.helpfulVotes[reviewId] ?? [];
-      if (voters.includes(ipHash)) return { helpfulCount: r.helpfulCount, voted: false, found: true };
-      voters.push(ipHash);
-      db.helpfulVotes[reviewId] = voters;
-      r.helpfulCount += 1;
-      await this.save();
-      return { helpfulCount: r.helpfulCount, voted: true, found: true };
-    }
-    return { helpfulCount: 0, voted: false, found: false };
+    const hit = this.findReview(db, reviewId);
+    if (!hit) return { helpfulCount: 0, voted: false, found: false };
+    const { review } = hit;
+    const voters = db.helpfulVotes[reviewId] ?? [];
+    if (voters.includes(ipHash)) return { helpfulCount: review.helpfulCount, voted: false, found: true };
+    voters.push(ipHash);
+    db.helpfulVotes[reviewId] = voters;
+    review.helpfulCount += 1;
+    await this.save();
+    return { helpfulCount: review.helpfulCount, voted: true, found: true };
   }
 
   async addReport(
@@ -321,7 +415,8 @@ export class CommunityStore {
   ): Promise<{ ok: boolean; found: boolean }> {
     const db = await this.load();
     const t = db.toilets.find((x) => x.id === toiletId);
-    if (!t || !t.reviews.some((r) => r.id === reviewId)) return { ok: false, found: false };
+    const reviews = t ? t.reviews : db.externalReviews[toiletId];
+    if (!reviews || !reviews.some((r) => r.id === reviewId)) return { ok: false, found: false };
     db.reports.push({
       id: `report-${crypto.randomUUID()}`,
       toiletId,
@@ -363,7 +458,12 @@ export function createCommunityRouter(store: CommunityStore, salt: string): Rout
   const ipHashOf = (req: Request) => hashIp(req.ip || "?", salt);
 
   router.get("/toilets", async (_req: Request, res: Response) => {
-    res.json({ toilets: publicToilets(await store.getToilets()) });
+    // toilets: コミュニティ登録トイレ。externalReviews: 外部施設（OSM/Google/OD）の
+    // 共有レビュー（M5）。クライアントがローカルのシード施設に重ねて表示する
+    res.json({
+      toilets: publicToilets(await store.getToilets()),
+      externalReviews: await store.getExternalReviews(),
+    });
   });
 
   router.post("/toilets", postLimiter, async (req: Request, res: Response) => {
@@ -406,15 +506,16 @@ export function createCommunityRouter(store: CommunityStore, salt: string): Rout
         hasWashlet: v.value.attributes.hasWashlet,
         hasMultipurpose: v.value.attributes.hasMultipurpose,
         hasBabyTable: v.value.attributes.hasBabyTable,
-        hasNursingRoom: false,
+        // 登録フォームで確認していない項目は true/false と断定せず null（未確認）
+        hasNursingRoom: null,
         hasPowderRoom: v.value.attributes.hasPowderRoom,
-        hasOstomate: false,
-        isFree: true,
+        hasOstomate: null,
+        isFree: null,
         isOpen24h: v.value.attributes.isOpen24h,
-        hasSoap: true,
-        hasAlcohol: true,
-        hasPaperTowelOrDryer: true,
-        toiletStyle: "western",
+        hasSoap: null,
+        hasAlcohol: null,
+        hasPaperTowelOrDryer: null,
+        toiletStyle: null,
       },
       openingHours: v.value.attributes.isOpen24h ? "24時間営業" : "施設営業時間に準ずる",
       description: v.value.description,
@@ -445,7 +546,18 @@ export function createCommunityRouter(store: CommunityStore, salt: string): Rout
       res.status(409).json({ error: "duplicate review" });
       return;
     }
-    res.status(201).json({ toilet: publicToilets([r.toilet!])[0] });
+    if (r.toilet) {
+      res.status(201).json({ toilet: publicToilets([r.toilet])[0] });
+      return;
+    }
+    // 外部施設（OSM/Google/OD）: 施設ごとレビュー一覧を返し、クライアントが重ねる
+    res.status(201).json({
+      facilityId: r.facilityId,
+      reviewCount: r.reviewCount,
+      cleanlinessScore: r.cleanlinessScore,
+      cleanlinessGrade: r.cleanlinessGrade,
+      reviews: r.reviews,
+    });
   });
 
   router.post("/reviews/:reviewId/helpful", voteLimiter, async (req: Request, res: Response) => {

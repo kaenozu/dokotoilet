@@ -44,6 +44,20 @@ describe("mapKumagayaRows", () => {
     expect(f.openingHours).toBe("常時開放");
   });
 
+  it("uniquifies facilities that share the same 町字ID", () => {
+    const { facilities } = mapKumagayaRows(HEADER, [
+      row({ "名称": "A公園便所" }),
+      row({ "名称": "B公園便所", "緯度": "36.15", "経度": "139.39" }),
+      row({ "名称": "C公園便所", "緯度": "36.16", "経度": "139.40" }),
+    ]);
+    expect(facilities.map((f) => f.id)).toEqual([
+      "od-kumagaya-0000001",
+      "od-kumagaya-0000001-2",
+      "od-kumagaya-0000001-3",
+    ]);
+    expect(new Set(facilities.map((f) => f.id)).size).toBe(3);
+  });
+
   it("scores A with wheelchair + equipment, detects station", () => {
     const { facilities } = mapKumagayaRows(HEADER, [
       row({ "名称": "熊谷駅前便所", "車椅子使用者用トイレ有無": "有", "オストメイト設置トイレ有無": "有" }),
