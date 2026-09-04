@@ -2,9 +2,43 @@ import React, { useState } from 'react';
 import {
   ToiletFacility,
   FacilityCategory,
+  TriState,
 } from '../types';
 import { gradeForScore } from '../lib/scoring';
-import { PlusCircle, MapPin, Sparkles, Building2 } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
+
+/** あり / 不明 / なし の3値ピッカー（不明=未確認。「なし」と区別する） */
+function TriPicker({
+  value,
+  onChange,
+}: {
+  value: TriState;
+  onChange: (v: TriState) => void;
+}) {
+  const options: { v: TriState; label: string; active: string }[] = [
+    { v: true, label: 'あり', active: 'bg-accent text-white border-accent' },
+    { v: null, label: '不明', active: 'bg-line-strong text-ink border-line-strong' },
+    { v: false, label: 'なし', active: 'bg-muted text-white border-muted' },
+  ];
+  return (
+    <div className="flex gap-1">
+      {options.map((o) => (
+        <button
+          key={String(o.v)}
+          type="button"
+          onClick={() => onChange(o.v)}
+          className={`flex-1 px-2 py-1 rounded-md text-[11px] font-semibold border transition-colors ${
+            value === o.v
+              ? o.active
+              : 'bg-white border-line text-faint hover:text-ink hover:border-line-strong'
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 interface AddToiletModalProps {
   isOpen: boolean;
@@ -24,11 +58,12 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
   const [address, setAddress] = useState('');
   const [floorInfo, setFloorInfo] = useState('');
   const [cleanlinessScore, setCleanlinessScore] = useState(4.5);
-  const [hasWashlet, setHasWashlet] = useState(true);
-  const [hasMultipurpose, setHasMultipurpose] = useState(false);
-  const [hasBabyTable, setHasBabyTable] = useState(false);
-  const [hasPowderRoom, setHasPowderRoom] = useState(false);
-  const [isOpen24h, setIsOpen24h] = useState(false);
+  // 設備は「あり/なし/不明」の3値。未確認を false（なし）と断定しない
+  const [hasWashlet, setHasWashlet] = useState<TriState>(null);
+  const [hasMultipurpose, setHasMultipurpose] = useState<TriState>(null);
+  const [hasBabyTable, setHasBabyTable] = useState<TriState>(null);
+  const [hasPowderRoom, setHasPowderRoom] = useState<TriState>(null);
+  const [isOpen24h, setIsOpen24h] = useState<TriState>(null);
   const [description, setDescription] = useState('');
 
   if (!isOpen) return null;
@@ -61,7 +96,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
       floorInfo: floorInfo.trim() || undefined,
       cleanlinessGrade: grade,
       cleanlinessScore,
-      // ユーザー報告が初回レビューとして付くため、設備推定＝実測扱い
+      // 登録者の申告スコアは実測口コミではないため、自動レビューは作らない。
+      // reviewCount: 0（未評価）でサーバー側の正規化（reviews: []）と一致させ、
+      // 口コミは通常の投稿フローで貯める（サーバー不整合の原因だった自動初回レビュー廃止）。
       equipmentGrade: grade,
       equipmentScore: cleanlinessScore,
       subScores: {
@@ -74,33 +111,21 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
         hasWashlet,
         hasMultipurpose,
         hasBabyTable,
-        hasNursingRoom: false,
+        // フォームで確認していない項目は true と断定せず null（未確認）で保存する
+        hasNursingRoom: null,
         hasPowderRoom,
-        hasOstomate: false,
-        isFree: true,
+        hasOstomate: null,
+        isFree: null,
         isOpen24h,
-        hasSoap: true,
-        hasAlcohol: true,
-        hasPaperTowelOrDryer: true,
-        toiletStyle: 'western',
+        hasSoap: null,
+        hasAlcohol: null,
+        hasPaperTowelOrDryer: null,
+        toiletStyle: null,
       },
       openingHours: isOpen24h ? '24時間営業' : '施設営業時間に準ずる',
       description: description.trim() || 'ユーザーによって登録されたトイレ情報です。',
-      reviewCount: 1,
-      lastCleaned: '本日登録',
-      reviews: [
-        {
-          id: `rev-init-${crypto.randomUUID()}`,
-          userName: '情報登録者',
-          rating: Math.round(cleanlinessScore),
-          cleanlinessScore: Math.round(cleanlinessScore),
-          odorScore: Math.round(cleanlinessScore),
-          suppliesScore: Math.round(cleanlinessScore),
-          comment: description.trim() || '新しくきれいなトイレとして登録されました。',
-          createdAt: new Date().toISOString().split('T')[0],
-          helpfulCount: 1,
-        },
-      ],
+      reviewCount: 0,
+      reviews: [],
       facilityNote: 'ユーザー報告に基づく新規登録トイレ情報。',
     };
 
@@ -110,18 +135,18 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-      <div className="bg-[#111111] border border-[#262626] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-surface border border-line-strong rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-[#222222] flex items-center justify-between bg-[#141414]">
+        <div className="p-4 sm:p-5 border-b border-line flex items-center justify-between bg-canvas">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#00d1b2] text-[#0a0a0a] flex items-center justify-center shadow-[0_0_10px_rgba(0,209,178,0.3)]">
+            <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center shadow-[0_3px_8px_rgba(11,110,82,0.25)]">
               <PlusCircle className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-[#f5f5f5]">
+              <h2 className="text-sm sm:text-base font-bold text-ink">
                 新しいトイレのきれい度を登録
               </h2>
-              <p className="text-xs text-[#888888]">
+              <p className="text-xs text-faint">
                 マップにまだない綺麗なトイレ・穴場スポットを追加
               </p>
             </div>
@@ -129,17 +154,17 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#888888] hover:text-[#ffffff] p-1 rounded-md text-sm transition-colors"
+            className="text-faint hover:text-ink p-1 rounded-md text-sm transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs text-[#e0e0e0]">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs text-ink-soft">
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
-              施設名・場所名 <span className="text-[#ff4444]">*</span>
+            <label className="block text-ink-soft font-semibold mb-1">
+              施設名・場所名 <span className="text-danger">*</span>
             </label>
             <input
               required
@@ -147,30 +172,30 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 新宿マルイ本館 4F レストルーム"
-              className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+              className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[#cccccc] font-semibold mb-1">
+              <label className="block text-ink-soft font-semibold mb-1">
                 カテゴリ
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as FacilityCategory)}
-                className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+                className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
               >
-                <option value="department" className="bg-[#181818] text-[#f5f5f5]">百貨店・商業施設</option>
-                <option value="station" className="bg-[#181818] text-[#f5f5f5]">駅・交通機関</option>
-                <option value="convenience" className="bg-[#181818] text-[#f5f5f5]">コンビニ</option>
-                <option value="park" className="bg-[#181818] text-[#f5f5f5]">公園・公衆トイレ</option>
-                <option value="hotel" className="bg-[#181818] text-[#f5f5f5]">ホテル・オフィス</option>
+                <option value="department" className="bg-white text-ink">百貨店・商業施設</option>
+                <option value="station" className="bg-white text-ink">駅・交通機関</option>
+                <option value="convenience" className="bg-white text-ink">コンビニ</option>
+                <option value="park" className="bg-white text-ink">公園・公衆トイレ</option>
+                <option value="hotel" className="bg-white text-ink">ホテル・オフィス</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-[#cccccc] font-semibold mb-1">
+              <label className="block text-ink-soft font-semibold mb-1">
                 フロア・階数 (任意)
               </label>
               <input
@@ -178,13 +203,13 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
                 value={floorInfo}
                 onChange={(e) => setFloorInfo(e.target.value)}
                 placeholder="例: 3F 南側奥"
-                className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+                className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
+            <label className="block text-ink-soft font-semibold mb-1">
               住所・ランドマーク
             </label>
             <input
@@ -192,17 +217,17 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="例: 東京都新宿区新宿3-30-13"
-              className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+              className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
           </div>
 
           {/* Cleanliness Score */}
-          <div className="bg-[#161616] p-3 rounded-xl border border-[#262626]">
+          <div className="bg-surface-2 p-3 rounded-xl border border-line">
             <div className="flex justify-between items-center mb-1">
-              <span className="font-semibold text-[#cccccc]">
-                きれい度スコア: <strong className="text-[#00d1b2] text-sm">{cleanlinessScore}</strong>
+              <span className="font-semibold text-muted">
+                きれい度スコア: <strong className="text-accent text-sm">{cleanlinessScore}</strong>
               </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#00d1b2]/20 text-[#00d1b2] border border-[#00d1b2]/40">
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-accent-soft text-accent border border-accent/30">
                 Grade {gradeForScore(cleanlinessScore)}
               </span>
             </div>
@@ -213,70 +238,41 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
               step="0.1"
               value={cleanlinessScore}
               onChange={(e) => setCleanlinessScore(parseFloat(e.target.value))}
-              className="w-full accent-[#00d1b2] cursor-pointer"
+              className="w-full accent-[#0b6e52] cursor-pointer"
             />
           </div>
 
-          {/* Equipment Checkboxes */}
+          {/* Equipment (tri-state: あり / 不明 / なし) */}
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1.5">
+            <label className="block text-ink-soft font-semibold mb-1.5">
               備え付け設備
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasWashlet}
-                  onChange={(e) => setHasWashlet(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">ウォシュレット</span>
-              </label>
-
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasMultipurpose}
-                  onChange={(e) => setHasMultipurpose(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">多目的・車椅子</span>
-              </label>
-
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasBabyTable}
-                  onChange={(e) => setHasBabyTable(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">おむつ替え台</span>
-              </label>
-
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasPowderRoom}
-                  onChange={(e) => setHasPowderRoom(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">パウダールーム</span>
-              </label>
-
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={isOpen24h}
-                  onChange={(e) => setIsOpen24h(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">24時間利用可</span>
-              </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {(
+                [
+                  ['ウォシュレット', hasWashlet, setHasWashlet],
+                  ['多目的・車椅子', hasMultipurpose, setHasMultipurpose],
+                  ['おむつ替え台', hasBabyTable, setHasBabyTable],
+                  ['パウダールーム', hasPowderRoom, setHasPowderRoom],
+                  ['24時間利用可', isOpen24h, setIsOpen24h],
+                ] as [string, TriState, (v: TriState) => void][]
+              ).map(([label, value, setter]) => (
+                <div
+                  key={label}
+                  className="p-2.5 bg-surface-2 border border-line rounded-lg space-y-1.5"
+                >
+                  <span className="text-ink-soft font-medium">{label}</span>
+                  <TriPicker value={value} onChange={setter} />
+                </div>
+              ))}
             </div>
+            <p className="text-[11px] text-faint mt-1.5">
+              実際に確認できた設備だけ「あり/なし」を選んでください。「不明」は未確認の意味で「なし」とは区別して表示されます。
+            </p>
           </div>
 
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
+            <label className="block text-ink-soft font-semibold mb-1">
               清潔感の特徴・メモ
             </label>
             <textarea
@@ -284,13 +280,13 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="清掃頻度、におい、アメニティ、空いている時間帯など..."
-              className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+              className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 bg-[#00d1b2] hover:bg-[#00bfa5] text-[#0a0a0a] font-bold rounded-lg shadow-[0_0_12px_rgba(0,209,178,0.25)] transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all flex items-center justify-center gap-2"
           >
             <PlusCircle className="w-4 h-4" />
             <span>マップにトイレを追加登録</span>

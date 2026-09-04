@@ -3,9 +3,7 @@ import { ToiletFacility, ToiletReview } from '../types';
 import {
   Sparkles,
   Star,
-  CheckCircle2,
   ShieldCheck,
-  ThumbsUp,
 } from 'lucide-react';
 
 interface ReviewModalProps {
@@ -28,8 +26,6 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   const [suppliesScore, setSuppliesScore] = useState(5);
   const [comment, setComment] = useState('');
   const [hasWashletConfirmed, setHasWashletConfirmed] = useState(true);
-  const [hasSoapConfirmed, setHasSoapConfirmed] = useState(true);
-  const [hasPaperConfirmed, setHasPaperConfirmed] = useState(true);
 
   if (!isOpen || !toilet) return null;
 
@@ -41,6 +37,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       id: `rev-${crypto.randomUUID()}`,
       userName: userName.trim() || '匿名の利用者',
       rating,
+      overallScore: rating, // 総合満足度（rating は旧名の別名として両方保存）
       cleanlinessScore,
       odorScore,
       suppliesScore,
@@ -59,33 +56,33 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-      <div className="bg-[#111111] border border-[#262626] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-surface border border-line-strong rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-[#222222] flex items-center justify-between bg-[#141414]">
+        <div className="p-4 sm:p-5 border-b border-line flex items-center justify-between bg-canvas">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#00d1b2] text-[#0a0a0a] flex items-center justify-center shadow-[0_0_10px_rgba(0,209,178,0.3)]">
+            <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center shadow-[0_3px_8px_rgba(11,110,82,0.25)]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-[#f5f5f5]">
+              <h2 className="text-sm sm:text-base font-bold text-ink">
                 トイレのきれい度を評価・投稿
               </h2>
-              <p className="text-xs text-[#888888] line-clamp-1">{toilet.name}</p>
+              <p className="text-xs text-faint line-clamp-1">{toilet.name}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#888888] hover:text-[#ffffff] p-1 rounded-md text-sm transition-colors"
+            className="text-faint hover:text-ink p-1 rounded-md text-sm transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs text-[#e0e0e0]">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs text-ink-soft">
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
+            <label className="block text-ink-soft font-semibold mb-1">
               ニックネーム (任意)
             </label>
             <input
@@ -93,13 +90,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="例: たろう / 匿名"
-              className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+              className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
           </div>
 
           {/* Overall Stars */}
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
+            <label className="block text-ink-soft font-semibold mb-1">
               総合満足度
             </label>
             <div className="flex items-center gap-1 text-[#f27d26]">
@@ -112,21 +109,21 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 >
                   <Star
                     className={`w-6 h-6 ${
-                      star <= rating ? 'fill-[#f27d26] text-[#f27d26]' : 'text-[#333333]'
+                      star <= rating ? 'fill-[#f27d26] text-[#f27d26]' : 'text-line-strong'
                     }`}
                   />
                 </button>
               ))}
-              <span className="ml-2 font-bold text-[#f5f5f5]">{rating} / 5</span>
+              <span className="ml-2 font-bold text-ink">{rating} / 5</span>
             </div>
           </div>
 
           {/* Sub-Score Sliders */}
-          <div className="space-y-2.5 bg-[#161616] p-3 rounded-xl border border-[#262626]">
+          <div className="space-y-2.5 bg-surface-2 p-3 rounded-xl border border-line">
             <div>
-              <div className="flex justify-between font-medium text-[#cccccc] mb-1">
+              <div className="flex justify-between font-medium text-muted mb-1">
                 <span>便器・床の清潔さ</span>
-                <span className="font-bold text-[#00d1b2]">{cleanlinessScore}点</span>
+                <span className="font-bold text-accent">{cleanlinessScore}点</span>
               </div>
               <input
                 type="range"
@@ -135,14 +132,14 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 step="1"
                 value={cleanlinessScore}
                 onChange={(e) => setCleanlinessScore(parseInt(e.target.value))}
-                className="w-full accent-[#00d1b2] cursor-pointer"
+                className="w-full accent-[#0b6e52] cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between font-medium text-[#cccccc] mb-1">
+              <div className="flex justify-between font-medium text-muted mb-1">
                 <span>におい・換気状態</span>
-                <span className="font-bold text-[#38bdf8]">{odorScore}点</span>
+                <span className="font-bold text-sky-500">{odorScore}点</span>
               </div>
               <input
                 type="range"
@@ -156,9 +153,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             </div>
 
             <div>
-              <div className="flex justify-between font-medium text-[#cccccc] mb-1">
+              <div className="flex justify-between font-medium text-muted mb-1">
                 <span>石鹸・ペーパー・除菌</span>
-                <span className="font-bold text-[#a78bfa]">{suppliesScore}点</span>
+                <span className="font-bold text-violet-500">{suppliesScore}点</span>
               </div>
               <input
                 type="range"
@@ -174,44 +171,26 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Quick Confirmation Checkboxes */}
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1.5">
+            <label className="block text-ink-soft font-semibold mb-1.5">
               利用時の設備チェック
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasWashletConfirmed}
-                  onChange={(e) => setHasWashletConfirmed(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">ウォシュレット稼働</span>
-              </label>
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasSoapConfirmed}
-                  onChange={(e) => setHasSoapConfirmed(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">石鹸あり</span>
-              </label>
-              <label className="flex items-center gap-1.5 p-2 bg-[#181818] border border-[#2a2a2a] rounded-lg cursor-pointer hover:bg-[#202020] transition-colors">
-                <input
-                  type="checkbox"
-                  checked={hasPaperConfirmed}
-                  onChange={(e) => setHasPaperConfirmed(e.target.checked)}
-                  className="rounded accent-[#00d1b2]"
-                />
-                <span className="text-[#e0e0e0]">ペーパー常備</span>
-              </label>
-            </div>
+            {/* 石鹸・ペーパーの確認チェックは送信先モデル/サーバーに存在しないため廃止
+                （表示だけで反映されない擬似UIだった）。確認できるのはウォシュレットのみ。 */}
+            <label className="flex items-center gap-1.5 p-2 bg-surface-2 border border-line rounded-lg cursor-pointer hover:bg-canvas transition-colors">
+              <input
+                type="checkbox"
+                checked={hasWashletConfirmed}
+                onChange={(e) => setHasWashletConfirmed(e.target.checked)}
+                className="rounded accent-[#0b6e52]"
+              />
+              <span className="text-ink-soft">ウォシュレット稼働</span>
+            </label>
           </div>
 
           {/* Review Text */}
           <div>
-            <label className="block text-[#cccccc] font-semibold mb-1">
-              口コミ・利用した感想 <span className="text-[#ff4444]">*</span>
+            <label className="block text-ink-soft font-semibold mb-1">
+              口コミ・利用した感想 <span className="text-danger">*</span>
             </label>
             <textarea
               required
@@ -219,13 +198,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="便座や床の清潔さ、におい、混雑具合、穴場フロアなど..."
-              className="w-full px-3 py-2 bg-[#181818] border border-[#2e2e2e] rounded-lg text-[#f5f5f5] placeholder-[#666666] focus:bg-[#1f1f1f] focus:outline-none focus:ring-1 focus:ring-[#00d1b2] focus:border-[#00d1b2] transition-colors"
+              className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 bg-[#00d1b2] hover:bg-[#00bfa5] text-[#0a0a0a] font-bold rounded-lg shadow-[0_0_12px_rgba(0,209,178,0.25)] transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>きれい度評価を投稿する</span>
