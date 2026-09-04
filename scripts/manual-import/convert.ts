@@ -29,6 +29,8 @@ export interface ManualItem {
   googleMapsUrl: string;
   reviewExcerpts: ManualExcerpt[];
   geoQuery?: string;
+  // 座標を公開情報から補完した場合の出典メモ（例：「マピオン電話帳」）
+  coordSource?: string;
   // run.ts が付与するエリアガード（入力JSONには書かない）
   batchGuard?: BatchGuard;
 }
@@ -120,8 +122,13 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     }
 
     // 座標: 調査値が無ければジオコーディング。ダメなら取込不可
+    // （入力JSONに直接lat/lngを書く場合は公開情報の座標出典を coordSource に記録する）
     let lat = typeof item.lat === "number" ? item.lat : NaN;
     let lng = typeof item.lng === "number" ? item.lng : NaN;
+    const coordNote =
+      typeof item.coordSource === "string" && item.coordSource
+        ? ` 座標出典: ${item.coordSource}。`
+        : "";
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       if (item.address) {
         const g = await opts.geocode({
@@ -204,7 +211,7 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
         basis + (lowConfidence ? "（清潔さは判定不能のため中立値。要現地確認）" : ""),
       reviewCount: reviews.length,
       reviews,
-      facilityNote: `Google口コミ・自治体調査に基づく手動調査データ（信頼度:${item.confidence || "不明"}）。`,
+      facilityNote: `Google口コミ・自治体調査に基づく手動調査データ（信頼度:${item.confidence || "不明"}）。${coordNote}`,
       googleMapsUrl: item.googleMapsUrl,
       officialOpenDataId: `gmaps-${placeId}`.slice(0, 80),
     });

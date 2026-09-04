@@ -168,8 +168,8 @@
     {
       "name": "ローソン 渋谷一丁目店",
       "category": "convenience",
-      "lat": null,
-      "lng": null,
+      "lat": 35.6607832,
+      "lng": 139.704912,
       "address": "日本, 〒150-0002 東京都渋谷区渋谷１丁目１０−１ １階",
       "openingHours": "24時間営業",
       "cleanlinessScore": null,
@@ -188,7 +188,8 @@
           "text": "都会では珍しくトイレの利用も出来る",
           "rating": 3.5
         }
-      ]
+      ],
+      "coordSource": "マピオン電話帳"
     },
     {
       "name": "喫茶室ルノアール 渋谷宮下公園店",
@@ -215,8 +216,8 @@
       "name": "ドトールコーヒーショップ 渋谷１丁目店",
       "category": "cafe",
       "geoQuery": "ドトールコーヒーショップ 渋谷1丁目店",
-      "lat": null,
-      "lng": null,
+      "lat": 35.6601324,
+      "lng": 139.7025979,
       "address": "日本, 〒150-0002 東京都渋谷区渋谷１丁目１４−１５ 森ビル",
       "openingHours": "平日 07:00-21:00、土日祝 07:30-20:00",
       "cleanlinessScore": null,
@@ -235,7 +236,8 @@
           "text": "２つあるトイレのひとつが故障中",
           "rating": 3
         }
-      ]
+      ],
+      "coordSource": "マピオン電話帳"
     }
   ]
 }
