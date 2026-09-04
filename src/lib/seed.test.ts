@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { haversineM, mergeSeedLists } from "./seed";
+import { haversineM, mergeSeedLists, passesGuard } from "./seed";
 import type { ToiletFacility } from "../types";
 
 const mk = (id: string, lat: number, lng: number): ToiletFacility =>
@@ -12,6 +12,15 @@ describe("haversineM", () => {
     const d = haversineM(35.659, 139.7006, 35.6642, 139.7021);
     expect(d).toBeGreaterThan(400);
     expect(d).toBeLessThan(700);
+  });
+});
+
+describe("passesGuard", () => {
+  it("rejects homonym misplacements", () => {
+    const kumagaya = { center: [36.1477, 139.3889] as [number, number], maxKm: 12 };
+    expect(passesGuard(36.14, 139.39, kumagaya)).toBe(true);
+    expect(passesGuard(40.7827725, -73.9653627, kumagaya)).toBe(false); // NYの中央公園
+    expect(passesGuard(0, 0, undefined)).toBe(true);
   });
 });
 

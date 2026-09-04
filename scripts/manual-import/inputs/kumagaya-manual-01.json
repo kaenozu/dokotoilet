@@ -1,0 +1,482 @@
+{
+  "center": [
+    36.1477,
+    139.3889
+  ],
+  "maxKm": 12,
+  "items": [
+    {
+      "name": "アズ熊谷",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0037 埼玉県熊谷市筑波2丁目115",
+      "openingHours": "本館 10:00-20:30（館・店舗により異なる）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "2020年の授乳室併設部について埃・カビ様汚れ、臭いゴミ箱の投稿を確認。一方で現行の子育て設備情報には清潔側の評価もあるが、最近のトイレ本体の星付き清潔口コミ数を確定できず判定不能。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": true,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%82%BA%E7%86%8A%E8%B0%B7&query_place_id=ChIJSztt874pH2ARj5k4UVuSjrE",
+      "reviewExcerpts": [
+        {
+          "text": "ゴミ箱もあり得ないほど臭かったです。",
+          "rating": null
+        }
+      ]
+    },
+    {
+      "name": "ティアラ21",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0037 埼玉県熊谷市筑波3丁目202",
+      "openingHours": "ショッピング・カフェ 10:00-21:00（店舗により異なる）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "2026年更新のMAMAMAPで4F赤ちゃん休憩室は清潔側のアンケート結果を確認したが、回答母数が公開表示から確定できず、館内トイレ全体の清潔度へ一般化できない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": true,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%86%E3%82%A3%E3%82%A2%E3%83%A921&query_place_id=ChIJ61SKxr0pH2ARwsFdwlCifZM",
+      "reviewExcerpts": [
+        {
+          "text": "清潔だった。",
+          "rating": null
+        }
+      ]
+    },
+    {
+      "name": "ニットーモール",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0032 埼玉県熊谷市銀座2丁目245",
+      "openingHours": "10:00-20:30（ヤオコー等一部店舗は異なる）",
+      "cleanlinessScore": 3.8,
+      "confidence": "medium",
+      "scoreBasis": "清潔さ関連を3系統で確認。2019年の利用記でトイレを明確に高評価、現行MAMAMAPも子育て設備の清潔側評価。一方、Yahoo!マップには古さを指摘する4★投稿が1件あり、満点評価にはしない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": true,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%83%E3%83%88%E3%83%BC%E3%83%A2%E3%83%BC%E3%83%AB&query_place_id=ChIJQ9Ntfb0pH2ARRUyCmYl82XY",
+      "reviewExcerpts": [
+        {
+          "text": "トイレが非常に綺麗で",
+          "rating": null
+        },
+        {
+          "text": "ニットモール自体がかなり古くトイレなども…",
+          "rating": 4
+        }
+      ]
+    },
+    {
+      "name": "八木橋百貨店",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-8502 埼玉県熊谷市仲町74",
+      "openingHours": "10:00-18:30（休業日あり）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "多目的トイレの実在と利用設備は確認できたが、清潔さを直接評価する近年の星付き口コミを十分確認できなかった。プライバシー設備への好意的投稿は清潔度判定には流用していない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E6%9C%A8%E6%A9%8B%E7%99%BE%E8%B2%A8%E5%BA%97&query_place_id=ChIJ1YwZF8kpH2AR5jQWinl_TXg",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "イオン熊谷店",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0815 埼玉県熊谷市本石2丁目135",
+      "openingHours": "1F食品 8:00-22:00、2F-3F 9:00-21:00",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "トイレ利用可能な大型商業施設であることは確認したが、今回取得できた公開口コミではトイレ清潔さの直接言及を十分確認できず、施設総合評価は代用していない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%82%AA%E3%83%B3%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJEUxRkc4pH2ARjlKPFoWQMZo",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "旬鮮魚市場クルベ熊谷銀座店",
+      "category": "department",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0032 埼玉県熊谷市銀座2丁目226",
+      "openingHours": "通常営業 10:00-21:00、夜間営業 21:30-24:00",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "公式サイトで公衆トイレ・多目的トイレを確認。ただし現CLBE開業後の清潔さ直接口コミを十分確認できず、前身ベルク時代の口コミは現店舗スコアへ流用しなかった。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%AC%E9%AE%AE%E9%AD%9A%E5%B8%82%E5%A0%B4%E3%82%AF%E3%83%AB%E3%83%99%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A7%E5%BA%97&query_place_id=ChIJvemYjqMpH2AR-ZsdyAk0s3c",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "熊谷駅",
+      "category": "station",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0037 埼玉県熊谷市筑波2丁目115",
+      "openingHours": "始発-終電（改札内トイレ。新幹線改札窓口 6:15-23:30）",
+      "cleanlinessScore": 4.0,
+      "confidence": "medium",
+      "scoreBasis": "トイレ専門サイト等3系統で「きれい」「比較的きれい」「新しくて綺麗」とする直接言及を確認し、今回確認範囲では清潔さの明確な否定は見つからなかった。ただし投稿時期が古いものを含み、Google Maps星付きレビューの全件集計ではない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": true,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJk36DiL4pH2ARMjZ0E478A2w",
+      "reviewExcerpts": [
+        {
+          "text": "なかなかきれいなトイレです。",
+          "rating": null
+        },
+        {
+          "text": "比較的きれいなトイレです。",
+          "rating": null
+        },
+        {
+          "text": "全体的に新しくて綺麗でしたが",
+          "rating": null
+        }
+      ]
+    },
+    {
+      "name": "上熊谷駅",
+      "category": "station",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0822 埼玉県熊谷市宮本町",
+      "openingHours": null,
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "秩父鉄道公式でバリアフリートイレの設置は確認できたが、清潔さを直接評価する公開口コミを十分確認できなかった。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": null
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8A%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJidAGHcYpH2AR_WKyE-wCgJI",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "石原駅",
+      "category": "station",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0816 埼玉県熊谷市石原",
+      "openingHours": null,
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "秩父鉄道公式で2025年7月8日-8月26日のトイレリニューアル工事完了を確認したが、工事後の清潔さ口コミを十分確認できず、改修済みという事実だけで高得点にはしていない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": null
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E5%8E%9F%E9%A7%85&query_place_id=ChIJ-_kGFysoH2ARsTiRodGp19I",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "セブン-イレブン 熊谷市役所前店",
+      "category": "convenience",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0041 埼玉県熊谷市宮町2丁目99-1",
+      "openingHours": "24時間",
+      "cleanlinessScore": 4.4,
+      "confidence": "medium",
+      "scoreBasis": "Yahoo!マップ等の確認範囲で清潔さ好意的言及2件。うち1件は5★でトイレを明示して「すごく綺麗」、もう1件は4★で店舗を「キレイ」と評価。トイレの否定的清潔言及は今回確認範囲では見つからなかった。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E5%B8%82%E5%BD%B9%E6%89%80%E5%89%8D%E5%BA%97&query_place_id=ChIJpYeinbcpH2ARr0Lwy2y8RJA",
+      "reviewExcerpts": [
+        {
+          "text": "店内やトイレがすごく綺麗",
+          "rating": 5
+        },
+        {
+          "text": "キレイで良い。",
+          "rating": 4
+        }
+      ]
+    },
+    {
+      "name": "セブン-イレブン 熊谷銀座3丁目店",
+      "category": "convenience",
+      "lat": null,
+      "lng": null,
+      "address": "日本、〒360-0032 埼玉県熊谷市銀座３丁目１−３１−１",
+      "openingHours": "24時間",
+      "cleanlinessScore": 4.0,
+      "confidence": "low",
+      "scoreBasis": "食べログ3★の1件でトイレがよく清掃されていたとの直接言及を確認。ただし2016年訪問の単独口コミで古く、現在状態を強く保証できないためconfidenceはlow。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A73%E4%B8%81%E7%9B%AE%E5%BA%97&query_place_id=ChIJzVY72qIpH2ARf93fTkKLIHI",
+      "reviewExcerpts": [
+        {
+          "text": "トイレがよく清掃されていてよかった。",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "name": "ミニストップ 熊谷上之店",
+      "category": "convenience",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0012 埼玉県熊谷市上之3885-1",
+      "openingHours": "24時間",
+      "cleanlinessScore": 2.8,
+      "confidence": "low",
+      "scoreBasis": "公開レビュー集約ページのトイレ直接言及4件を確認。清潔1件、普通1件、ウォシュレットなし1件、落書き・古い公衆便所のようとの強い否定1件で評価が割れる。各投稿の星と日付を確定できないためlow。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%9F%E3%83%8B%E3%82%B9%E3%83%88%E3%83%83%E3%83%97%20%E7%86%8A%E8%B0%B7%E4%B8%8A%E4%B9%8B%E5%BA%97&query_place_id=ChIJpfPlhA4pH2ARlk8QA1Ie0D4",
+      "reviewExcerpts": [
+        {
+          "text": "トイレは普通だけど",
+          "rating": null
+        },
+        {
+          "text": "落書きまである、まるで昭和の公衆便所だ。",
+          "rating": null
+        },
+        {
+          "text": "トイレが綺麗",
+          "rating": null
+        }
+      ]
+    },
+    {
+      "name": "星乃珈琲店 熊谷店",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0023 埼玉県熊谷市佐谷田168-1",
+      "openingHours": "8:00-21:00（L.O.20:15）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "店舗口コミは多数確認できたが、今回取得できた範囲でトイレ清潔さを直接評価する十分な言及を確認できなかった。店内雰囲気や料理評価は代用していない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E4%B9%83%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJxWJbbKApH2ARNBWxTnIDkTg",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "珈琲館 熊谷店",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0825 埼玉県熊谷市月見町2丁目1-1",
+      "openingHours": "8:00-21:00",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "公式店舗情報は確認できたが、トイレ清潔さを直接評価する公開口コミを十分確認できなかったためスコア化しない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E9%A4%A8%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJy8iIodQpH2ARxI9cGByZJ0Q",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "珈琲所 コメダ珈琲店 熊谷店",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0018 埼玉県熊谷市中央1丁目326",
+      "openingHours": "7:00-23:00（L.O.22:30）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "店舗全体の清潔感を好意的に述べる4★口コミは確認したが、トイレ自体への直接言及ではないため清潔度スコアへ流用しない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E6%89%80%20%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "ジョイフル 熊谷店",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "〒360-0023 埼玉県熊谷市佐谷田字飯塚1203-2",
+      "openingHours": "24時間",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "飲食店としての口コミは多数確認できたが、今回取得範囲でトイレ清潔さを直接評価する十分な言及を確認できなかったためスコア化しない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A4%E3%83%95%E3%83%AB%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJUZuleGQpH2AR8dIOmruLgjc",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "中央公園",
+      "category": "park",
+      "lat": 36.1478109759971,
+      "lng": 139.389654820411,
+      "address": "〒360-0041 埼玉県熊谷市宮町2丁目37番地1",
+      "openingHours": "緑化センター 9:00-21:00（水曜・年末年始休館。トイレはセンター内）",
+      "cleanlinessScore": 2.8,
+      "confidence": "low",
+      "scoreBasis": "2021年利用の3★口コミ1件がトイレを明確に「綺麗とは言えず、薄暗い」と指摘。一方、2022年5★口コミにはトイレがあり公園が綺麗との広い表現もあるため、強い断定は避けた。口コミが古いためlow。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": false
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJb8C6N7cpH2AR_vzU9BON8lQ",
+      "reviewExcerpts": [
+        {
+          "text": "トイレもあまり綺麗とは言えず",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "name": "万平公園",
+      "category": "park",
+      "lat": 36.1359327704625,
+      "lng": 139.390052275651,
+      "address": "〒360-0034 埼玉県熊谷市万平町1丁目",
+      "openingHours": "終日（自治会等により利用時間制限の場合あり）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "埼玉県公式でバリアフリートイレと終日利用を確認したが、清潔さを直接評価する口コミを十分確認できなかった。公園・桜の高評価はトイレ評価に流用していない。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E5%B9%B3%E5%85%AC%E5%9C%92&query_place_id=ChIJjZImeJYpH2ARVuBiHYXaG0o",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "伊勢町ふれあい公園",
+      "category": "park",
+      "lat": 36.1450757505572,
+      "lng": 139.372255670263,
+      "address": "〒360-0821 埼玉県熊谷市伊勢町94",
+      "openingHours": "終日（自治会等により利用時間制限の場合あり）",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "scoreBasis": "熊谷市公式でトイレ設置、埼玉県公式でバリアフリートイレ・終日利用を確認。ただしYahoo!マップ等17件の施設口コミで、今回取得範囲ではトイレ清潔さの直接言及を確認できず判定不能。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": true,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": true
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJs1h-0tMpH2ARHMye0CJTuhM",
+      "reviewExcerpts": []
+    },
+    {
+      "name": "荒川公園",
+      "category": "park",
+      "lat": 36.1368290497189,
+      "lng": 139.385420778143,
+      "address": "〒360-0035 埼玉県熊谷市河原町2丁目",
+      "openingHours": null,
+      "cleanlinessScore": 2.0,
+      "confidence": "medium",
+      "scoreBasis": "熊谷市の2025年市民アンケート自由意見に、荒川公園のトイレをきれいにしてほしい旨の記載が2件。星評価ではないが、同時期に同方向の改善要望が複数あるため2.0。肯定的なトイレ清潔言及は今回確認範囲で見つからなかった。",
+      "equipment": {
+        "hasWashlet": null,
+        "hasMultipurpose": null,
+        "hasBabyTable": null,
+        "hasPowderRoom": null,
+        "isOpen24h": null
+      },
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8D%92%E5%B7%9D%E5%85%AC%E5%9C%92&query_place_id=ChIJsU0pbsApH2AR4ijf6m89rFg",
+      "reviewExcerpts": [
+        {
+          "text": "荒川公園はトイレをきれいにしてほしいです。",
+          "rating": null
+        },
+        {
+          "text": "特に外のトイレをきれいに綺麗にしてほしい。",
+          "rating": null
+        }
+      ]
+    }
+  ]
+}
