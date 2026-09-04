@@ -17,6 +17,14 @@ import {
   triFromYesNo,
 } from "./src/lib/osm";
 
+/** クエリパラメータ→数値。未指定は undefined、指定があれば数値化（数値化不能は NaN）。 */
+function parseQueryNum(v: unknown): number | undefined {
+  if (v === undefined) return undefined;
+  if (typeof v === "number") return v;
+  if (typeof v === "string" && v.trim() !== "") return Number(v);
+  return NaN;
+}
+
 async function startServer() {
   const app = express();
   // Cloud Run / AI Studio は PORT 環境変数を注入する
@@ -93,9 +101,27 @@ async function startServer() {
   // OpenStreetMap Overpass API Proxy for live real toilets
   app.get("/api/osm/toilets", async (req, res) => {
     try {
-      const lat = parseFloat(req.query.lat as string) || 35.6590;
-      const lng = parseFloat(req.query.lng as string) || 139.7006;
-      const radius = Math.min(parseInt(req.query.radius as string) || 1500, 3000);
+      // クエリ検証（P5）: 未指定は既定値。指定がある場合は有限値かつ範囲内のみ受け付ける。
+      // NaN / Infinity / 範囲外の値が Overpass クエリやキャッシュキーに混入しないようにする。
+      const q = {
+        lat: parseQueryNum(req.query.lat),
+        lng: parseQueryNum(req.query.lng),
+        radius: parseQueryNum(req.query.radius),
+      };
+      if (
+        (q.lat !== undefined && !(q.lat >= -90 && q.lat <= 90)) ||
+        (q.lng !== undefined && !(q.lng >= -180 && q.lng <= 180)) ||
+        (q.radius !== undefined && !(q.radius >= 1 && q.radius <= 3000))
+      ) {
+        console.warn("[osm-proxy] invalid query parameters:", req.query);
+        res.status(400).json({
+          error: "invalid query parameter: lat (-90..90), lng (-180..180), radius (1..3000)",
+        });
+        return;
+      }
+      const lat = q.lat ?? 35.6590;
+      const lng = q.lng ?? 139.7006;
+      const radius = q.radius ?? 1500;
 
       const cacheKey = `${lat.toFixed(2)}_${lng.toFixed(2)}_${radius}`;
       const cached = osmCache.get(cacheKey);
@@ -118,6 +144,7 @@ async function startServer() {
 
       let rawElements: any[] = [];
       let fetchSuccess = false;
+      let lastMirrorError: unknown = null;
 
       for (const mirrorUrl of mirrors) {
         try {
@@ -145,13 +172,26 @@ async function startServer() {
               break;
             }
           }
-        } catch {
+        } catch (e) {
+          lastMirrorError = e;
           // Gracefully continue to next mirror without noisy unhandled warnings
           continue;
         }
       }
 
+      // 全ミラー失敗は握りつぶさず console.error で可視化する（後段で実在OSMシードへフォールバック）
+      if (!fetchSuccess) {
+        console.error(
+          "[osm-proxy] All Overpass mirrors returned no usable data; falling back to seed:",
+          lastMirrorError instanceof Error
+            ? lastMirrorError.message
+            : "(empty / non-200 responses)"
+        );
+      }
+
       // If live Overpass endpoints are temporarily unreachable, use verified real OSM seed data
+      // source: レスポンスの出所を明示する（クライアント・運用での障害判別用）
+      let source: "overpass" | "seed" | "none" = fetchSuccess ? "overpass" : "none";
       if (!fetchSuccess || rawElements.length === 0) {
         const matchedSeed = REAL_OSM_SEED.filter((el: any) => {
           const dLat = Math.abs((el.lat || 0) - lat);
@@ -160,6 +200,7 @@ async function startServer() {
         });
         if (matchedSeed.length > 0) {
           rawElements = matchedSeed;
+          source = "seed";
         }
       }
 
@@ -292,7 +333,8 @@ async function startServer() {
         elements: rawElements,
         toilets,
         count: toilets.length,
-        source: "OpenStreetMap",
+        // 出所を明示: overpass（ライブ）/ seed（実在OSMシードへフォールバック）/ none（データなし）
+        source,
         timestamp: new Date().toISOString(),
       };
 
@@ -302,12 +344,14 @@ async function startServer() {
 
       res.json(responsePayload);
     } catch (err: any) {
-      console.info("OSM Overpass API fallback served:", err?.message);
-      res.json({
+      // 内部エラーは成功風の空ペイロードで隠さず、エラーログと source=error で明示する
+      console.error("OSM Overpass API error:", err?.message ?? err);
+      res.status(502).json({
         elements: [],
         toilets: [],
         count: 0,
-        source: "OpenStreetMap",
+        source: "error",
+        error: err?.message ?? "unknown",
         timestamp: new Date().toISOString(),
       });
     }

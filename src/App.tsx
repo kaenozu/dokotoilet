@@ -335,6 +335,13 @@ export default function App() {
     setIsLoadingOsm(true);
     try {
       const res = await fetch(`/api/osm/toilets?lat=${lat}&lng=${lng}&radius=2000`);
+      if (!res.ok) {
+        // 非200（レート制限・サーバー障害）を「見つからなかった」と誤表示しない
+        if (notifyUser) {
+          showToast('OpenStreetMapの取得に失敗しました（サーバーエラー）。時間をおいて再度お試しください。');
+        }
+        return;
+      }
       const data = await res.json();
 
       let incoming: ToiletFacility[] = [];
@@ -418,8 +425,9 @@ export default function App() {
         }
       });
     } catch {
+      // 通信断など。成功したかのような文言を出さない（旧M7の誤表示の修正）
       if (notifyUser) {
-        showToast('実在公衆トイレ（OSM）の取得を完了しました。');
+        showToast('OpenStreetMapの取得に失敗しました。通信環境をご確認のうえ、時間をおいて再度お試しください。');
       }
     } finally {
       setIsLoadingOsm(false);
