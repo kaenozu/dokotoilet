@@ -15,14 +15,14 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lng": 139.7020557,
     "address": "日本、〒150-0001 東京都渋谷区神宮前６丁目２２−８",
     "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
+    "cleanlinessScore": 4.5,
     "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "equipmentScore": 4.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 4.5,
+      "odor": 4.5,
+      "supplies": 4.5,
+      "comfort": 4.5
     },
     "attributes": {
       "hasWashlet": true,
@@ -39,12 +39,46 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": "both"
     },
     "openingHours": "07:00-23:00（毎日）",
-    "description": "渋谷区の令和6年度利用者調査N=55で「とても満足」14件、「満足」30件、「清潔」20件、「臭いがない」25件。不満2件・とても不満0件。Google Mapsは4.0/5・114件だが、星平均だけではなく自治体調査を主根拠とした。",
-    "reviewCount": 0,
-    "reviews": [],
+    "description": "清潔さへの直接言及3件中3件が肯定的。2023年の口コミでも「きれい」と明確に評価。",
+    "reviewCount": 3,
+    "reviews": [
+      {
+        "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-0",
+        "userName": "Google口コミより引用",
+        "rating": 5,
+        "cleanlinessScore": 5,
+        "odorScore": 5,
+        "suppliesScore": 5,
+        "comment": "ウォシュレット付きのきれいなトイレにビックリしました！",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      },
+      {
+        "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-1",
+        "userName": "Google口コミより引用",
+        "rating": 3.5,
+        "cleanlinessScore": 3.5,
+        "odorScore": 3.5,
+        "suppliesScore": 3.5,
+        "comment": "中はきれいでした。",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      },
+      {
+        "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-2",
+        "userName": "Google口コミより引用",
+        "rating": 4,
+        "cleanlinessScore": 4,
+        "odorScore": 4,
+        "suppliesScore": 4,
+        "comment": "中も綺麗なトイレです。",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      }
+    ],
     "externalReviewCount": 114,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:high）。",
+    "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
     "officialOpenDataId": "gmaps-ChIJHXtAN-6NGGARLL6RIDLFPXo"
   },
@@ -57,15 +91,15 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 35.6596047,
     "lng": 139.6915526,
     "address": "日本、〒150-0046 東京都渋谷区松濤２丁目１０−１０−７",
-    "cleanlinessGrade": "S",
-    "cleanlinessScore": 4.7,
-    "equipmentGrade": "S",
-    "equipmentScore": 4.7,
+    "cleanlinessGrade": "A",
+    "cleanlinessScore": 4.3,
+    "equipmentGrade": "A",
+    "equipmentScore": 4.3,
     "subScores": {
-      "cleanliness": 4.7,
-      "odor": 4.7,
-      "supplies": 4.7,
-      "comfort": 4.7
+      "cleanliness": 4.3,
+      "odor": 4.3,
+      "supplies": 4.3,
+      "comfort": 4.3
     },
     "attributes": {
       "hasWashlet": true,
@@ -82,12 +116,35 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": "both"
     },
     "openingHours": "24時間営業",
-    "description": "渋谷区利用者調査N=68で「とても満足」40件、「満足」22件、「清潔」46件、「臭いがない」23件。不満1件・とても不満0件。Google Mapsは3.9/5・69件。自治体調査では清潔さへの肯定が明確。",
-    "reviewCount": 0,
-    "reviews": [],
+    "description": "清潔さへの直接言及2件中2件が肯定的。2024年12月訪問の口コミでも改修後の清潔さを確認できるが、件数が少ないためlow。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 2,
+    "reviews": [
+      {
+        "id": "rev-gmaps-ChIJoXN2SauMGGAR17Mw-0",
+        "userName": "Google口コミより引用",
+        "rating": 3,
+        "cleanlinessScore": 3,
+        "odorScore": 3,
+        "suppliesScore": 3,
+        "comment": "近年トイレを改修して綺麗になり、使いやすくなりました。",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      },
+      {
+        "id": "rev-gmaps-ChIJoXN2SauMGGAR17Mw-1",
+        "userName": "Google口コミより引用",
+        "rating": 3,
+        "cleanlinessScore": 3,
+        "odorScore": 3,
+        "suppliesScore": 3,
+        "comment": "しかし、入ってみるととても綺麗なトイレです。",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      }
+    ],
     "externalReviewCount": 69,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:high）。",
+    "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
     "officialOpenDataId": "gmaps-ChIJoXN2SauMGGAR17MwL12sXS8"
   },
