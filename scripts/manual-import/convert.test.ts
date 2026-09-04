@@ -89,6 +89,14 @@ describe("convertItems", () => {
     expect(skipped).toHaveLength(2);
   });
 
+  it("records coordSource in facilityNote", async () => {
+    const { facilities } = await convertItems(
+      [{ ...base, coordSource: "マピオン電話帳" }],
+      { geocode: noGeo }
+    );
+    expect(facilities[0].facilityNote).toContain("マピオン電話帳");
+  });
+
   it("caps excerpts at maxExcerpts", async () => {
     const many = Array.from({ length: 8 }, (_, i) => ({ text: `口コミ${i}`, rating: 4 }));
     const { facilities } = await convertItems(
