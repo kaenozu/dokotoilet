@@ -12,9 +12,9 @@
       "lng": 139.7020557,
       "address": "日本、〒150-0001 東京都渋谷区神宮前６丁目２２−８",
       "openingHours": "07:00-23:00（毎日）",
-      "cleanlinessScore": 4.2,
-      "confidence": "high",
-      "scoreBasis": "渋谷区の令和6年度利用者調査N=55で「とても満足」14件、「満足」30件、「清潔」20件、「臭いがない」25件。不満2件・とても不満0件。Google Mapsは4.0/5・114件だが、星平均だけではなく自治体調査を主根拠とした。",
+      "cleanlinessScore": 4.5,
+      "confidence": "medium",
+      "scoreBasis": "清潔さへの直接言及3件中3件が肯定的。2023年の口コミでも「きれい」と明確に評価。",
       "equipment": {
         "hasWashlet": true,
         "hasMultipurpose": true,
@@ -23,7 +23,20 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
-      "reviewExcerpts": [],
+      "reviewExcerpts": [
+        {
+          "text": "ウォシュレット付きのきれいなトイレにビックリしました！",
+          "rating": 5.0
+        },
+        {
+          "text": "中はきれいでした。",
+          "rating": 3.5
+        },
+        {
+          "text": "中も綺麗なトイレです。",
+          "rating": 4.0
+        }
+      ],
       "externalReviewCount": 114,
       "externalReviewSource": "Google Maps"
     },
@@ -35,9 +48,9 @@
       "lng": null,
       "address": "日本、〒150-0046 東京都渋谷区松濤２丁目１０−１０−７",
       "openingHours": "24時間営業",
-      "cleanlinessScore": 4.7,
-      "confidence": "high",
-      "scoreBasis": "渋谷区利用者調査N=68で「とても満足」40件、「満足」22件、「清潔」46件、「臭いがない」23件。不満1件・とても不満0件。Google Mapsは3.9/5・69件。自治体調査では清潔さへの肯定が明確。",
+      "cleanlinessScore": 4.3,
+      "confidence": "low",
+      "scoreBasis": "清潔さへの直接言及2件中2件が肯定的。2024年12月訪問の口コミでも改修後の清潔さを確認できるが、件数が少ないためlow。",
       "equipment": {
         "hasWashlet": true,
         "hasMultipurpose": true,
@@ -46,7 +59,16 @@
         "isOpen24h": true
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
-      "reviewExcerpts": [],
+      "reviewExcerpts": [
+        {
+          "text": "近年トイレを改修して綺麗になり、使いやすくなりました。",
+          "rating": 3.0
+        },
+        {
+          "text": "しかし、入ってみるととても綺麗なトイレです。",
+          "rating": null
+        }
+      ],
       "externalReviewCount": 69,
       "externalReviewSource": "Google Maps"
     },
