@@ -18,7 +18,26 @@ async function startServer() {
 
   // Cloud Runはリバースプロキシ配下のため、rate-limitのIP判定用に1段だけ信頼する
   app.set("trust proxy", 1);
-  app.use(helmet());
+  // helmetの既定CSPは地図タイル（OSM/国土地理院）とVite開発サーバを壊すため調整する。
+  // 開発時（Viteミドルウェア）はCSPを無効化するのが定石。
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        process.env.NODE_ENV === "production"
+          ? {
+              directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                "img-src": [
+                  "'self'",
+                  "data:",
+                  "https://tile.openstreetmap.org",
+                  "https://cyberjapandata.gsi.go.jp",
+                ],
+              },
+            }
+          : false,
+    })
+  );
   app.use(express.json({ limit: "100kb" }));
   // OSMプロキシの踏み台化を防ぐ（/api/配下は1分60リクエスト/IP）
   const apiLimiter = rateLimit({
