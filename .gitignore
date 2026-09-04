@@ -8,6 +8,8 @@ coverage/
 !.env.example
 # シード生成用の一時スクリプト・中間ファイルは管理外（手順は README 参照）
 tmp/
-# コミュニティ投稿のローカル保存先（本番は外部DB推奨。README参照）
-# ※ src/data/ はシード管理のため追跡する。ルート直下のみ無視
-/data/
+# コミュニティ投稿データ: data/community.json のみgit管理する
+# （バックアップ・差分レビュー・手動キュレーション運用。README参照）
+# ※ src/data/ はシード管理のため追跡する。data/ 配下のその他は無視
+/data/*
+!/data/community.json
