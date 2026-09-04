@@ -183,8 +183,20 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     },
     "openingHours": "月-金・日 05:00-00:00、土 05:00-01:00",
     "description": "Google Mapsの公衆トイレlistingは4.6/5・26件と高評価だが、清潔さを明示する口コミ本文を今回取得できなかった。総合星評価を清潔さスコアへ推測転用しないため判定不能。（清潔さは判定不能のため中立値。要現地確認）",
-    "reviewCount": 0,
-    "reviews": [],
+    "reviewCount": 1,
+    "reviews": [
+      {
+        "id": "rev-gmaps-ChIJn7NPqQWLGGARN8o1-0",
+        "userName": "Google口コミより引用",
+        "rating": 5,
+        "cleanlinessScore": 5,
+        "odorScore": 5,
+        "suppliesScore": 5,
+        "comment": "A lifesaver and super clean",
+        "createdAt": "2026-09-04",
+        "helpfulCount": 0
+      }
+    ],
     "externalReviewCount": 26,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",

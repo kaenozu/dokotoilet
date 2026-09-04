@@ -90,7 +90,12 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn7NPqQWLGGARN8o1-fJF74o",
-      "reviewExcerpts": [],
+      "reviewExcerpts": [
+        {
+          "text": "A lifesaver and super clean",
+          "rating": 5
+        }
+      ],
       "externalReviewCount": 26,
       "externalReviewSource": "Google Maps"
     },
