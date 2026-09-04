@@ -23,7 +23,9 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 114,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "鍋島松濤公園 ﾊﾞﾘｱﾌﾘｰ公衆トイレ",
@@ -44,7 +46,9 @@
         "isOpen24h": true
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 69,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "渋谷駅東口 公衆トイレ",
@@ -64,7 +68,9 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn7NPqQWLGGARN8o1-fJF74o",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 26,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "京王井の頭線 渋谷駅",
@@ -84,7 +90,9 @@
         "isOpen24h": null
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJe3fBYgCLGGARb1EaXbqbbc4",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 18,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "渋谷ヒカリエ",
@@ -113,7 +121,9 @@
           "text": "そのおしゃれなトイレが話題になりました。",
           "rating": 5
         }
-      ]
+      ],
+      "externalReviewCount": 14874,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "渋谷スクランブルスクエア",
@@ -138,7 +148,9 @@
           "text": "キレイなトイレです、ありがとうございました。",
           "rating": 4
         }
-      ]
+      ],
+      "externalReviewCount": 9387,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "渋谷PARCO",
@@ -163,7 +175,9 @@
           "text": "トイレもピカピカで綺麗でした。",
           "rating": 3.5
         }
-      ]
+      ],
+      "externalReviewCount": 8309,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ローソン 渋谷一丁目店",
@@ -189,7 +203,9 @@
           "rating": 3.5
         }
       ],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 46,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "喫茶室ルノアール 渋谷宮下公園店",
@@ -210,7 +226,9 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn-8w66eMGGAReKy7V_Fuh8g",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 453,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ドトールコーヒーショップ 渋谷１丁目店",
@@ -237,7 +255,9 @@
           "rating": 3
         }
       ],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 513,
+      "externalReviewSource": "Google Maps"
     }
   ]
 }

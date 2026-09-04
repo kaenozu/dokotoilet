@@ -42,6 +42,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "渋谷区の令和6年度利用者調査N=55で「とても満足」14件、「満足」30件、「清潔」20件、「臭いがない」25件。不満2件・とても不満0件。Google Mapsは4.0/5・114件だが、星平均だけではなく自治体調査を主根拠とした。",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 114,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:high）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
     "officialOpenDataId": "gmaps-ChIJHXtAN-6NGGARLL6RIDLFPXo"
@@ -83,6 +85,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "渋谷区利用者調査N=68で「とても満足」40件、「満足」22件、「清潔」46件、「臭いがない」23件。不満1件・とても不満0件。Google Mapsは3.9/5・69件。自治体調査では清潔さへの肯定が明確。",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 69,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:high）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
     "officialOpenDataId": "gmaps-ChIJoXN2SauMGGAR17MwL12sXS8"
@@ -124,6 +128,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "Google Mapsの公衆トイレlistingは4.6/5・26件と高評価だが、清潔さを明示する口コミ本文を今回取得できなかった。総合星評価を清潔さスコアへ推測転用しないため判定不能。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 26,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn7NPqQWLGGARN8o1-fJF74o",
     "officialOpenDataId": "gmaps-ChIJn7NPqQWLGGARN8o1-fJF74o"
@@ -165,6 +171,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "2026年公開の中央口改札内トイレ専門調査で総合2.8/5、清潔さ項目は約2.5/5。Google Maps listingは3.7/5・18件だが、清潔さに限定したGoogle口コミ本文の十分な抽出はできていないためmedium。",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 18,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJe3fBYgCLGGARb1EaXbqbbc4",
     "officialOpenDataId": "gmaps-ChIJe3fBYgCLGGARb1EaXbqbbc4"
@@ -229,6 +237,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 14874,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJP6jlUFiLGGAR5fwuswd1KXA",
     "officialOpenDataId": "gmaps-ChIJP6jlUFiLGGAR5fwuswd1KXA"
@@ -282,6 +292,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 9387,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJscDhJ4SLGGARbx0GlzPi9ng",
     "officialOpenDataId": "gmaps-ChIJscDhJ4SLGGARbx0GlzPi9ng"
@@ -335,6 +347,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 8309,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJcyH-4qiMGGARGzk4lZCx2xo",
     "officialOpenDataId": "gmaps-ChIJcyH-4qiMGGARGzk4lZCx2xo"
@@ -388,6 +402,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 46,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJMaI731OLGGARRjpKM-IoEkA",
     "officialOpenDataId": "gmaps-ChIJMaI731OLGGARRjpKM-IoEkA"
@@ -429,6 +445,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "店舗口コミからビル共用トイレを使用することは確認できたが、トイレそのものの清潔さを評価した十分な口コミ本文を取得できず判定不能。Google Mapsの店舗総合3.7/5・452件は清潔さへ転用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 453,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn-8w66eMGGAReKy7V_Fuh8g",
     "officialOpenDataId": "gmaps-ChIJn-8w66eMGGAReKy7V_Fuh8g"
@@ -482,6 +500,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 513,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ0_O8DFiLGGARIMS75pBB_ug",
     "officialOpenDataId": "gmaps-ChIJ0_O8DFiLGGARIMS75pBB_ug"
@@ -535,6 +555,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 985,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%82%BA%E7%86%8A%E8%B0%B7&query_place_id=ChIJSztt874pH2ARj5k4UVuSjrE",
     "officialOpenDataId": "gmaps-アズ熊谷"
@@ -588,6 +610,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 1441,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: テナント店のGoogleマップリンク（同建物）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%86%E3%82%A3%E3%82%A2%E3%83%A921&query_place_id=ChIJ61SKxr0pH2ARwsFdwlCifZM",
     "officialOpenDataId": "gmaps-ティアラ21"
@@ -652,6 +676,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 2129,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。 座標出典: マピオン電話帳・Yahoo!マップ一致。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%83%E3%83%88%E3%83%BC%E3%83%A2%E3%83%BC%E3%83%AB&query_place_id=ChIJQ9Ntfb0pH2ARRUyCmYl82XY",
     "officialOpenDataId": "gmaps-ニットーモール"
@@ -693,6 +719,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "多目的トイレの実在と利用設備は確認できたが、清潔さを直接評価する近年の星付き口コミを十分確認できなかった。プライバシー設備への好意的投稿は清潔度判定には流用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 2556,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E6%9C%A8%E6%A9%8B%E7%99%BE%E8%B2%A8%E5%BA%97&query_place_id=ChIJ1YwZF8kpH2AR5jQWinl_TXg",
     "officialOpenDataId": "gmaps-八木橋百貨店"
@@ -734,6 +762,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "トイレ利用可能な大型商業施設であることは確認したが、今回取得できた公開口コミではトイレ清潔さの直接言及を十分確認できず、施設総合評価は代用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 1125,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%82%AA%E3%83%B3%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJEUxRkc4pH2ARjlKPFoWQMZo",
     "officialOpenDataId": "gmaps-イオン熊谷店"
@@ -775,6 +805,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "公式サイトで公衆トイレ・多目的トイレを確認。ただし現CLBE開業後の清潔さ直接口コミを十分確認できず、前身ベルク時代の口コミは現店舗スコアへ流用しなかった。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 91,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳（前身ベルク同建物・同住所）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%AC%E9%AE%AE%E9%AD%9A%E5%B8%82%E5%A0%B4%E3%82%AF%E3%83%AB%E3%83%99%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A7%E5%BA%97&query_place_id=ChIJvemYjqMpH2AR-ZsdyAk0s3c",
     "officialOpenDataId": "gmaps-旬鮮魚市場クルベ熊谷銀座店"
@@ -850,6 +882,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 921,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJk36DiL4pH2ARMjZ0E478A2w",
     "officialOpenDataId": "gmaps-熊谷駅"
@@ -891,6 +925,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "秩父鉄道公式でバリアフリートイレの設置は確認できたが、清潔さを直接評価する公開口コミを十分確認できなかった。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 54,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8A%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJidAGHcYpH2AR_WKyE-wCgJI",
     "officialOpenDataId": "gmaps-上熊谷駅"
@@ -932,6 +968,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "秩父鉄道公式で2025年7月8日-8月26日のトイレリニューアル工事完了を確認したが、工事後の清潔さ口コミを十分確認できず、改修済みという事実だけで高得点にはしていない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 40,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E5%8E%9F%E9%A7%85&query_place_id=ChIJ-_kGFysoH2ARsTiRodGp19I",
     "officialOpenDataId": "gmaps-石原駅"
@@ -996,6 +1034,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 56,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。 座標出典: NAVITIMEスポット情報。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E5%B8%82%E5%BD%B9%E6%89%80%E5%89%8D%E5%BA%97&query_place_id=ChIJpYeinbcpH2ARr0Lwy2y8RJA",
     "officialOpenDataId": "gmaps-セブン-イレブン-熊谷市役所前店"
@@ -1049,6 +1089,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 34,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: セブン-イレブン公式店舗検索。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A73%E4%B8%81%E7%9B%AE%E5%BA%97&query_place_id=ChIJzVY72qIpH2ARf93fTkKLIHI",
     "officialOpenDataId": "gmaps-セブン-イレブン-熊谷銀座3丁目店"
@@ -1124,6 +1166,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 37,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%9F%E3%83%8B%E3%82%B9%E3%83%88%E3%83%83%E3%83%97%20%E7%86%8A%E8%B0%B7%E4%B8%8A%E4%B9%8B%E5%BA%97&query_place_id=ChIJpfPlhA4pH2ARlk8QA1Ie0D4",
     "officialOpenDataId": "gmaps-ミニストップ-熊谷上之店"
@@ -1165,6 +1209,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "店舗口コミは多数確認できたが、今回取得できた範囲でトイレ清潔さを直接評価する十分な言及を確認できなかった。店内雰囲気や料理評価は代用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 460,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: NAVITIMEスポット情報。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E4%B9%83%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJxWJbbKApH2ARNBWxTnIDkTg",
     "officialOpenDataId": "gmaps-星乃珈琲店-熊谷店"
@@ -1206,6 +1252,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "公式店舗情報は確認できたが、トイレ清潔さを直接評価する公開口コミを十分確認できなかったためスコア化しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 167,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E9%A4%A8%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJy8iIodQpH2ARxI9cGByZJ0Q",
     "officialOpenDataId": "gmaps-珈琲館-熊谷店"
@@ -1247,6 +1295,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "店舗全体の清潔感を好意的に述べる4★口コミは確認したが、トイレ自体への直接言及ではないため清潔度スコアへ流用しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 745,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: マピオン電話帳。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E6%89%80%20%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
     "officialOpenDataId": "gmaps-珈琲所-コメダ珈琲店-熊谷店"
@@ -1288,6 +1338,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "飲食店としての口コミは多数確認できたが、今回取得範囲でトイレ清潔さを直接評価する十分な言及を確認できなかったためスコア化しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 615,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。 座標出典: ジョイフル公式サイト。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A4%E3%83%95%E3%83%AB%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJUZuleGQpH2AR8dIOmruLgjc",
     "officialOpenDataId": "gmaps-ジョイフル-熊谷店"
@@ -1341,6 +1393,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 144,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJb8C6N7cpH2AR_vzU9BON8lQ",
     "officialOpenDataId": "gmaps-中央公園"
@@ -1382,6 +1436,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "埼玉県公式でバリアフリートイレと終日利用を確認したが、清潔さを直接評価する口コミを十分確認できなかった。公園・桜の高評価はトイレ評価に流用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 289,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E5%B9%B3%E5%85%AC%E5%9C%92&query_place_id=ChIJjZImeJYpH2ARVuBiHYXaG0o",
     "officialOpenDataId": "gmaps-万平公園"
@@ -1423,6 +1479,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "description": "熊谷市公式でトイレ設置、埼玉県公式でバリアフリートイレ・終日利用を確認。ただしYahoo!マップ等17件の施設口コミで、今回取得範囲ではトイレ清潔さの直接言及を確認できず判定不能。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
+    "externalReviewCount": 153,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJs1h-0tMpH2ARHMye0CJTuhM",
     "officialOpenDataId": "gmaps-伊勢町ふれあい公園"
@@ -1487,6 +1545,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
         "helpfulCount": 0
       }
     ],
+    "externalReviewCount": 256,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google口コミ・自治体調査に基づく手動調査データ（信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8D%92%E5%B7%9D%E5%85%AC%E5%9C%92&query_place_id=ChIJsU0pbsApH2AR4ijf6m89rFg",
     "officialOpenDataId": "gmaps-荒川公園"
