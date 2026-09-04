@@ -78,6 +78,10 @@ export interface ToiletFacility {
   photos?: string[];
   reviewCount: number;
   reviews: ToiletReview[];
+  // 外部（Google Maps等）のlisting上に表示される口コミ総数。未取得でも件数だけ
+  // 記録し、「口コミなし」と「未取込」を区別するために使う。undefined＝不明
+  externalReviewCount?: number;
+  externalReviewSource?: string;
   facilitySummary?: string;
   // 施設メモ。旧aiSummary（AIが生成したものではないため改名）
   facilityNote?: string;

@@ -29,6 +29,9 @@ export interface ManualItem {
   googleMapsUrl: string;
   reviewExcerpts: ManualExcerpt[];
   geoQuery?: string;
+  // listing上の口コミ総数（本文未取得でも件数だけ記録。「未取込」表示用）
+  externalReviewCount?: number | null;
+  externalReviewSource?: string;
   // 座標を公開情報から補完した場合の出典メモ（例：「マピオン電話帳」）
   coordSource?: string;
   // run.ts が付与するエリアガード（入力JSONには書かない）
@@ -211,6 +214,17 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
         basis + (lowConfidence ? "（清潔さは判定不能のため中立値。要現地確認）" : ""),
       reviewCount: reviews.length,
       reviews,
+      ...(typeof item.externalReviewCount === "number" &&
+      Number.isInteger(item.externalReviewCount) &&
+      item.externalReviewCount >= 0
+        ? {
+            externalReviewCount: item.externalReviewCount,
+            externalReviewSource:
+              typeof item.externalReviewSource === "string" && item.externalReviewSource
+                ? item.externalReviewSource.slice(0, 50)
+                : "Google Maps",
+          }
+        : {}),
       facilityNote: `Google口コミ・自治体調査に基づく手動調査データ（信頼度:${item.confidence || "不明"}）。${coordNote}`,
       googleMapsUrl: item.googleMapsUrl,
       officialOpenDataId: `gmaps-${placeId}`.slice(0, 80),
