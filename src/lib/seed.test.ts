@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { haversineM, mergeSeedLists, passesGuard } from "./seed";
+import { haversineM, mergeSeedLists, passesGuard, uniquifyIds } from "./seed";
 import type { ToiletFacility } from "../types";
+// App の SEED_TOILETS と同じ合成を再現して重複IDの回帰を防ぐ
+import { GOOGLE_SEED } from "../data/googleSeed";
+import { KUMAGAYA_SEED } from "../data/kumagayaSeed";
+import { INITIAL_TOILETS } from "../data/toilets";
 
 const mk = (id: string, lat: number, lng: number): ToiletFacility =>
   ({ id, lat, lng, reviewCount: 0 } as ToiletFacility);
@@ -70,5 +74,59 @@ describe("mergeSeedLists", () => {
     expect(merged[0].attributes.isOpen24h).toBe(false);
     expect(merged[0].attributes.hasSoap).toBe(false);
     expect(merged[0].openingHours).toBe("07:00-23:00");
+  });
+
+  it("unions tri-state flags: true wins, confirmed false beats unknown, both unknown stays null", () => {
+    const primary = [
+      { ...mk("a", 35.66, 139.7), attributes: { hasWashlet: null, hasOstomate: false, isFree: false } },
+    ];
+    const secondary = [
+      { ...mk("b", 35.66, 139.7), attributes: { hasWashlet: true, hasOstomate: null, isFree: null } },
+    ];
+    const merged = mergeSeedLists(primary as any, secondary as any, 30);
+    expect(merged).toHaveLength(1);
+    // true > false > null
+    expect(merged[0].attributes.hasWashlet).toBe(true);
+    expect(merged[0].attributes.hasOstomate).toBe(false);
+    expect(merged[0].attributes.isFree).toBe(false);
+    // null同士も「なし」に潰さない
+    const bothUnknown = mergeSeedLists(
+      [{ ...mk("c", 35.66, 139.7), attributes: { hasSoap: null } }] as any,
+      [{ ...mk("d", 35.66, 139.7), attributes: { hasSoap: null } }] as any,
+      30
+    );
+    expect(bothUnknown[0].attributes.hasSoap).toBeNull();
+  });
+
+  it("uniquifies colliding ids instead of dropping facilities", () => {
+    // 同一ID・別座標の施設（町字IDの誤用のような実データ）が含まれても捨てない
+    const out = mergeSeedLists([], [
+      mk("od-kumagaya-0000001", 35.66, 139.7),
+      mk("od-kumagaya-0000001", 35.67, 139.71),
+    ] as any);
+    expect(out.map((t) => t.id)).toEqual(["od-kumagaya-0000001", "od-kumagaya-0000001-2"]);
+    expect(out).toHaveLength(2);
+  });
+
+  it("uniquifyIds never drops facilities and suffixes deterministically", () => {
+    const out = uniquifyIds([
+      mk("a", 1, 1),
+      mk("a", 2, 2),
+      mk("a", 3, 3),
+      mk("b", 4, 4),
+    ] as ToiletFacility[]);
+    expect(out.map((t) => t.id)).toEqual(["a", "a-2", "a-3", "b"]);
+  });
+});
+
+describe("重複IDの回帰防止（App の SEED_TOILETS 合成を再現）", () => {
+  it("合成後のシードに同一IDが無い", () => {
+    const assembled = mergeSeedLists(
+      GOOGLE_SEED,
+      mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
+    );
+    const ids = assembled.map((t) => t.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.length).toBeGreaterThan(100);
   });
 });

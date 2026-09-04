@@ -94,6 +94,9 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
 
   const facilities: ToiletFacility[] = [];
   const skipped: { name: string; reason: string }[] = [];
+  // 町字IDは「町字」単位のコードで施設ごとに一意ではない。同一IDの2件目以降は
+  // 行順に -2, -3 … を付与して施設ID（Reactキー・サーバー共有レビュー鍵）を一意化する
+  const usedIds = new Map<string, number>();
 
   for (const r of rows) {
     const name = (r[c.name] || "").trim();
@@ -108,7 +111,10 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
       continue;
     }
     const rawId = (r[c.id] || "").trim() || `${lat},${lng}`;
-    const id = `od-kumagaya-${rawId}`;
+    const baseId = `od-kumagaya-${rawId}`;
+    const nth = (usedIds.get(baseId) ?? 0) + 1;
+    usedIds.set(baseId, nth);
+    const id = nth === 1 ? baseId : `${baseId}-${nth}`;
     const wheelchair = has(r[c.wheelchair]);
     const baby = has(r[c.baby]);
     const ostomate = has(r[c.ostomate]);
@@ -151,17 +157,18 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
       equipmentScore: score,
       subScores: { cleanliness: score, odor: score, supplies: score, comfort: score },
       attributes: {
-        hasWashlet: false,
+        // CSVに無い項目は true/false と断定せず null（未確認）で保存する
+        hasWashlet: null,
         hasMultipurpose: wheelchair || barrier > 0,
         hasBabyTable: baby,
-        hasNursingRoom: false,
-        hasPowderRoom: false,
+        hasNursingRoom: null,
+        hasPowderRoom: null,
         hasOstomate: ostomate,
-        isFree: true,
+        isFree: null,
         isOpen24h: !hasHours,
-        hasSoap: false,
-        hasAlcohol: false,
-        hasPaperTowelOrDryer: false,
+        hasSoap: null,
+        hasAlcohol: null,
+        hasPaperTowelOrDryer: null,
         toiletStyle,
       },
       openingHours,

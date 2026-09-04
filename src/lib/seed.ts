@@ -1,4 +1,4 @@
-import type { ToiletFacility } from "../types";
+import type { ToiletFacility, TriState } from "../types";
 
 function toRad(d: number): number {
   return (d * Math.PI) / 180;
@@ -31,6 +31,15 @@ export function haversineM(lat1: number, lng1: number, lat2: number, lng2: numbe
 //   primary側の値をそのまま使う
 // - isFree: 全件trueのため統合が無意味
 // - hasSoap/hasAlcohol/hasPaperTowelOrDryer: 旧シードの楽観デフォルト由来で信頼性が低い
+/** 3値（true/false/null）のOR統合: どちらかが true なら true。
+ * 確認済みの false（「なし」）は未確認(null)より優先（null で確定情報を潰さない）。
+ * 両方未確認(null)のときのみ null を維持する。 */
+function unionTriState(a: TriState, b: TriState): TriState {
+  if (a === true || b === true) return true;
+  if (a === false || b === false) return false;
+  return null;
+}
+
 const UNION_BOOL_KEYS = [
   "hasWashlet",
   "hasMultipurpose",
@@ -62,9 +71,36 @@ export function mergeSeedLists(
     const dupAttrs = (dup.attributes ?? {}) as any;
     const candAttrs = (cand.attributes ?? {}) as any;
     for (const k of UNION_BOOL_KEYS) {
-      dupAttrs[k] = Boolean(dupAttrs[k] || candAttrs[k]);
+      dupAttrs[k] = unionTriState(dupAttrs[k], candAttrs[k]);
     }
     if (!dup.attributes) dup.attributes = dupAttrs;
   }
-  return merged;
+  // 防衛: 同一IDが残っていたら施設を捨てずに一意化する（Reactキー/共有レビュー鍵の衝突防止）。
+  // 本来はデータ生成側で防ぐべきで、ここが発火したら import スクリプト側を修正する。
+  return uniquifyIds(merged);
+}
+
+/**
+ * 同一IDの施設を捨てずに -2, -3, … の接尾辞で一意化する。
+ * 別名の同一ID（例: 町字IDの誤用）で別施設が潰れないようにする最終防衛線。
+ */
+export function uniquifyIds(toilets: ToiletFacility[]): ToiletFacility[] {
+  const seen = new Set<string>();
+  return toilets.map((t) => {
+    if (!seen.has(t.id)) {
+      seen.add(t.id);
+      return t;
+    }
+    let n = 2;
+    let next = `${t.id}-${n}`;
+    while (seen.has(next)) {
+      n += 1;
+      next = `${t.id}-${n}`;
+    }
+    seen.add(next);
+    console.warn(
+      `[seed] 重複IDを一意化: ${t.id} -> ${next}（${t.name}）。データ生成元（scripts/opendata-import等）を確認してください。`
+    );
+    return { ...t, id: next };
+  });
 }
