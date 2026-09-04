@@ -41,18 +41,37 @@ bun start        # 本番起動（dist/server.cjs）
 
 | メソッド | パス | 内容 |
 |---|---|---|
-| GET | `/api/community/toilets` | 共有トイレ一覧 |
+| GET | `/api/community/toilets` | 共有トイレ一覧＋外部施設（OSM/Google/OD）の共有レビュー（`externalReviews`） |
 | POST | `/api/community/toilets` | 新規登録（バリデーション・ID重複409） |
-| POST | `/api/community/toilets/:id/reviews` | 口コミ投稿（重複409・スパムURL400） |
+| POST | `/api/community/toilets/:id/reviews` | 口コミ投稿（重複409・スパムURL400）。対象はコミュニティ登録トイレに限らず `osm-*` / `google-*` / `od-*` の全施設ID |
 | POST | `/api/community/reviews/:id/helpful` | 役に立った投票（IP毎1回） |
-| POST | `/api/community/reviews/:id/report` | 通報（モデレーションキュー） |
+| POST | `/api/community/reviews/:id/report` | 通報（コミュニティ登録・外部施設の両方のレビューが対象） |
 
 - 投稿系は 10回/分・IP、投票系は 30回/分・IP のレート制限。
 - 保存先は `data/community.json`（`COMMUNITY_STORE_PATH` で変更可）。
-  Cloud Run 等の ephemeral FS では再起動で消えるため、本格運用は
-  Firestore / Postgres への差し替えを想定（`CommunityStore` IF維持）。
-- IPはソルト付きSHA-256ハッシュのみ保存（`COMMUNITY_SALT` 未設定時は起動毎ランダム）。
-  ハッシュはAPI応答に含めない。
+  **データはgit管理で運用する**（`.gitignore` で `data/community.json` のみ追跡）。
+  再起動・デプロイ後の復元と、投稿内容の差分レビュー・手動キュレーションにgitを使う。
+  コミットのタイミングは投稿が溜まったとき or 運用スクリプト（任意）で定期化する。
+  なお、Cloud Run 等の ephemeral FS では**再起動時に未コミット分が消える**ため、
+  コミット前に消えても良い量か、永続ボリュームの併用を検討すること。
+  運用スクリプト（`scripts/community-ops/`、リポジトリ直下から実行）:
+  - 差分サマリ（作業ツリー vs HEAD、`--old`/`--new`/`--counts-only` オプション）:
+    `bun scripts/community-ops/summarize.ts`
+  - スナップショット出力（既定 `data/backups/community-<時刻>.json`、git管理外）:
+    `bun scripts/community-ops/export.ts`
+  - コミット補助（既定はdry-runでメッセージ案の表示のみ。`--commit` で
+    `git add data/community.json` + commit を実行。push はしない）:
+    `bun scripts/community-ops/commit.ts`
+  - 通報対応（`list` で一覧、`resolve <reportId>` は既定dry-runの削除プレビュー。
+    `--apply` で該当レビューを削除し、同一レビューへの全通報・投票・重複ガードを
+    掃除してスコアを再計算したうえで書き込む）:
+    `bun scripts/community-ops/curate.ts resolve <reportId> --apply`
+- `COMMUNITY_SALT` は**必ず固定値**を設定すること（未設定だと起動毎にランダムになり、
+  「IP毎1回」の投票・重複ガードが再起動のたびにリセットされる）。
+  IPはソルト付きSHA-256ハッシュのみ保存し、ハッシュはAPI応答に含めない。
+- 口コミはコミュニティ登録トイレに加え、OSM取得・Google手動調査・自治体ODの施設
+  （`osm-*` / `google-*` / `od-*`）へも投稿でき、他端末と共有される（M5対応）。
+  フロントは起動時に `externalReviews` を取得してシード施設へ重ねる。
 - フロントはAPI不通時に localStorage のみのローカル動作にフォールバックする。
 
 ## Google手動調査データの取込（`scripts/manual-import/`）
@@ -70,7 +89,14 @@ Places APIは使わず、ChatGPT等による手動リサーチ結果（JSON）�
    `src/data/googleSeed.ts` が生成される。スキップ理由はコンソールに出る
    （座標特定不能・形式不正は取込不可）。
 4. 判定不能（score null）は中立値3.0＋要確認メモで取込む。UI上は未評価表示。
-5. 設備の不明値は `false`（未確認）として格納する。
+5. 設備は `true`（あり） / `false`（なし） / `null`（未確認）の3値で格納する。
+   未調査の項目は `null` にし、`false`（確認済みで無い）と区別する。
+6. **規約：口コミ本文の転載禁止**。Google Maps 等のユーザー投稿の本文（および
+   ほぼ同一の書き換え）は、規約・プライバシー上の理由から取り込まない。取り込むのは
+   listing の口コミ「件数」（`externalReviewCount`）と、調査者が自前の文章で書いた
+   傾向要約（`scoreBasis`）のみ。`convert.ts` は旧形式の `reviewExcerpts`（口コミ引用）を
+   検出すると破棄し `warn:` をコンソールに出力する。調査プロンプト
+   `docs/manual-research-prompt.md` も引用収集を要求しない（2026-09 改定）。
 
 ## 自治体オープンデータの取込（`scripts/opendata-import/`）
 
@@ -91,5 +117,12 @@ bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取�
   `reviewCount === 0` の施設は設備推定値（`equipmentScore` / `equipmentGrade`）を
   表示用に入れるが、UI上は「未評価」としてランク表示しない。
 - スコア→グレード判定は `src/lib/scoring.ts` の `gradeForScore` に一本化すること。
-- OSM タグ欠落時は楽観的に true にしない
-  （`hasSoap` は `soap=yes` のみ、`isFree` は `fee=yes` 以外）。
+- 設備フラグは `true`（あり） / `false`（なし） / `null`（未確認）の3値。
+  OSM タグ欠落時は楽観的に true にせず `null`（未確認）にする
+  （例: `hasSoap` は `soap=yes` のみ true、`isFree` は `fee=no` のみ true で
+  `fee` タグ欠落を「無料」と断定しない。変換は `src/lib/osm.ts` に一本化）。
+- **口コミ本文の転載禁止**：外部サイト（Google Maps 等）のユーザー投稿本文を
+  アプリ・リポジトリに転載しない（規約・プライバシー上の理由）。
+  `src/data/googleSeed.ts` は口コミ本文を含まない（過去の引用は 2026-09 に除去済み）。
+  Google 由来施設のスコアは件数と要約に基づく手動判断値で、`reviewCount === 0` のため
+  UI上は「未評価（口コミ未取込）」として扱う。
