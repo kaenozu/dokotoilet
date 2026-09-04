@@ -211,6 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
               <option value="all">全データ元</option>
               <option value="osm">OpenStreetMap</option>
               <option value="google">Google（手動調査）</option>
+              <option value="opendata">自治体オープンデータ</option>
               <option value="community">ユーザー投稿</option>
             </select>
           </div>

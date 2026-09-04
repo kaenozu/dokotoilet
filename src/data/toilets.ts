@@ -447,6 +447,7 @@ export const REAL_OSM_VERIFIED_TOILETS: ToiletFacility[] = [
 export const INITIAL_TOILETS: ToiletFacility[] = REAL_OSM_VERIFIED_TOILETS;
 
 export const CITY_PRESETS: CityPreset[] = [
+  { name: '熊谷 (Kumagaya)', lat: 36.1477, lng: 139.3889, zoom: 13 },
   { name: '渋谷 (Shibuya)', lat: 35.6590, lng: 139.7006, zoom: 15 },
   { name: '新宿 (Shinjuku)', lat: 35.6900, lng: 139.7005, zoom: 15 },
   { name: '銀座・東京駅 (Ginza / Tokyo)', lat: 35.6760, lng: 139.7640, zoom: 15 },

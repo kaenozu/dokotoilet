@@ -72,6 +72,19 @@ Places APIは使わず、ChatGPT等による手動リサーチ結果（JSON）�
 4. 判定不能（score null）は中立値3.0＋要確認メモで取込む。UI上は未評価表示。
 5. 設備の不明値は `false`（未確認）として格納する。
 
+## 自治体オープンデータの取込（`scripts/opendata-import/`）
+
+初弾として熊谷市「公衆トイレ一覧」（くまっぷオープンデータ、2023年10月2日掲載、126件）を取込済み。
+出典表記は各施設の `facilityNote` と本READMEで行う（CC-BY 相当の帰属表示）。
+
+```bash
+bun scripts/opendata-import/run-kumagaya.ts            # inputs のCSVから生成
+bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取得して生成
+```
+
+注意：公式CSVは緯度/経度列が重複している（前半は空、後半に実値）。
+`mapKumagayaRows` は最終出現を採用する。他自治体を追加する際は列定義を確認すること。
+
 ## データ方針
 
 - `cleanlinessScore` / `cleanlinessGrade` は実測レビュー平均。
