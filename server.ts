@@ -10,6 +10,12 @@ import {
   createCommunityRouter,
   defaultStorePath,
 } from "./server/community";
+import {
+  osmAttributesFromTags,
+  triFromFee,
+  triFromOpen24h,
+  triFromYesNo,
+} from "./src/lib/osm";
 
 async function startServer() {
   const app = express();
@@ -180,11 +186,12 @@ async function startServer() {
         const isTheTokyoToilet = tags.network === "The Tokyo Toilet" || tags.architect;
         const isWheelchair = tags.wheelchair === "yes";
         const hasDiaper = tags.diaper === "yes" || tags.changing_table === "yes";
-        const hasWashlet = tags.washlet === "yes";
-        // タグ欠落時は楽観的に true にしない（#5）。fee は明示的有料のみ false
-        const isFree = tags.fee !== "yes";
-        const isOpen24h = tags.opening_hours === "24/7";
-        const isOstomate = tags.ostomate === "yes";
+        // 設備フラグは true/false/null の3値（null=未確認）。タグ欠落時は楽観的に
+        // true にしない。特に fee タグ欠落を「無料」と断定しない（レビューP1）。
+        const hasWashlet = triFromYesNo(tags.washlet);
+        const isFree = triFromFee(tags.fee);
+        const isOpen24h = triFromOpen24h(tags.opening_hours);
+        const isOstomate = triFromYesNo(tags.ostomate);
 
         // Facility category
         let category: "park" | "station" | "convenience" | "hotel" | "department" | "cafe" = "park";
@@ -222,7 +229,8 @@ async function startServer() {
         if (isFree) pros.push("無料利用可能");
 
         const cons: string[] = [];
-        if (!hasWashlet) cons.push("ウォシュレット非対応または未登録");
+        // 未確認(null)を「非対応」と断定しない。確認済みの「なし」のみ記載する
+        if (hasWashlet === false) cons.push("ウォシュレット非対応");
         if (tags.wheelchair === "no") cons.push("車椅子非対応の構造");
 
         // OSMは誰でも編集できるため、contact:websiteはhttp(s)のみ許可する
@@ -259,20 +267,7 @@ async function startServer() {
             supplies: score,
             comfort: score,
           },
-          attributes: {
-            hasWashlet,
-            hasMultipurpose: isWheelchair,
-            hasBabyTable: hasDiaper,
-            hasNursingRoom: tags.nursing_room === "yes",
-            hasPowderRoom: tags.mirror === "yes",
-            hasOstomate: isOstomate,
-            isFree,
-            isOpen24h,
-            hasSoap: tags.soap === "yes",
-            hasAlcohol: tags.hand_disinfectant === "yes",
-            hasPaperTowelOrDryer: tags.hand_dryer === "yes",
-            toiletStyle: (tags["toilets:position"] === "seated" ? "western" : "both") as "western" | "both",
-          },
+          attributes: osmAttributesFromTags(tags),
           openingHours: tags.opening_hours ? (isOpen24h ? "24時間" : tags.opening_hours) : "常時開放",
           description: `OpenStreetMap (Node/Way ID: ${el.id}) に登録されている実在の公衆トイレです。${
             tags.description ? tags.description : ""

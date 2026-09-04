@@ -22,7 +22,8 @@ const goodToilet = () => ({
 
 const goodReview = () => ({
   userName: "たろう",
-  rating: 5,
+  rating: 5, // 旧名（別名）。新クライアントは overallScore も同時に送る
+  overallScore: 5,
   cleanlinessScore: 5,
   odorScore: 4,
   suppliesScore: 4,
@@ -42,11 +43,28 @@ describe("validateToiletInput", () => {
     [{ ...goodToilet(), lng: 200 }, "invalid lng"],
     [{ ...goodToilet(), cleanlinessScore: 0 }, "invalid cleanlinessScore"],
     [{ ...goodToilet(), cleanlinessScore: 5.5 }, "invalid cleanlinessScore"],
+    [{ ...goodToilet(), attributes: { hasWashlet: "yes" } }, "invalid attributes.hasWashlet"],
     [null, "invalid body"],
   ])("rejects %j", (body, expected) => {
     const r = validateToiletInput(body);
     expect(r.ok).toBe(false);
     expect(r.error).toBe(expected);
+  });
+
+  it("accepts tri-state attributes (null=未確認) and defaults missing ones to null", () => {
+    const r = validateToiletInput({
+      ...goodToilet(),
+      attributes: { hasWashlet: null, hasMultipurpose: true, hasBabyTable: false },
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.attributes.hasWashlet).toBeNull();
+      expect(r.value.attributes.hasMultipurpose).toBe(true);
+      expect(r.value.attributes.hasBabyTable).toBe(false);
+      // 未送信の項目も「なし」ではなく「未確認(null)」として保存する
+      expect(r.value.attributes.hasPowderRoom).toBeNull();
+      expect(r.value.attributes.isOpen24h).toBeNull();
+    }
   });
 });
 
@@ -69,6 +87,15 @@ describe("validateReviewInput", () => {
     const r = validateReviewInput(body);
     expect(r.ok).toBe(false);
     expect(r.error).toBe(expected);
+  });
+  it("accepts overallScore-only reviews (new field) and validates it", () => {
+    const { rating: _dropped, overallScore: _dropped2, ...withoutBoth } = goodReview();
+    expect(validateReviewInput({ ...withoutBoth, overallScore: 4 }).ok).toBe(true);
+    expect(validateReviewInput({ ...withoutBoth, overallScore: 0 }).ok).toBe(false);
+    expect(validateReviewInput({ ...withoutBoth, overallScore: 6 }).ok).toBe(false);
+    expect(validateReviewInput({ ...withoutBoth, overallScore: 4.5 }).ok).toBe(false);
+    // rating も overallScore も無ければ無効
+    expect(validateReviewInput(withoutBoth).ok).toBe(false);
   });
 });
 
@@ -175,13 +202,22 @@ describe("CommunityStore", () => {
     expect(r1.toilet?.reviewCount).toBe(1);
     expect(r1.toilet?.cleanlinessScore).toBe(5);
     expect(r1.toilet?.cleanlinessGrade).toBe("S");
+    expect(r1.toilet?.overallScore).toBe(5);
+    // 保存されるレビューには overallScore と rating の両方が入る（旧クライアント互換）
+    expect(r1.toilet?.reviews[0]).toMatchObject({ rating: 5, overallScore: 5 });
     // same IP + same comment within 24h -> duplicate
     const dup = await store.addReview("toilet-user-r1", { ...goodReview(), rating: 1 } as any, "ipA");
     expect(dup.error).toBe("duplicate");
-    // different IP -> accepted, average recomputed
-    const r2 = await store.addReview("toilet-user-r1", { ...goodReview(), rating: 3, comment: "普通でした" } as any, "ipB");
+    // different IP -> accepted, per-dimension averages recomputed
+    const r2 = await store.addReview(
+      "toilet-user-r1",
+      { ...goodReview(), rating: 4, overallScore: 4, cleanlinessScore: 3, comment: "普通でした" } as any,
+      "ipB"
+    );
     expect(r2.toilet?.reviewCount).toBe(2);
-    expect(r2.toilet?.cleanlinessScore).toBe(4);
+    expect(r2.toilet?.cleanlinessScore).toBe(4); // 清潔さ次元の平均 (5+3)/2
+    expect(r2.toilet?.cleanlinessGrade).toBe("A");
+    expect(r2.toilet?.overallScore).toBe(4.5); // 総合次元の平均 (5+4)/2
     // unknown toilet
     expect((await store.addReview("nope", goodReview() as any, "ipA")).error).toBe("not_found");
   });
@@ -199,5 +235,45 @@ describe("CommunityStore", () => {
     const rep = await store.addReport("toilet-user-r1", reviewId, "いたずらの疑い");
     expect(rep).toEqual({ ok: true, found: true });
     expect((await store.addReport("toilet-user-r1", "rev-nope", "x")).found).toBe(false);
+  });
+
+  it("accepts reviews for external facility ids (osm/google/od) and persists them", async () => {
+    const r1 = await store.addReview("osm-2198890502", goodReview() as any, "ipA");
+    expect(r1.error).toBeUndefined();
+    expect(r1.facilityId).toBe("osm-2198890502");
+    expect(r1.toilet).toBeUndefined();
+    expect(r1.reviewCount).toBe(1);
+    expect(r1.reviews).toHaveLength(1);
+    expect(r1.cleanlinessScore).toBe(5);
+    expect(r1.cleanlinessGrade).toBe("S");
+    expect(r1.overallScore).toBe(5);
+    // 同一IP＋同一コメントは重複扱い
+    const dup = await store.addReview("osm-2198890502", { ...goodReview(), rating: 1 } as any, "ipA");
+    expect(dup.error).toBe("duplicate");
+    // 別施設（google / od 形式）も受付。同一IPでも施設が違えばOK
+    const r2 = await store.addReview("google-ChIJxyz", { ...goodReview(), comment: "Google施設です" } as any, "ipA");
+    expect(r2.facilityId).toBe("google-ChIJxyz");
+    const r3 = await store.addReview("od-kumagaya-0019002", goodReview() as any, "ipB");
+    expect(r3.facilityId).toBe("od-kumagaya-0019002");
+    // ID形式不一致（コミュニティ登録外かつ接頭辞なし）は従来どおり not_found
+    expect((await store.addReview("nope", goodReview() as any, "ipA")).error).toBe("not_found");
+    // 再読込しても残っている
+    const store2 = new CommunityStore(path.join(dir, "community.json"));
+    const ext = await store2.getExternalReviews();
+    expect(Object.keys(ext).sort()).toEqual(["google-ChIJxyz", "od-kumagaya-0019002", "osm-2198890502"]);
+    expect(ext["osm-2198890502"]).toHaveLength(1);
+  });
+
+  it("votes and reports external-facility reviews", async () => {
+    await store.addReview("google-ChIJvote", goodReview() as any, "ipA");
+    const { "google-ChIJvote": list } = await store.getExternalReviews();
+    const reviewId = list[0].id;
+    const v1 = await store.voteHelpful(reviewId, "ipX");
+    expect(v1).toEqual({ helpfulCount: 1, voted: true, found: true });
+    expect((await store.voteHelpful(reviewId, "ipX")).voted).toBe(false);
+    const rep = await store.addReport("google-ChIJvote", reviewId, "スパムの疑い");
+    expect(rep).toEqual({ ok: true, found: true });
+    expect((await store.addReport("google-ChIJvote", "rev-nope", "x")).found).toBe(false);
+    expect((await store.voteHelpful("rev-nope", "ipX")).found).toBe(false);
   });
 });
