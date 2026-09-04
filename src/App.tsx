@@ -7,11 +7,15 @@ import {
 } from './types';
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
 import { GOOGLE_SEED } from './data/googleSeed';
+import { KUMAGAYA_SEED } from './data/kumagayaSeed';
 import { gradeForScore } from './lib/scoring';
 import { mergeSeedLists } from './lib/seed';
 
-// Google手動調査シードを優先し、OSM側の重複は設備フラグをOR統合して落とす
-const SEED_TOILETS = mergeSeedLists(GOOGLE_SEED, INITIAL_TOILETS);
+// Google手動調査・熊谷市ODを優先し、OSM側の重複は設備フラグをOR統合して落とす
+const SEED_TOILETS = mergeSeedLists(
+  GOOGLE_SEED,
+  mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
+);
 import { Header } from './components/Header';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
