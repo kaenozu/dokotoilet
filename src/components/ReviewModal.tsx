@@ -25,7 +25,6 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   const [odorScore, setOdorScore] = useState(5);
   const [suppliesScore, setSuppliesScore] = useState(5);
   const [comment, setComment] = useState('');
-  const [hasWashletConfirmed, setHasWashletConfirmed] = useState(true);
 
   if (!isOpen || !toilet) return null;
 
@@ -44,8 +43,6 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       comment: comment.trim(),
       createdAt: new Date().toISOString().split('T')[0],
       helpfulCount: 0,
-      hasWashletConfirmed,
-      isCleanConfirmed: cleanlinessScore >= 4,
     };
 
     onSubmitReview(toilet.id, newReview);
@@ -167,24 +164,6 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 className="w-full accent-[#a78bfa] cursor-pointer"
               />
             </div>
-          </div>
-
-          {/* Quick Confirmation Checkboxes */}
-          <div>
-            <label className="block text-ink-soft font-semibold mb-1.5">
-              利用時の設備チェック
-            </label>
-            {/* 石鹸・ペーパーの確認チェックは送信先モデル/サーバーに存在しないため廃止
-                （表示だけで反映されない擬似UIだった）。確認できるのはウォシュレットのみ。 */}
-            <label className="flex items-center gap-1.5 p-2 bg-surface-2 border border-line rounded-lg cursor-pointer hover:bg-canvas transition-colors">
-              <input
-                type="checkbox"
-                checked={hasWashletConfirmed}
-                onChange={(e) => setHasWashletConfirmed(e.target.checked)}
-                className="rounded accent-[#0b6e52]"
-              />
-              <span className="text-ink-soft">ウォシュレット稼働</span>
-            </label>
           </div>
 
           {/* Review Text */}

@@ -126,3 +126,20 @@ bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取�
   `src/data/googleSeed.ts` は口コミ本文を含まない（過去の引用は 2026-09 に除去済み）。
   Google 由来施設のスコアは件数と要約に基づく手動判断値で、`reviewCount === 0` のため
   UI上は「未評価（口コミ未取込）」として扱う。
+
+## ライセンスとデータ帰属
+
+- コード: MIT License（`LICENSE` 参照）。
+- 同梱データ（`src/data/` 配下のシード・生成物）はコードのライセンス対象外で、出典ごとの条件に従う。
+  - **OpenStreetMap 由来**（`src/data/realOsmSeed.ts`・`src/data/toilets.ts`、
+    OSM リアルタイム取得の変換結果）: © OpenStreetMap contributors, ODbL。
+    抽出・再利用は ODbL 条件（派生 DB のシェアアライク等）に従うこと。
+    https://www.openstreetmap.org/copyright
+  - **熊谷市「公衆トイレ一覧」**（くまっぷオープンデータ、2023年10月2日掲載）: CC-BY 相当。
+    出典: https://www2.wagmap.jp/kumagaya/OpenData
+  - **Google Maps 由来の手動調査データ**（`src/data/googleSeed.ts`）: 事実情報（座標・設備・
+    口コミ件数）と調査者が自前で書いた要約のみで、ユーザー投稿本文は含まない（転載禁止方針）。
+    「Google」は Google LLC の商標。
+- 地図タイルは © OpenStreetMap contributors（ODbL）および国土地理院。帰属は地図上のコントロールに常時表示。
+- コミュニティ投稿（口コミ・施設登録）は投稿者のコンテンツ。削除依頼・モデレーションは
+  `scripts/community-ops/` の運用フローで対応する。
