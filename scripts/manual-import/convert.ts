@@ -29,6 +29,13 @@ export interface ManualItem {
   googleMapsUrl: string;
   reviewExcerpts: ManualExcerpt[];
   geoQuery?: string;
+  // run.ts が付与するエリアガード（入力JSONには書かない）
+  batchGuard?: BatchGuard;
+}
+
+export interface BatchGuard {
+  center: [number, number];
+  maxKm: number;
 }
 
 export interface GeoTarget {
@@ -36,6 +43,8 @@ export interface GeoTarget {
   address: string;
   // 手動調整用の優先クエリ（名称が検索しづらい場合に設定）
   geoQuery?: string;
+  // run.ts が付与するエリアガード（入力JSONには書かない）
+  guard?: BatchGuard;
 }
 
 export type Geocoder = (target: GeoTarget) => Promise<{ lat: number; lng: number } | null>;
@@ -115,7 +124,12 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     let lng = typeof item.lng === "number" ? item.lng : NaN;
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       if (item.address) {
-        const g = await opts.geocode({ name, address: item.address, geoQuery: item.geoQuery });
+        const g = await opts.geocode({
+          name,
+          address: item.address,
+          geoQuery: item.geoQuery,
+          guard: item.batchGuard,
+        });
         if (g) {
           lat = g.lat;
           lng = g.lng;

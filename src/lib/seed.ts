@@ -4,6 +4,17 @@ function toRad(d: number): number {
   return (d * Math.PI) / 180;
 }
 
+export interface AreaGuard {
+  center: [number, number];
+  maxKm: number;
+}
+
+/** 同名異地の誤配置防止（例：中央公園→NY）。範囲外は false */
+export function passesGuard(lat: number, lng: number, guard?: AreaGuard): boolean {
+  if (!guard) return true;
+  return haversineM(lat, lng, guard.center[0], guard.center[1]) / 1000 <= guard.maxKm;
+}
+
 /** 2点間の距離（m）。シード重複排除用 */
 export function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000;
