@@ -34,6 +34,7 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
 - 住所・座標はlisting記載のまま。推測で補完しない。不明は null
 - 口コミ引用は原文ママ・30字以内・最大3件。創作は厳禁
 - スコアには必ず根拠を basis に書く（例：口コミ12件中9件が清潔に好意的）
+- listingに表示される口コミ総数も必ず記録する（externalReviewCount。口コミ本文が取れなくても件数だけは書く。「口コミなし」と「未取込」の区別に使う。0件なら0と書く）
 - 出力は下記スキーマのJSONのみ（コードブロック1つ）。 employmentの説明は不要
 - JSONの後に、カバレッジの限界（調べ切れていない点）を3行以内で別に書く
 
@@ -51,6 +52,8 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
     "cleanlinessScore": 4.2,
     "confidence": "high | medium | low のいずれか",
     "scoreBasis": "根拠（口コミ何件中何件が肯定的か等）",
+    "externalReviewCount": 114,
+    "externalReviewSource": "Google Maps",
     "equipment": {
       "hasWashlet": true,
       "hasMultipurpose": false,

@@ -89,6 +89,25 @@ describe("convertItems", () => {
     expect(skipped).toHaveLength(2);
   });
 
+  it("records external review counts", async () => {
+    const { facilities } = await convertItems(
+      [{ ...base, externalReviewCount: 114, externalReviewSource: "Google Maps" }],
+      { geocode: noGeo }
+    );
+    expect(facilities[0].externalReviewCount).toBe(114);
+    expect(facilities[0].externalReviewSource).toBe("Google Maps");
+  });
+
+  it("drops invalid external review counts", async () => {
+    const { facilities } = await convertItems(
+      [{ ...base, externalReviewCount: -1 }],
+      { geocode: noGeo }
+    );
+    expect(facilities[0].externalReviewCount).toBeUndefined();
+    const zero = await convertItems([{ ...base, externalReviewCount: 0 }], { geocode: noGeo });
+    expect(zero.facilities[0].externalReviewCount).toBe(0);
+  });
+
   it("records coordSource in facilityNote", async () => {
     const { facilities } = await convertItems(
       [{ ...base, coordSource: "マピオン電話帳" }],

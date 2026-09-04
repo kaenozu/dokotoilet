@@ -47,6 +47,10 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 }) => {
   // 実測レビュー0件は設備推定値しかないため「未評価」表示にする
   const evaluated = isEvaluated(toilet);
+  // 外部に口コミがあるが未取込か（例：GoogleにN件）。undefined/0＝不明または無し
+  const externalCount = toilet.externalReviewCount ?? 0;
+  const hasUnfetched = !evaluated && externalCount > 0;
+  const externalSource = toilet.externalReviewSource || 'Google Maps';
   const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
   // 旧バージョンの保存データ互換（aiSummary → facilityNote 改名対応）
   const legacyNote = (toilet as unknown as { aiSummary?: string }).aiSummary;
@@ -152,12 +156,18 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                 </div>
               </div>
               <p className={`text-xs font-medium ${gradeColor.text}`}>
-                {evaluated ? gradeColor.label : '未評価（設備からの推定値）'}
+                {evaluated
+                  ? gradeColor.label
+                  : hasUnfetched
+                    ? '未評価（口コミ未取込）'
+                    : '未評価（設備からの推定値）'}
               </p>
               <p className="text-[11px] text-[#888888] mt-0.5">
                 {evaluated
                   ? `口コミ・評価 ${toilet.reviewCount}件`
-                  : `口コミ募集中・設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`}
+                  : hasUnfetched
+                    ? `${externalSource}に約${externalCount}件あり・取込後に反映／設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`
+                    : `口コミ募集中・設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`}
               </p>
             </div>
           </div>
