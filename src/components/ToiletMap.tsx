@@ -83,8 +83,8 @@ interface ToiletMapProps {
 }
 
 // 実測レビューが1件でもあるか。無い場合は設備推定値しかないため「未評価」扱い
-export const isEvaluated = (toilet: { reviewCount: number }) =>
-  toilet.reviewCount > 0;
+export const isEvaluated = (toilet?: { reviewCount?: number } | null) =>
+  ((toilet?.reviewCount ?? 0) > 0);
 
 export const getGradeColor = (grade: CleanlinessGrade | null | undefined) => {
   switch (grade) {

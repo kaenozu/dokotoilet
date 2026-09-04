@@ -36,6 +36,79 @@ const LEGACY_STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v2';
 // types.ts の DataSourceType と対応。不明な値も保持するため列挙しておく
 const KNOWN_DATA_SOURCES = new Set(['google', 'osm', 'opendata', 'community']);
 
+export function sanitizeToiletFacility(raw: any): ToiletFacility {
+  const cleanlinessScore =
+    typeof raw?.cleanlinessScore === 'number' && !isNaN(raw.cleanlinessScore)
+      ? raw.cleanlinessScore
+      : typeof raw?.equipmentScore === 'number' && !isNaN(raw.equipmentScore)
+      ? raw.equipmentScore
+      : 3.0;
+
+  const cleanlinessGrade =
+    raw?.cleanlinessGrade || gradeForScore(cleanlinessScore);
+
+  const equipmentScore =
+    typeof raw?.equipmentScore === 'number' && !isNaN(raw.equipmentScore)
+      ? raw.equipmentScore
+      : cleanlinessScore;
+
+  const equipmentGrade =
+    raw?.equipmentGrade || gradeForScore(equipmentScore);
+
+  const subScores = {
+    cleanliness:
+      typeof raw?.subScores?.cleanliness === 'number' && !isNaN(raw.subScores.cleanliness)
+        ? raw.subScores.cleanliness
+        : cleanlinessScore,
+    odor:
+      typeof raw?.subScores?.odor === 'number' && !isNaN(raw.subScores.odor)
+        ? raw.subScores.odor
+        : cleanlinessScore,
+    supplies:
+      typeof raw?.subScores?.supplies === 'number' && !isNaN(raw.subScores.supplies)
+        ? raw.subScores.supplies
+        : cleanlinessScore,
+    comfort:
+      typeof raw?.subScores?.comfort === 'number' && !isNaN(raw.subScores.comfort)
+        ? raw.subScores.comfort
+        : cleanlinessScore,
+  };
+
+  const rawAttrs = raw?.attributes || {};
+  const attributes = {
+    hasWashlet: Boolean(rawAttrs.hasWashlet),
+    hasMultipurpose: Boolean(rawAttrs.hasMultipurpose),
+    hasBabyTable: Boolean(rawAttrs.hasBabyTable),
+    hasNursingRoom: Boolean(rawAttrs.hasNursingRoom),
+    hasPowderRoom: Boolean(rawAttrs.hasPowderRoom),
+    hasOstomate: Boolean(rawAttrs.hasOstomate),
+    isFree: rawAttrs.isFree !== false,
+    isOpen24h: Boolean(rawAttrs.isOpen24h),
+    hasSoap: Boolean(rawAttrs.hasSoap),
+    hasAlcohol: Boolean(rawAttrs.hasAlcohol),
+    hasPaperTowelOrDryer: Boolean(rawAttrs.hasPaperTowelOrDryer),
+    toiletStyle: rawAttrs.toiletStyle || 'western',
+  };
+
+  const reviews = Array.isArray(raw?.reviews) ? raw.reviews : [];
+  const reviewCount =
+    typeof raw?.reviewCount === 'number' && !isNaN(raw.reviewCount)
+      ? raw.reviewCount
+      : reviews.length;
+
+  return {
+    ...raw,
+    cleanlinessScore,
+    cleanlinessGrade,
+    equipmentScore,
+    equipmentGrade,
+    subScores,
+    attributes,
+    reviewCount,
+    reviews,
+  };
+}
+
 export default function App() {
   // Persistence for user reviews and newly added toilets (Strictly real data only, no mock samples)
   const [toilets, setToilets] = useState<ToiletFacility[]>(() => {
@@ -49,7 +122,7 @@ export default function App() {
         if (Array.isArray(parsed)) {
           // 将来の dataSource（google/opendata等）を黙って捨てない。
           // 旧v2のモック除外ルールも維持する
-          const migrated = (parsed as ToiletFacility[]).filter(
+          const migrated = (parsed as any[]).filter(
             (t) =>
               t &&
               typeof t.id === 'string' &&
@@ -59,18 +132,18 @@ export default function App() {
                   KNOWN_DATA_SOURCES.has(t.dataSource)))
           );
           if (migrated.length > 0) {
-            return migrated;
+            return migrated.map(sanitizeToiletFacility);
           }
         }
       }
     } catch (e) {
       console.warn('Failed to load saved toilets from localStorage:', e);
     }
-    return SEED_TOILETS;
+    return SEED_TOILETS.map(sanitizeToiletFacility);
   });
 
-  const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(
-    SEED_TOILETS[0]
+  const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(() =>
+    SEED_TOILETS[0] ? sanitizeToiletFacility(SEED_TOILETS[0]) : null
   );
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
     lat: 35.6590,
@@ -147,7 +220,7 @@ export default function App() {
         if (!res.ok) return;
         const data = await res.json();
         if (!Array.isArray(data.toilets)) return;
-        const serverItems = data.toilets as ToiletFacility[];
+        const serverItems = (data.toilets as any[]).map(sanitizeToiletFacility);
         if (serverItems.length === 0) return;
         setToilets((prev) => {
           const serverIds = new Set(serverItems.map((t) => t.id));
@@ -168,40 +241,40 @@ export default function App() {
       if (filter.searchQuery.trim()) {
         const q = filter.searchQuery.toLowerCase();
         const matches =
-          item.name.toLowerCase().includes(q) ||
-          item.address.toLowerCase().includes(q) ||
-          item.facilityType.toLowerCase().includes(q) ||
+          (item.name || '').toLowerCase().includes(q) ||
+          (item.address || '').toLowerCase().includes(q) ||
+          (item.facilityType || '').toLowerCase().includes(q) ||
           (item.floorInfo && item.floorInfo.toLowerCase().includes(q));
         if (!matches) return false;
       }
 
       // High cleanliness (Grade S & A)
-      if (filter.onlyHighCleanliness && item.cleanlinessScore < 4.0) {
+      if (filter.onlyHighCleanliness && (item.cleanlinessScore ?? 0) < 4.0) {
         return false;
       }
 
       // Washlet
-      if (filter.onlyWashlet && !item.attributes.hasWashlet) {
+      if (filter.onlyWashlet && !item.attributes?.hasWashlet) {
         return false;
       }
 
       // Multipurpose
-      if (filter.onlyMultipurpose && !item.attributes.hasMultipurpose) {
+      if (filter.onlyMultipurpose && !item.attributes?.hasMultipurpose) {
         return false;
       }
 
       // Baby Table
-      if (filter.onlyBabyTable && !item.attributes.hasBabyTable) {
+      if (filter.onlyBabyTable && !item.attributes?.hasBabyTable) {
         return false;
       }
 
       // Powder Room
-      if (filter.onlyPowderRoom && !item.attributes.hasPowderRoom) {
+      if (filter.onlyPowderRoom && !item.attributes?.hasPowderRoom) {
         return false;
       }
 
       // 24h
-      if (filter.only24h && !item.attributes.isOpen24h) {
+      if (filter.only24h && !item.attributes?.isOpen24h) {
         return false;
       }
 
@@ -227,7 +300,7 @@ export default function App() {
 
       let incoming: ToiletFacility[] = [];
       if (Array.isArray(data.toilets) && data.toilets.length > 0) {
-        incoming = data.toilets;
+        incoming = (data.toilets as any[]).map(sanitizeToiletFacility);
       } else if (Array.isArray(data.elements) && data.elements.length > 0) {
         // Fallback mapper if raw elements returned
         incoming = data.elements
@@ -236,7 +309,7 @@ export default function App() {
             const itemLng = el.lon || el.center?.lon;
             const tags = el.tags || {};
             if (!itemLat || !itemLng) return null;
-            return {
+            return sanitizeToiletFacility({
               id: `osm-${el.id}`,
               name: tags.name || `公衆便所 (OSM #${el.id})`,
               facilityType: '公衆便所 (OpenStreetMap実在登録)',
@@ -269,7 +342,7 @@ export default function App() {
               reviewCount: 0,
               reviews: [],
               facilityNote: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
-            };
+            });
           })
           .filter(Boolean) as ToiletFacility[];
       }
@@ -370,22 +443,22 @@ export default function App() {
       prev.map((item) => {
         if (item.id !== toiletId) return item;
 
-        const updatedReviews = [newReview, ...item.reviews];
+        const updatedReviews = [newReview, ...(item.reviews || [])];
         const newCount = updatedReviews.length;
 
         // Recalculate average cleanliness score
-        const totalRating = updatedReviews.reduce((sum, r) => sum + r.rating, 0);
-        const newScore = parseFloat((totalRating / newCount).toFixed(1));
+        const totalRating = updatedReviews.reduce((sum, r) => sum + (r.rating || 0), 0);
+        const newScore = newCount > 0 ? parseFloat((totalRating / newCount).toFixed(1)) : 3.0;
         const newGrade = gradeForScore(newScore);
 
-        const updated = {
+        const updated = sanitizeToiletFacility({
           ...item,
           cleanlinessGrade: newGrade,
           cleanlinessScore: newScore,
           reviewCount: newCount,
           lastCleaned: 'たった今（利用者が確認）',
           reviews: updatedReviews,
-        };
+        });
 
         if (selectedToilet?.id === toiletId) {
           setSelectedToilet(updated);
@@ -407,7 +480,7 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         if (data.toilet) {
-          const updated = data.toilet as ToiletFacility;
+          const updated = sanitizeToiletFacility(data.toilet);
           setToilets((prev) => prev.map((t) => (t.id === toiletId ? updated : t)));
           if (selectedToilet?.id === toiletId) setSelectedToilet(updated);
           return;
@@ -424,9 +497,10 @@ export default function App() {
 
   // Add new toilet (server first, local fallback)
   const handleAddToilet = async (newFacility: ToiletFacility) => {
-    setToilets((prev) => [newFacility, ...prev]);
-    setSelectedToilet(newFacility);
-    setMapCenter({ lat: newFacility.lat, lng: newFacility.lng });
+    const sanitized = sanitizeToiletFacility(newFacility);
+    setToilets((prev) => [sanitized, ...prev]);
+    setSelectedToilet(sanitized);
+    setMapCenter({ lat: sanitized.lat, lng: sanitized.lng });
     setMapZoom(16);
     try {
       const res = await fetch('/api/community/toilets', {

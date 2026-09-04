@@ -86,6 +86,8 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
     }
   };
 
+  const attrs = toilet.attributes || ({} as any);
+
   return (
     <div className="flex flex-col h-full bg-[#121212] text-[#e0e0e0] overflow-y-auto">
       {/* Header Info */}
@@ -132,14 +134,18 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               className={`w-14 h-14 rounded-2xl ${gradeColor.bg} text-white flex flex-col items-center justify-center shadow-lg`}
             >
               <span className="text-2xl font-black leading-none">
-                {evaluated ? toilet.cleanlinessGrade : '–'}
+                {evaluated ? (toilet.cleanlinessGrade || '–') : '–'}
               </span>
               <span className="text-[10px] font-semibold tracking-tighter uppercase">GRADE</span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-[#f5f5f5]">
-                  {toilet.cleanlinessScore.toFixed(1)}
+                  {evaluated
+                    ? (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')
+                    : (toilet.equipmentScore != null
+                        ? Number(toilet.equipmentScore).toFixed(1)
+                        : (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–'))}
                 </span>
                 <span className="text-xs text-[#666666]">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -147,7 +153,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                     <Star
                       key={i}
                       className={`w-3.5 h-3.5 ${
-                        evaluated && i < Math.round(toilet.cleanlinessScore)
+                        evaluated && toilet.cleanlinessScore != null && i < Math.round(Number(toilet.cleanlinessScore))
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-[#333333]'
                       }`}
@@ -164,10 +170,10 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               </p>
               <p className="text-[11px] text-[#888888] mt-0.5">
                 {evaluated
-                  ? `口コミ・評価 ${toilet.reviewCount}件`
+                  ? `口コミ・評価 ${toilet.reviewCount ?? 0}件`
                   : hasUnfetched
-                    ? `${externalSource}に約${externalCount}件あり・取込後に反映／設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`
-                    : `口コミ募集中・設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`}
+                    ? `${externalSource}に約${externalCount}件あり・取込後に反映／設備推定 ${toilet.equipmentGrade ?? toilet.cleanlinessGrade ?? '–'}級 (${toilet.equipmentScore != null ? Number(toilet.equipmentScore).toFixed(1) : (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')})`
+                    : `口コミ募集中・設備推定 ${toilet.equipmentGrade ?? toilet.cleanlinessGrade ?? '–'}級 (${toilet.equipmentScore != null ? Number(toilet.equipmentScore).toFixed(1) : (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')})`}
               </p>
             </div>
           </div>
@@ -187,12 +193,14 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-[#181818] p-2.5 rounded-lg border border-[#262626]">
             <div className="flex justify-between text-[#a0a0a0] mb-1">
               <span>便器・床の清潔感</span>
-              <span className="font-semibold text-[#f5f5f5]">{toilet.subScores.cleanliness.toFixed(1)}</span>
+              <span className="font-semibold text-[#f5f5f5]">
+                {toilet.subScores?.cleanliness != null ? Number(toilet.subScores.cleanliness).toFixed(1) : '–'}
+              </span>
             </div>
             <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#00d1b2] h-1.5 rounded-full"
-                style={{ width: `${(toilet.subScores.cleanliness / 5) * 100}%` }}
+                style={{ width: `${((toilet.subScores?.cleanliness ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -200,12 +208,14 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-[#181818] p-2.5 rounded-lg border border-[#262626]">
             <div className="flex justify-between text-[#a0a0a0] mb-1">
               <span>におい・換気状態</span>
-              <span className="font-semibold text-[#f5f5f5]">{toilet.subScores.odor.toFixed(1)}</span>
+              <span className="font-semibold text-[#f5f5f5]">
+                {toilet.subScores?.odor != null ? Number(toilet.subScores.odor).toFixed(1) : '–'}
+              </span>
             </div>
             <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#0284c7] h-1.5 rounded-full"
-                style={{ width: `${(toilet.subScores.odor / 5) * 100}%` }}
+                style={{ width: `${((toilet.subScores?.odor ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -213,12 +223,14 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-[#181818] p-2.5 rounded-lg border border-[#262626]">
             <div className="flex justify-between text-[#a0a0a0] mb-1">
               <span>石鹸・ペーパー・除菌</span>
-              <span className="font-semibold text-[#f5f5f5]">{toilet.subScores.supplies.toFixed(1)}</span>
+              <span className="font-semibold text-[#f5f5f5]">
+                {toilet.subScores?.supplies != null ? Number(toilet.subScores.supplies).toFixed(1) : '–'}
+              </span>
             </div>
             <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#6366f1] h-1.5 rounded-full"
-                style={{ width: `${(toilet.subScores.supplies / 5) * 100}%` }}
+                style={{ width: `${((toilet.subScores?.supplies ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -226,12 +238,14 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-[#181818] p-2.5 rounded-lg border border-[#262626]">
             <div className="flex justify-between text-[#a0a0a0] mb-1">
               <span>広さ・快適性・明るさ</span>
-              <span className="font-semibold text-[#f5f5f5]">{toilet.subScores.comfort.toFixed(1)}</span>
+              <span className="font-semibold text-[#f5f5f5]">
+                {toilet.subScores?.comfort != null ? Number(toilet.subScores.comfort).toFixed(1) : '–'}
+              </span>
             </div>
             <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#f59e0b] h-1.5 rounded-full"
-                style={{ width: `${(toilet.subScores.comfort / 5) * 100}%` }}
+                style={{ width: `${((toilet.subScores?.comfort ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -246,12 +260,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasWashlet
+              attrs.hasWashlet
                 ? 'bg-[#0369a1]/20 border-[#0284c7]/40 text-[#38bdf8] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasWashlet ? (
+            {attrs.hasWashlet ? (
               <CheckCircle2 className="w-4 h-4 text-[#38bdf8] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -261,12 +275,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasMultipurpose
+              attrs.hasMultipurpose
                 ? 'bg-[#4338ca]/20 border-[#4f46e5]/40 text-[#818cf8] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasMultipurpose ? (
+            {attrs.hasMultipurpose ? (
               <Accessibility className="w-4 h-4 text-[#818cf8] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -276,12 +290,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasBabyTable
+              attrs.hasBabyTable
                 ? 'bg-[#831843]/20 border-[#db2777]/40 text-[#f472b6] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasBabyTable ? (
+            {attrs.hasBabyTable ? (
               <Baby className="w-4 h-4 text-[#f472b6] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -291,12 +305,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasPowderRoom
+              attrs.hasPowderRoom
                 ? 'bg-[#581c87]/20 border-[#9333ea]/40 text-[#c084fc] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasPowderRoom ? (
+            {attrs.hasPowderRoom ? (
               <Sparkles className="w-4 h-4 text-[#c084fc] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -306,12 +320,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasSoap
+              attrs.hasSoap
                 ? 'bg-[#064e3b]/20 border-[#059669]/40 text-[#34d399] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasSoap ? (
+            {attrs.hasSoap ? (
               <CheckCircle2 className="w-4 h-4 text-[#34d399] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -321,12 +335,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasAlcohol
+              attrs.hasAlcohol
                 ? 'bg-[#064e3b]/20 border-[#059669]/40 text-[#34d399] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
-            {toilet.attributes.hasAlcohol ? (
+            {attrs.hasAlcohol ? (
               <CheckCircle2 className="w-4 h-4 text-[#34d399] shrink-0" />
             ) : (
               <XCircle className="w-4 h-4 text-[#444444] shrink-0" />
@@ -336,18 +350,18 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.isOpen24h
+              attrs.isOpen24h
                 ? 'bg-[#78350f]/20 border-[#d97706]/40 text-[#fbbf24] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
           >
             <Clock className="w-4 h-4 shrink-0 text-[#fbbf24]" />
-            <span>{toilet.attributes.isOpen24h ? '24時間利用可' : toilet.openingHours}</span>
+            <span>{attrs.isOpen24h ? '24時間利用可' : (toilet.openingHours || '利用時間未確認')}</span>
           </div>
 
           <div
             className={`flex items-center gap-2 p-2 rounded-lg border ${
-              toilet.attributes.hasOstomate
+              attrs.hasOstomate
                 ? 'bg-[#1e3a8a]/20 border-[#2563eb]/40 text-[#60a5fa] font-medium'
                 : 'bg-[#181818] border-[#222222] text-[#666666]'
             }`}
@@ -358,7 +372,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 
           <div className="flex items-center gap-2 p-2 rounded-lg border bg-[#181818] border-[#222222] text-[#a0a0a0]">
             <span className="font-medium text-xs">便座様式:</span>
-            <span className="text-[#e0e0e0]">{toilet.attributes.toiletStyle === 'western' ? '洋式メイン' : toilet.attributes.toiletStyle === 'both' ? '和洋両方' : '和式'}</span>
+            <span className="text-[#e0e0e0]">{attrs.toiletStyle === 'western' ? '洋式メイン' : attrs.toiletStyle === 'both' ? '和洋両方' : attrs.toiletStyle === 'japanese' ? '和式' : '未確認'}</span>
           </div>
         </div>
       </div>

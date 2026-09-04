@@ -76,6 +76,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
             const evaluated = isEvaluated(toilet);
             const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
             const isSelected = selectedToilet?.id === toilet.id;
+            const attrs = toilet.attributes || ({} as any);
 
             return (
               <div
@@ -94,7 +95,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                         {getCategoryIcon(toilet.category)}
                         {toilet.facilityType}
                       </span>
-                      {toilet.attributes.isOpen24h && (
+                      {attrs.isOpen24h && (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#78350f]/40 text-[#fbbf24] border border-[#d97706]/40">
                           24h
                         </span>
@@ -114,7 +115,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     title={evaluated ? gradeColor.label : '未評価（口コミ募集中）'}
                   >
                     <span className="text-base font-black leading-none">
-                      {evaluated ? toilet.cleanlinessGrade : '–'}
+                      {evaluated ? (toilet.cleanlinessGrade || '–') : '–'}
                     </span>
                     <span className="text-[7px] font-bold">GRADE</span>
                   </div>
@@ -126,24 +127,24 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <span className="font-bold">
                       {evaluated
-                        ? toilet.cleanlinessScore.toFixed(1)
-                        : `推定 ${toilet.equipmentScore.toFixed(1)}`}
+                        ? (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')
+                        : `推定 ${toilet.equipmentScore != null ? Number(toilet.equipmentScore).toFixed(1) : (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')}`}
                     </span>
-                    <span className="text-[#666666]">({toilet.reviewCount})</span>
+                    <span className="text-[#666666]">({toilet.reviewCount ?? 0})</span>
                   </div>
 
                   <div className="flex items-center gap-1 text-[10px] text-[#888888]">
-                    {toilet.attributes.hasWashlet && (
+                    {attrs.hasWashlet && (
                       <span className="px-1.5 py-0.5 rounded bg-[#0369a1]/30 text-[#38bdf8] font-medium border border-[#0284c7]/30">
                         洗浄便座
                       </span>
                     )}
-                    {toilet.attributes.hasMultipurpose && (
+                    {attrs.hasMultipurpose && (
                       <span className="px-1.5 py-0.5 rounded bg-[#4338ca]/30 text-[#818cf8] font-medium border border-[#4f46e5]/30">
                         多機能
                       </span>
                     )}
-                    {toilet.attributes.hasPowderRoom && (
+                    {attrs.hasPowderRoom && (
                       <span className="px-1.5 py-0.5 rounded bg-[#831843]/30 text-[#f472b6] font-medium border border-[#db2777]/30">
                         パウダー
                       </span>
