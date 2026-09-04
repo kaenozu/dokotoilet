@@ -109,7 +109,7 @@ export interface ToiletFacility {
 
 export interface FilterState {
   dataSource: string;
-  onlyHighCleanliness: boolean; // Grade S & A (score >= 4.0)
+  onlyHighCleanliness: boolean; // Grade S & A (score >= 4.0)。実測口コミあり（reviewCount > 0）のみ対象
   onlyWashlet: boolean;
   onlyMultipurpose: boolean;
   onlyPowderRoom: boolean;
