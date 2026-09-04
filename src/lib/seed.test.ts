@@ -48,4 +48,27 @@ describe("mergeSeedLists", () => {
     expect(merged[0].attributes.hasWashlet).toBe(true);
     expect(merged[0].attributes.hasOstomate).toBe(true);
   });
+
+  it("keeps primary opening-hours flags (no 24h contradiction)", () => {
+    // あまやどり事例：営業時間07:00-23:00＋24hチップの矛盾を防ぐ
+    const primary = [
+      {
+        ...mk("google-a", 35.66, 139.7),
+        openingHours: "07:00-23:00",
+        attributes: { isOpen24h: false, hasSoap: false, isFree: true },
+      },
+    ];
+    const secondary = [
+      {
+        ...mk("osm-a", 35.66, 139.7),
+        openingHours: "24時間営業",
+        attributes: { isOpen24h: true, hasSoap: true, isFree: true },
+      },
+    ];
+    const merged = mergeSeedLists(primary as any, secondary as any, 30);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].attributes.isOpen24h).toBe(false);
+    expect(merged[0].attributes.hasSoap).toBe(false);
+    expect(merged[0].openingHours).toBe("07:00-23:00");
+  });
 });

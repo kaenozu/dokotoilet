@@ -26,6 +26,11 @@ export function haversineM(lat1: number, lng1: number, lat2: number, lng2: numbe
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+// 重複時にOR統合する設備フラグ。除外するもの：
+// - isOpen24h: openingHours文字列と矛盾するため（例：07:00-23:00表示＋24hチップ）。
+//   primary側の値をそのまま使う
+// - isFree: 全件trueのため統合が無意味
+// - hasSoap/hasAlcohol/hasPaperTowelOrDryer: 旧シードの楽観デフォルト由来で信頼性が低い
 const UNION_BOOL_KEYS = [
   "hasWashlet",
   "hasMultipurpose",
@@ -33,17 +38,12 @@ const UNION_BOOL_KEYS = [
   "hasNursingRoom",
   "hasPowderRoom",
   "hasOstomate",
-  "isFree",
-  "isOpen24h",
-  "hasSoap",
-  "hasAlcohol",
-  "hasPaperTowelOrDryer",
 ] as const;
 
 /**
  * シードリストの結合。primary を優先し、secondary 側で primary のいずれかと
  * radiusM 以内にあるものは重複として落とす（例：OSMとGoogleの同一施設）。
- * ただし設備フラグは両者のORを残す（どちらかが確認した設備は活かす）。
+ * ただし設備の有無フラグは両者のORを残す（どちらかが確認した設備は活かす）。
  */
 export function mergeSeedLists(
   primary: ToiletFacility[],
