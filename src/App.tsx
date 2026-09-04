@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   ToiletFacility,
   FilterState,
@@ -8,8 +8,27 @@ import {
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
 import { GOOGLE_SEED } from './data/googleSeed';
 import { KUMAGAYA_SEED } from './data/kumagayaSeed';
-import { gradeForScore } from './lib/scoring';
 import { mergeSeedLists } from './lib/seed';
+import { filterAndSortToilets } from './lib/filter';
+import { gradeForScore } from './lib/scoring';
+import { osmAttributesFromTags } from './lib/osm';
+import { overlayExternalReviews } from './lib/externalReviews';
+import {
+  applyDeltaToSeeds,
+  emptyDelta,
+  extractDelta,
+  LOCAL_DELTA_KEY,
+  LEGACY_TOILETS_V2_KEY,
+  LEGACY_TOILETS_V3_KEY,
+  mergeFacilityLists,
+  migrateLegacyArray,
+  OSM_CACHE_KEY,
+  OSM_CACHE_MAX,
+  parseLocalDelta,
+  parseToiletArray,
+  recomputeFromReviews,
+  unionServerToilet,
+} from './lib/localDeltas';
 
 // Google手動調査・熊谷市ODを優先し、OSM側の重複は設備フラグをOR統合して落とす
 const SEED_TOILETS = mergeSeedLists(
@@ -31,10 +50,8 @@ import {
   Info,
 } from 'lucide-react';
 
-const STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v3';
-const LEGACY_STORAGE_KEY_TOILETS = 'toilet_cleanliness_map_real_v2';
-// types.ts の DataSourceType と対応。不明な値も保持するため列挙しておく
-const KNOWN_DATA_SOURCES = new Set(['google', 'osm', 'opendata', 'community']);
+// M6: シードは保存せず、ユーザーデルタとOSMキャッシュだけを localStorage に残す
+const SEED_ID_SET = new Set(SEED_TOILETS.map((t) => t.id));
 
 export function sanitizeToiletFacility(raw: any): ToiletFacility {
   const cleanlinessScore =
@@ -74,20 +91,28 @@ export function sanitizeToiletFacility(raw: any): ToiletFacility {
         : cleanlinessScore,
   };
 
-  const rawAttrs = raw?.attributes || {};
+  // 設備フラグは3値（true/false/null）を維持する。欠落・非booleanは null（未確認）。
+  // 旧v2データの楽観デフォルト（isFree=true / toiletStyle=western 等）は信用しない
+  const rawAttrs = (raw?.attributes ?? {}) as Record<string, unknown>;
+  const tri = (v: unknown): boolean | null => (typeof v === 'boolean' ? v : null);
   const attributes = {
-    hasWashlet: Boolean(rawAttrs.hasWashlet),
-    hasMultipurpose: Boolean(rawAttrs.hasMultipurpose),
-    hasBabyTable: Boolean(rawAttrs.hasBabyTable),
-    hasNursingRoom: Boolean(rawAttrs.hasNursingRoom),
-    hasPowderRoom: Boolean(rawAttrs.hasPowderRoom),
-    hasOstomate: Boolean(rawAttrs.hasOstomate),
-    isFree: rawAttrs.isFree !== false,
-    isOpen24h: Boolean(rawAttrs.isOpen24h),
-    hasSoap: Boolean(rawAttrs.hasSoap),
-    hasAlcohol: Boolean(rawAttrs.hasAlcohol),
-    hasPaperTowelOrDryer: Boolean(rawAttrs.hasPaperTowelOrDryer),
-    toiletStyle: rawAttrs.toiletStyle || 'western',
+    hasWashlet: tri(rawAttrs.hasWashlet),
+    hasMultipurpose: tri(rawAttrs.hasMultipurpose),
+    hasBabyTable: tri(rawAttrs.hasBabyTable),
+    hasNursingRoom: tri(rawAttrs.hasNursingRoom),
+    hasPowderRoom: tri(rawAttrs.hasPowderRoom),
+    hasOstomate: tri(rawAttrs.hasOstomate),
+    isFree: tri(rawAttrs.isFree),
+    isOpen24h: tri(rawAttrs.isOpen24h),
+    hasSoap: tri(rawAttrs.hasSoap),
+    hasAlcohol: tri(rawAttrs.hasAlcohol),
+    hasPaperTowelOrDryer: tri(rawAttrs.hasPaperTowelOrDryer),
+    toiletStyle:
+      rawAttrs.toiletStyle === 'western' ||
+      rawAttrs.toiletStyle === 'both' ||
+      rawAttrs.toiletStyle === 'japanese'
+        ? rawAttrs.toiletStyle
+        : null,
   };
 
   const reviews = Array.isArray(raw?.reviews) ? raw.reviews : [];
@@ -110,32 +135,43 @@ export function sanitizeToiletFacility(raw: any): ToiletFacility {
 }
 
 export default function App() {
-  // Persistence for user reviews and newly added toilets (Strictly real data only, no mock samples)
+  // サーバーが保持している施設ID・レビューID（差分保存からの除外判定に使う）
+  const serverFacilityIdsRef = useRef<Set<string>>(new Set());
+  const serverKnownReviewsRef = useRef<Map<string, Set<string>>>(new Map());
+  // 直近の GET /api/community/toilets で取得した共有レビュー（外部施設向け）。
+  // 起動後に新規取得した OSM 施設にも既存の共有レビューを重ねるために保持する
+  const externalReviewsRef = useRef<Record<string, ToiletReview[]>>({});
+  const noteServerFacility = (facilityId: string, reviewIds: string[]) => {
+    serverFacilityIdsRef.current.add(facilityId);
+    const set = serverKnownReviewsRef.current.get(facilityId) ?? new Set<string>();
+    for (const rid of reviewIds) set.add(rid);
+    serverKnownReviewsRef.current.set(facilityId, set);
+  };
+  const noteReviewsKnown = (facilityId: string, reviewIds: string[]) => {
+    const set = serverKnownReviewsRef.current.get(facilityId) ?? new Set<string>();
+    for (const rid of reviewIds) set.add(rid);
+    serverKnownReviewsRef.current.set(facilityId, set);
+  };
+
+  // M6: 起動時は常に「最新バンドル版シード」へ差分を重ねる（シード自体は保存しない）
   const [toilets, setToilets] = useState<ToiletFacility[]>(() => {
     try {
-      // v3が無ければv2から移行する（v2は残し、保存はv3へ）
-      const saved =
-        localStorage.getItem(STORAGE_KEY_TOILETS) ??
-        localStorage.getItem(LEGACY_STORAGE_KEY_TOILETS);
-      if (saved) {
-        const parsed: unknown = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          // 将来の dataSource（google/opendata等）を黙って捨てない。
-          // 旧v2のモック除外ルールも維持する
-          const migrated = (parsed as any[]).filter(
-            (t) =>
-              t &&
-              typeof t.id === 'string' &&
-              (t.id.startsWith('osm-') ||
-                t.id.startsWith('toilet-user-') ||
-                (typeof t.dataSource === 'string' &&
-                  KNOWN_DATA_SOURCES.has(t.dataSource)))
-          );
-          if (migrated.length > 0) {
-            return migrated.map(sanitizeToiletFacility);
-          }
+      let delta = parseLocalDelta(localStorage.getItem(LOCAL_DELTA_KEY));
+      if (!delta) {
+        // 旧形式（v3 → v2 の全体スナップショット）からユーザーデルタへ移行する
+        const legacy =
+          localStorage.getItem(LEGACY_TOILETS_V3_KEY) ??
+          localStorage.getItem(LEGACY_TOILETS_V2_KEY);
+        if (legacy) {
+          delta = migrateLegacyArray(JSON.parse(legacy));
+          localStorage.removeItem(LEGACY_TOILETS_V3_KEY);
+          localStorage.removeItem(LEGACY_TOILETS_V2_KEY);
         }
       }
+      // OSMリアルタイム取得分は別キーの上限付きキャッシュ
+      const cachedOsm = parseToiletArray(localStorage.getItem(OSM_CACHE_KEY));
+      const seeded = applyDeltaToSeeds(SEED_TOILETS, delta ?? emptyDelta());
+      return mergeFacilityLists(seeded, cachedOsm);
     } catch (e) {
       console.warn('Failed to load saved toilets from localStorage:', e);
     }
@@ -172,25 +208,46 @@ export default function App() {
 
   // Filters
   const [filter, setFilter] = useState<FilterState>({
-    category: 'all',
     dataSource: 'all',
-    minGrade: 'all',
+    onlyHighCleanliness: false,
     onlyWashlet: false,
     onlyMultipurpose: false,
-    onlyBabyTable: false,
     onlyPowderRoom: false,
     only24h: false,
-    onlyFree: false,
-    onlyHighCleanliness: false,
     searchQuery: '',
   });
 
-  // Save toilets to localStorage
+  // M6: localStorage へは「ユーザーデルタ」と「OSMキャッシュ」だけを保存する
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY_TOILETS, JSON.stringify(toilets));
+      localStorage.setItem(
+        LOCAL_DELTA_KEY,
+        JSON.stringify(
+          extractDelta(toilets, {
+            facilityIds: serverFacilityIdsRef.current,
+            reviewIdsByFacility: serverKnownReviewsRef.current,
+          })
+        )
+      );
+      // OSMキャッシュも「再取得可能なデータ」なので、サーバー同期済みレビューは
+      // 含めない（git運用でサーバー側から削除されたレビューが復活しないように）。
+      const known = serverKnownReviewsRef.current;
+      const osmCache = toilets
+        .filter((t) => t.dataSource === 'osm' && !SEED_ID_SET.has(t.id))
+        .map((t) => {
+          const knownIds = known.get(t.id);
+          const reviews = t.reviews ?? [];
+          if (!knownIds || knownIds.size === 0 || reviews.length === 0) return t;
+          const kept = reviews.filter((r) => !knownIds.has(r.id));
+          // 共有レビューだけを除いたらスコアも再計算（0件なら設備推定値＝未評価に戻す）
+          return kept.length === reviews.length
+            ? t
+            : recomputeFromReviews(t, kept);
+        })
+        .slice(-OSM_CACHE_MAX);
+      localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(osmCache));
     } catch (e) {
-      console.warn('Failed to save toilets:', e);
+      console.warn('Failed to save user data:', e);
     }
   }, [toilets]);
 
@@ -219,14 +276,42 @@ export default function App() {
         const res = await fetch('/api/community/toilets');
         if (!res.ok) return;
         const data = await res.json();
-        if (!Array.isArray(data.toilets)) return;
-        const serverItems = (data.toilets as any[]).map(sanitizeToiletFacility);
-        if (serverItems.length === 0) return;
+        const serverItems = Array.isArray(data.toilets)
+          ? (data.toilets as any[]).map(sanitizeToiletFacility)
+          : [];
+        const externalReviews =
+          data.externalReviews && typeof data.externalReviews === 'object'
+            ? (data.externalReviews as Record<string, ToiletReview[]>)
+            : {};
+        // 直近スナップショットとして保持（OSM施設の新規取得時に再利用）
+        externalReviewsRef.current = externalReviews;
+        // M6: サーバーが保持している施設・レビューIDを記録（差分保存から除外する）
+        for (const s of serverItems) {
+          noteServerFacility(s.id, (s.reviews ?? []).map((r) => r.id));
+        }
+        for (const [fid, revs] of Object.entries(externalReviews)) {
+          if (revs && revs.length > 0) noteReviewsKnown(fid, revs.map((r) => r.id));
+        }
+        if (serverItems.length === 0 && Object.keys(externalReviews).length === 0) {
+          return;
+        }
         setToilets((prev) => {
+          const prevById = new Map<string, ToiletFacility>(prev.map((t) => [t.id, t]));
           const serverIds = new Set(serverItems.map((t) => t.id));
-          // サーバー側を正とし、サーバーに無いローカル分（オフライン投稿等）は残す
+          // コミュニティトイレはサーバーを正としつつ、ローカル未同期レビューは保持する
+          const merged = serverItems.map((s) => {
+            const local = prevById.get(s.id);
+            return local ? unionServerToilet(local, s) : s;
+          });
           const localOnly = prev.filter((t) => !serverIds.has(t.id));
-          return [...serverItems, ...localOnly];
+          const base = [...merged, ...localOnly];
+          // 外部施設（OSM/Google/OD）の共有レビューをローカル施設へ重ねる（M5）
+          return base.map((t) => {
+            const reviews = externalReviews[t.id];
+            return reviews && reviews.length > 0
+              ? overlayExternalReviews(t, reviews)
+              : t;
+          });
         });
       } catch {
         /* offline / static hosting: local-only mode */
@@ -234,58 +319,12 @@ export default function App() {
     })();
   }, []);
 
-  // Filtered Toilets List
-  const filteredToilets = useMemo(() => {
-    return toilets.filter((item) => {
-      // Search query
-      if (filter.searchQuery.trim()) {
-        const q = filter.searchQuery.toLowerCase();
-        const matches =
-          (item.name || '').toLowerCase().includes(q) ||
-          (item.address || '').toLowerCase().includes(q) ||
-          (item.facilityType || '').toLowerCase().includes(q) ||
-          (item.floorInfo && item.floorInfo.toLowerCase().includes(q));
-        if (!matches) return false;
-      }
-
-      // High cleanliness (Grade S & A)
-      if (filter.onlyHighCleanliness && (item.cleanlinessScore ?? 0) < 4.0) {
-        return false;
-      }
-
-      // Washlet
-      if (filter.onlyWashlet && !item.attributes?.hasWashlet) {
-        return false;
-      }
-
-      // Multipurpose
-      if (filter.onlyMultipurpose && !item.attributes?.hasMultipurpose) {
-        return false;
-      }
-
-      // Baby Table
-      if (filter.onlyBabyTable && !item.attributes?.hasBabyTable) {
-        return false;
-      }
-
-      // Powder Room
-      if (filter.onlyPowderRoom && !item.attributes?.hasPowderRoom) {
-        return false;
-      }
-
-      // 24h
-      if (filter.only24h && !item.attributes?.isOpen24h) {
-        return false;
-      }
-
-      // Data source
-      if (filter.dataSource !== 'all' && item.dataSource !== filter.dataSource) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [toilets, filter]);
+  // Filtered Toilets List（絞り込み＋ソートは純関数に切り出し: src/lib/filter.ts）
+  // ソートは「清潔度順」＝評価済み（口コミあり）をスコア降順→未評価は推定スコア降順。
+  const filteredToilets = useMemo(
+    () => filterAndSortToilets(toilets, filter),
+    [toilets, filter]
+  );
 
   // Live fetch OpenStreetMap toilets around coordinates
   const handleFetchOsmNearCenter = async (
@@ -323,20 +362,8 @@ export default function App() {
               equipmentGrade: 'B' as const,
               equipmentScore: 3.4,
               subScores: { cleanliness: 3.4, odor: 3.3, supplies: 3.5, comfort: 3.4 },
-              attributes: {
-                hasWashlet: tags.washlet === 'yes',
-                hasMultipurpose: tags.wheelchair === 'yes',
-                hasBabyTable: tags.changing_table === 'yes',
-                hasNursingRoom: false,
-                hasPowderRoom: false,
-                hasOstomate: tags.ostomate === 'yes',
-                isFree: tags.fee !== 'yes',
-                isOpen24h: tags.opening_hours === '24/7',
-                hasSoap: tags.soap === 'yes',
-                hasAlcohol: false,
-                hasPaperTowelOrDryer: false,
-                toiletStyle: 'both' as const,
-              },
+              // タグ欠落は null=未確認（true/false/null の3値。fee 欠落を「無料」と断定しない）
+              attributes: osmAttributesFromTags(tags),
               openingHours: tags.opening_hours || '常時開放',
               description: `OpenStreetMap登録の実在公衆便所。`,
               reviewCount: 0,
@@ -366,7 +393,13 @@ export default function App() {
               (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
             );
             if (!isDuplicateCoord) {
-              newFacilities.push(item);
+              // 既存のサーバー共有レビュー（externalReviews）があれば新規取得時点で重ねる
+              const shared = externalReviewsRef.current[item.id];
+              newFacilities.push(
+                shared && shared.length > 0
+                  ? overlayExternalReviews(item, shared)
+                  : item
+              );
               existingIds.add(item.id);
             }
           }
@@ -443,22 +476,13 @@ export default function App() {
       prev.map((item) => {
         if (item.id !== toiletId) return item;
 
-        const updatedReviews = [newReview, ...(item.reviews || [])];
-        const newCount = updatedReviews.length;
-
-        // Recalculate average cleanliness score
-        const totalRating = updatedReviews.reduce((sum, r) => sum + (r.rating || 0), 0);
-        const newScore = newCount > 0 ? parseFloat((totalRating / newCount).toFixed(1)) : 3.0;
-        const newGrade = gradeForScore(newScore);
-
-        const updated = sanitizeToiletFacility({
-          ...item,
-          cleanlinessGrade: newGrade,
-          cleanlinessScore: newScore,
-          reviewCount: newCount,
+        const updatedReviews = [newReview, ...item.reviews];
+        // 次元別に独立集計（総合→overallScore / 清潔さ→cleanlinessScore）
+        const updated = {
+          ...recomputeFromReviews(item, updatedReviews),
+          // 利用者が投稿時に清潔さを確認した旨（base〜上流の挙動を維持）
           lastCleaned: 'たった今（利用者が確認）',
-          reviews: updatedReviews,
-        });
+        };
 
         if (selectedToilet?.id === toiletId) {
           setSelectedToilet(updated);
@@ -478,11 +502,35 @@ export default function App() {
         body: JSON.stringify({ review: newReview }),
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.toilet) {
-          const updated = sanitizeToiletFacility(data.toilet);
-          setToilets((prev) => prev.map((t) => (t.id === toiletId ? updated : t)));
-          if (selectedToilet?.id === toiletId) setSelectedToilet(updated);
+        const data = await res.json().catch(() => null);
+        if (data?.toilet) {
+          const updated = data.toilet as ToiletFacility;
+          noteServerFacility(updated.id, (updated.reviews ?? []).map((r) => r.id));
+          setToilets((prev) =>
+            prev.map((t) => (t.id === toiletId ? unionServerToilet(t, updated) : t))
+          );
+          if (selectedToilet?.id === toiletId) {
+            setSelectedToilet((cur) => (cur ? unionServerToilet(cur, updated) : cur));
+          }
+          return;
+        }
+        // 外部施設（OSM/Google/OD）: サーバーが共有レビュー一覧を返すので重ねる（M5）
+        if (data?.facilityId === toiletId && Array.isArray(data.reviews)) {
+          const serverReviews = data.reviews as ToiletReview[];
+          // この施設の最新スナップショットを反映（同じ施設の再取得時にも使えるように）
+          externalReviewsRef.current = {
+            ...externalReviewsRef.current,
+            [toiletId]: serverReviews,
+          };
+          noteReviewsKnown(toiletId, serverReviews.map((r) => r.id));
+          setToilets((prev) =>
+            prev.map((t) =>
+              t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
+            )
+          );
+          if (selectedToilet?.id === toiletId) {
+            setSelectedToilet(overlayExternalReviews(selectedToilet, serverReviews));
+          }
           return;
         }
       } else {
@@ -525,7 +573,25 @@ export default function App() {
           },
         }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          toilet?: ToiletFacility;
+        } | null;
+        const serverToilet = data?.toilet;
+        if (serverToilet) {
+          noteServerFacility(serverToilet.id, []);
+          // サーバー保存版（reviewCount: 0 / reviews: [] に正規化済み）を正として同期する
+          setToilets((prev) =>
+            prev.map((t) =>
+              t.id === serverToilet.id ? unionServerToilet(t, serverToilet) : t
+            )
+          );
+          setSelectedToilet((cur) =>
+            cur?.id === serverToilet.id ? unionServerToilet(cur, serverToilet) : cur
+          );
+          return;
+        }
+      } else {
         const err = await res.json().catch(() => null);
         if (err?.error) showToast(`共有登録できませんでした: ${err.error}（この端末のみに保存）`);
       }
@@ -591,7 +657,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans antialiased">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-canvas text-ink-soft font-sans antialiased">
       {/* App Header */}
       <Header
         filter={filter}
@@ -642,12 +708,13 @@ export default function App() {
             zoom={mapZoom}
             onFetchOsmNearCenter={handleFetchOsmNearCenter}
             isLoadingOsm={isLoadingOsm}
+            detailsOpen={selectedToilet !== null}
           />
         </div>
 
         {/* Right Side: Selected Toilet Details Drawer */}
         {selectedToilet && (
-          <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-[#222222] bg-[#121212]">
+          <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
             <ToiletDetails
               toilet={selectedToilet}
               onClose={() => setSelectedToilet(null)}
@@ -661,12 +728,12 @@ export default function App() {
       </div>
 
       {/* Mobile Bottom Tab Switcher (Visible only on small screens) */}
-      <div className="md:hidden flex items-center justify-around border-t border-[#222222] bg-[#111111] py-2 px-4 z-30">
+      <div className="md:hidden flex items-center justify-around border-t border-line bg-surface py-2 px-4 z-30">
         <button
           type="button"
           onClick={() => setMobileTab('map')}
           className={`flex flex-col items-center gap-1 text-xs font-medium ${
-            mobileTab === 'map' ? 'text-[#00d1b2]' : 'text-[#888888] hover:text-[#e0e0e0]'
+            mobileTab === 'map' ? 'text-accent' : 'text-faint hover:text-ink-soft'
           }`}
         >
           <MapIcon className="w-5 h-5" />
@@ -677,7 +744,7 @@ export default function App() {
           type="button"
           onClick={() => setMobileTab('list')}
           className={`flex flex-col items-center gap-1 text-xs font-medium ${
-            mobileTab === 'list' ? 'text-[#00d1b2]' : 'text-[#888888] hover:text-[#e0e0e0]'
+            mobileTab === 'list' ? 'text-accent' : 'text-faint hover:text-ink-soft'
           }`}
         >
           <List className="w-5 h-5" />
@@ -687,7 +754,7 @@ export default function App() {
         <button
           type="button"
           onClick={() => setIsDataSourcesModalOpen(true)}
-          className="flex flex-col items-center gap-1 text-xs font-medium text-[#888888] hover:text-[#e0e0e0]"
+          className="flex flex-col items-center gap-1 text-xs font-medium text-faint hover:text-ink-soft"
         >
           <Info className="w-5 h-5" />
           <span>データ元比較</span>
@@ -716,8 +783,8 @@ export default function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#1a1a1a]/95 backdrop-blur-md text-[#f5f5f5] text-xs font-medium px-4 py-2.5 rounded-xl border border-[#333333] shadow-2xl flex items-center gap-2 pointer-events-auto">
-          <Sparkles className="w-4 h-4 text-[#00d1b2] shrink-0" />
+        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink/95 backdrop-blur-md text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/10 shadow-2xl flex items-center gap-2 pointer-events-auto">
+          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
