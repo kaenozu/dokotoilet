@@ -28,7 +28,9 @@
           "text": "ゴミ箱もあり得ないほど臭かったです。",
           "rating": null
         }
-      ]
+      ],
+      "externalReviewCount": 985,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ティアラ21",
@@ -54,7 +56,9 @@
           "rating": null
         }
       ],
-      "coordSource": "テナント店のGoogleマップリンク（同建物）"
+      "coordSource": "テナント店のGoogleマップリンク（同建物）",
+      "externalReviewCount": 1441,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ニットーモール",
@@ -84,7 +88,9 @@
           "rating": 4
         }
       ],
-      "coordSource": "マピオン電話帳・Yahoo!マップ一致"
+      "coordSource": "マピオン電話帳・Yahoo!マップ一致",
+      "externalReviewCount": 2129,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "八木橋百貨店",
@@ -104,7 +110,9 @@
         "isOpen24h": false
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E6%9C%A8%E6%A9%8B%E7%99%BE%E8%B2%A8%E5%BA%97&query_place_id=ChIJ1YwZF8kpH2AR5jQWinl_TXg",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 2556,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "イオン熊谷店",
@@ -125,7 +133,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%82%AA%E3%83%B3%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJEUxRkc4pH2ARjlKPFoWQMZo",
       "reviewExcerpts": [],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 1125,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "旬鮮魚市場クルベ熊谷銀座店",
@@ -146,7 +156,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%AC%E9%AE%AE%E9%AD%9A%E5%B8%82%E5%A0%B4%E3%82%AF%E3%83%AB%E3%83%99%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A7%E5%BA%97&query_place_id=ChIJvemYjqMpH2AR-ZsdyAk0s3c",
       "reviewExcerpts": [],
-      "coordSource": "マピオン電話帳（前身ベルク同建物・同住所）"
+      "coordSource": "マピオン電話帳（前身ベルク同建物・同住所）",
+      "externalReviewCount": 91,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "熊谷駅",
@@ -179,7 +191,9 @@
           "text": "全体的に新しくて綺麗でしたが",
           "rating": null
         }
-      ]
+      ],
+      "externalReviewCount": 921,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "上熊谷駅",
@@ -199,7 +213,9 @@
         "isOpen24h": null
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8A%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJidAGHcYpH2AR_WKyE-wCgJI",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 54,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "石原駅",
@@ -219,7 +235,9 @@
         "isOpen24h": null
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E5%8E%9F%E9%A7%85&query_place_id=ChIJ-_kGFysoH2ARsTiRodGp19I",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 40,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "セブン-イレブン 熊谷市役所前店",
@@ -249,7 +267,9 @@
           "rating": 4
         }
       ],
-      "coordSource": "NAVITIMEスポット情報"
+      "coordSource": "NAVITIMEスポット情報",
+      "externalReviewCount": 56,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "セブン-イレブン 熊谷銀座3丁目店",
@@ -275,7 +295,9 @@
           "rating": 3
         }
       ],
-      "coordSource": "セブン-イレブン公式店舗検索"
+      "coordSource": "セブン-イレブン公式店舗検索",
+      "externalReviewCount": 34,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ミニストップ 熊谷上之店",
@@ -309,7 +331,9 @@
           "rating": null
         }
       ],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 37,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "星乃珈琲店 熊谷店",
@@ -330,7 +354,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E4%B9%83%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJxWJbbKApH2ARNBWxTnIDkTg",
       "reviewExcerpts": [],
-      "coordSource": "NAVITIMEスポット情報"
+      "coordSource": "NAVITIMEスポット情報",
+      "externalReviewCount": 460,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "珈琲館 熊谷店",
@@ -351,7 +377,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E9%A4%A8%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJy8iIodQpH2ARxI9cGByZJ0Q",
       "reviewExcerpts": [],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 167,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "珈琲所 コメダ珈琲店 熊谷店",
@@ -372,7 +400,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E6%89%80%20%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
       "reviewExcerpts": [],
-      "coordSource": "マピオン電話帳"
+      "coordSource": "マピオン電話帳",
+      "externalReviewCount": 745,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "ジョイフル 熊谷店",
@@ -393,7 +423,9 @@
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A4%E3%83%95%E3%83%AB%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJUZuleGQpH2AR8dIOmruLgjc",
       "reviewExcerpts": [],
-      "coordSource": "ジョイフル公式サイト"
+      "coordSource": "ジョイフル公式サイト",
+      "externalReviewCount": 615,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "中央公園",
@@ -418,7 +450,9 @@
           "text": "トイレもあまり綺麗とは言えず",
           "rating": 3
         }
-      ]
+      ],
+      "externalReviewCount": 144,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "万平公園",
@@ -438,7 +472,9 @@
         "isOpen24h": true
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E5%B9%B3%E5%85%AC%E5%9C%92&query_place_id=ChIJjZImeJYpH2ARVuBiHYXaG0o",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 289,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "伊勢町ふれあい公園",
@@ -458,7 +494,9 @@
         "isOpen24h": true
       },
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJs1h-0tMpH2ARHMye0CJTuhM",
-      "reviewExcerpts": []
+      "reviewExcerpts": [],
+      "externalReviewCount": 153,
+      "externalReviewSource": "Google Maps"
     },
     {
       "name": "荒川公園",
@@ -487,7 +525,9 @@
           "text": "特に外のトイレをきれいに綺麗にしてほしい。",
           "rating": null
         }
-      ]
+      ],
+      "externalReviewCount": 256,
+      "externalReviewSource": "Google Maps"
     }
   ]
 }
