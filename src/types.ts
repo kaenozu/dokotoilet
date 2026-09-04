@@ -62,8 +62,6 @@ export interface ToiletReview {
   lastCleanedTime?: string;
   tags?: string[];
   helpfulCount: number;
-  hasWashletConfirmed?: boolean;
-  isCleanConfirmed?: boolean;
 }
 
 export interface ToiletFacility {

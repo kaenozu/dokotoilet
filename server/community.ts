@@ -128,7 +128,6 @@ export interface ReviewInput {
   odorScore: number;
   suppliesScore: number;
   comment: string;
-  hasWashletConfirmed: boolean;
 }
 
 export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
@@ -159,7 +158,6 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
       odorScore: r.odorScore,
       suppliesScore: r.suppliesScore,
       comment: r.comment.trim(),
-      hasWashletConfirmed: r.hasWashletConfirmed !== false,
     },
   };
 }
@@ -294,8 +292,6 @@ export class CommunityStore {
       comment: input.comment,
       createdAt: new Date().toISOString().split("T")[0],
       helpfulCount: 0,
-      hasWashletConfirmed: input.hasWashletConfirmed,
-      isCleanConfirmed: input.cleanlinessScore >= 4,
     };
   }
 

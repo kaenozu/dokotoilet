@@ -604,36 +604,37 @@ export default function App() {
   const handleVoteHelpful = async (toiletId: string, reviewId: string) => {
     if (votedReviewIds.includes(reviewId)) return;
     setVotedReviewIds((prev) => [...prev, reviewId]);
-    setToilets((prev) =>
-      prev.map((t) =>
-        t.id === toiletId
-          ? {
-              ...t,
-              reviews: t.reviews.map((r) =>
-                r.id === reviewId ? { ...r, helpfulCount: r.helpfulCount + 1 } : r
-              ),
-            }
-          : t
-      )
-    );
+    // 開いている詳細パネル（selectedToilet）と一覧/地図（toilets）の両方を更新する。
+    // 片方だけだと drawer の「役に立った」件数が古いまま残る。
+    const bumpVote = (t: ToiletFacility): ToiletFacility =>
+      t.id === toiletId
+        ? {
+            ...t,
+            reviews: t.reviews.map((r) =>
+              r.id === reviewId ? { ...r, helpfulCount: r.helpfulCount + 1 } : r
+            ),
+          }
+        : t;
+    setToilets((prev) => prev.map(bumpVote));
+    setSelectedToilet((cur) => (cur ? bumpVote(cur) : cur));
     try {
       const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/helpful`, {
         method: 'POST',
       });
       if (res.ok) {
         const data = await res.json();
-        setToilets((prev) =>
-          prev.map((t) =>
-            t.id === toiletId
-              ? {
-                  ...t,
-                  reviews: t.reviews.map((r) =>
-                    r.id === reviewId ? { ...r, helpfulCount: data.helpfulCount } : r
-                  ),
-                }
-              : t
-          )
-        );
+        // サーバー確定値で同期（投票済みなら楽観カウントは巻き戻る）
+        const syncVote = (t: ToiletFacility): ToiletFacility =>
+          t.id === toiletId
+            ? {
+                ...t,
+                reviews: t.reviews.map((r) =>
+                  r.id === reviewId ? { ...r, helpfulCount: data.helpfulCount } : r
+                ),
+              }
+            : t;
+        setToilets((prev) => prev.map(syncVote));
+        setSelectedToilet((cur) => (cur ? syncVote(cur) : cur));
       }
     } catch {
       /* offline: local count only */
