@@ -44,7 +44,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 5,
         "cleanlinessScore": 5,
         "odorScore": 5,
@@ -55,7 +55,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3.5,
         "cleanlinessScore": 3.5,
         "odorScore": 3.5,
@@ -66,7 +66,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ChIJHXtAN-6NGGARLL6R-2",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 4,
         "cleanlinessScore": 4,
         "odorScore": 4,
@@ -121,7 +121,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJoXN2SauMGGAR17Mw-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -132,7 +132,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ChIJoXN2SauMGGAR17Mw-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -187,7 +187,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJn7NPqQWLGGARN8o1-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 5,
         "cleanlinessScore": 5,
         "odorScore": 5,
@@ -285,7 +285,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJP6jlUFiLGGAR5fwu-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 4,
         "cleanlinessScore": 4,
         "odorScore": 4,
@@ -296,7 +296,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ChIJP6jlUFiLGGAR5fwu-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 5,
         "cleanlinessScore": 5,
         "odorScore": 5,
@@ -351,7 +351,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJscDhJ4SLGGARbx0G-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 4,
         "cleanlinessScore": 4,
         "odorScore": 4,
@@ -406,7 +406,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJcyH-4qiMGGARGzk4-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3.5,
         "cleanlinessScore": 3.5,
         "odorScore": 3.5,
@@ -461,7 +461,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJMaI731OLGGARRjpK-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3.5,
         "cleanlinessScore": 3.5,
         "odorScore": 3.5,
@@ -559,7 +559,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ChIJ0_O8DFiLGGARIMS7-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -614,7 +614,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-アズ熊谷-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -669,7 +669,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ティアラ21-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -724,7 +724,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ニットーモール-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -735,7 +735,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ニットーモール-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 4,
         "cleanlinessScore": 4,
         "odorScore": 4,
@@ -919,7 +919,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-熊谷駅-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -930,7 +930,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-熊谷駅-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -941,7 +941,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-熊谷駅-2",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1082,7 +1082,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-セブン-イレブン-熊谷市役所前店-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 5,
         "cleanlinessScore": 5,
         "odorScore": 5,
@@ -1093,7 +1093,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-セブン-イレブン-熊谷市役所前店-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 4,
         "cleanlinessScore": 4,
         "odorScore": 4,
@@ -1148,7 +1148,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-セブン-イレブン-熊谷銀座3丁目店-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1203,7 +1203,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-ミニストップ-熊谷上之店-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1214,7 +1214,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ミニストップ-熊谷上之店-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1225,7 +1225,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-ミニストップ-熊谷上之店-2",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1452,7 +1452,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-中央公園-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1593,7 +1593,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviews": [
       {
         "id": "rev-gmaps-荒川公園-0",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,
@@ -1604,7 +1604,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       },
       {
         "id": "rev-gmaps-荒川公園-1",
-        "userName": "Google口コミより引用",
+        "userName": "口コミ引用",
         "rating": 3,
         "cleanlinessScore": 3,
         "odorScore": 3,

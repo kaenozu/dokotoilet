@@ -33,6 +33,9 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
 - 実在しない施設を作らない。1件ごとにGoogle Mapsのlisting URLを添付する
 - 住所・座標はlisting記載のまま。推測で補完しない。不明は null
 - 口コミ引用は原文ママ・30字以内・最大3件。創作は厳禁
+- 各引用に `source` を付ける（確認場所。例：「Google Maps」「Yahoo!マップ」）。
+  Google Mapsの口コミ欄で直接確認した原文だけ「Google Maps」にする。
+  転載サイトで見たものはそのサイト名、不明なら付けない
 - スコアには必ず根拠を basis に書く（例：口コミ12件中9件が清潔に好意的）
 - listingに表示される口コミ総数も必ず記録する（externalReviewCount。口コミ本文が取れなくても件数だけは書く。「口コミなし」と「未取込」の区別に使う。0件なら0と書く）
 - 出力は下記スキーマのJSONのみ（コードブロック1つ）。 employmentの説明は不要
@@ -62,7 +65,7 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
       "isOpen24h": true
     },
     "googleMapsUrl": "https://www.google.com/maps/place/...",
-    "reviewExcerpts": [{ "text": "原文引用（30字以内）", "rating": 5 }]
+    "reviewExcerpts": [{ "text": "原文引用（30字以内）", "rating": 5, "source": "Google Maps" }]
   }
 ]
 ```

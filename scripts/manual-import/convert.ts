@@ -5,6 +5,8 @@ import { gradeForScore } from "../../src/lib/scoring";
 export interface ManualExcerpt {
   text: string;
   rating: number;
+  // 引用の確認場所（例：「Google Maps」「Yahoo!マップ」）。Google確認分のみGoogle表記可
+  source?: string;
 }
 
 export interface ManualEquipment {
@@ -170,7 +172,11 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
       .filter((e) => e && typeof e.text === "string" && e.text.trim())
       .map((e, i) => ({
         id: `rev-gmaps-${placeId.slice(0, 20)}-${i}`,
-        userName: "Google口コミより引用",
+        // 出所未確認のため中立表記。Google確認分は source に記録して表示する
+        userName: "口コミ引用",
+        ...(typeof e.source === "string" && e.source.trim()
+          ? { source: e.source.trim().slice(0, 30) }
+          : {}),
         rating: typeof e.rating === "number" ? e.rating : 3,
         cleanlinessScore: typeof e.rating === "number" ? e.rating : 3,
         odorScore: typeof e.rating === "number" ? e.rating : 3,

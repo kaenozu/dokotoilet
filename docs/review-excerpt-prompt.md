@@ -27,7 +27,7 @@ JSONで出力してください。口コミが見つからない施設は無理�
 [
   {
     "name": "施設名（下表のまま）",
-    "excerpts": [{ "text": "原文引用（30字以内）", "rating": 4 }],
+    "excerpts": [{ "text": "原文引用（30字以内）", "rating": 4, "source": "Google Maps" }],
     "scoreRevision": {
       "cleanlinessScore": 4.2,
       "confidence": "medium",
@@ -36,6 +36,14 @@ JSONで出力してください。口コミが見つからない施設は無理�
   }
 ]
 ```
+
+## 出所ルール（厳守）
+
+- 各引用に `source` を付ける（どこで確認した原文か。例：「Google Maps」「Yahoo!マップ」「食べログ」）
+- Google Mapsの口コミ欄で直接確認した原文だけ `source` を「Google Maps」にする。
+  転載サイト・まとめ記事で見たものはそのサイト名を書く。不明なら `source` を付けない
+- アプリには出所どおりに表示される（「Google Mapsより引用」等）。未確認のものを
+  Google表記してはならない
 
 ## 対象16件
 
