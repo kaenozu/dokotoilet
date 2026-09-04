@@ -33,24 +33,24 @@ export const Header: React.FC<HeaderProps> = ({
   isLocating,
 }) => {
   return (
-    <header className="bg-[#111111] border-b border-[#222222] sticky top-0 z-30 shadow-xs">
+    <header className="bg-surface border-b border-line-strong sticky top-0 z-30 shadow-sm">
       {/* Top Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         {/* Logo & Title */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#00d1b2] text-[#0a0a0a] flex items-center justify-center shadow-[0_0_15px_rgba(0,209,178,0.3)]">
+          <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center shadow-[0_3px_10px_rgba(11,110,82,0.28)] ring-1 ring-inset ring-white/50">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-bold text-[#f5f5f5] tracking-tight">
+              <h1 className="text-lg sm:text-xl font-bold text-ink tracking-tight font-display">
                 きれいトイレ
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#059669]/20 text-[#34d399] border border-[#059669]/40">
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-accent-soft text-accent border border-accent/30">
                 <CheckCircle2 className="w-3.5 h-3.5" /> 実在データ (OSM & 口コミ)
               </span>
             </div>
-            <p className="text-xs text-[#888888] hidden md:block">
+            <p className="text-xs text-faint hidden md:block">
               実在する公衆便所オープンデータ（OpenStreetMap）と実際の利用者の清潔度評価
             </p>
           </div>
@@ -62,16 +62,16 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onOpenDataSourcesModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#e0e0e0] bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg hover:bg-[#242424] hover:border-[#383838] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-ink-soft bg-surface border border-line rounded-lg hover:bg-surface-2 hover:border-line-strong transition-colors"
           >
-            <Database className="w-3.5 h-3.5 text-[#818cf8]" />
+            <Database className="w-3.5 h-3.5 text-indigo-500" />
             <span className="hidden sm:inline">データ元比較</span>
           </button>
 
           <button
             type="button"
             onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#0a0a0a] bg-[#00d1b2] rounded-lg hover:bg-[#00bfa5] shadow-[0_0_12px_rgba(0,209,178,0.25)] transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-accent rounded-lg hover:bg-accent-strong shadow-[0_3px_10px_rgba(11,110,82,0.25)] transition-all"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>きれい度を投稿</span>
@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Filter & City Bar */}
-      <div className="bg-[#141414] border-t border-[#222222] px-4 sm:px-6 py-2.5">
+      <div className="bg-canvas border-t border-line px-4 sm:px-6 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5">
           {/* City Presets & GPS Locate */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs scrollbar-none">
@@ -89,18 +89,18 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onLocateUser}
               disabled={isLocating}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#1a1a1a] border border-[#2a2a2a] text-[#e0e0e0] hover:bg-[#242424] hover:border-[#383838] font-medium whitespace-nowrap shrink-0 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface border border-line text-ink-soft hover:bg-surface-2 hover:border-line-strong font-medium whitespace-nowrap shrink-0 transition-colors"
             >
-              <Navigation className={`w-3 h-3 text-[#38bdf8] ${isLocating ? 'animate-spin' : ''}`} />
+              <Navigation className={`w-3 h-3 text-sky-500 ${isLocating ? 'animate-spin' : ''}`} />
               {isLocating ? '測位中...' : '現在地'}
             </button>
-            <span className="text-[#333333] mx-0.5">|</span>
+            <span className="text-line-strong mx-0.5">|</span>
             {CITY_PRESETS.map((city) => (
               <button
                 key={city.name}
                 type="button"
                 onClick={() => onCitySelect(city)}
-                className="px-2.5 py-1 rounded-md bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:border-[#3a3a3a] hover:text-[#ffffff] hover:bg-[#222222] whitespace-nowrap shrink-0 transition-colors"
+                className="px-2.5 py-1 rounded-md bg-surface border border-line text-muted hover:border-line-strong hover:text-ink hover:bg-surface-2 whitespace-nowrap shrink-0 transition-colors"
               >
                 {city.name.split(' ')[0]}
               </button>
@@ -120,8 +120,8 @@ export const Header: React.FC<HeaderProps> = ({
               }
               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-medium whitespace-nowrap transition-colors ${
                 filter.onlyHighCleanliness
-                  ? 'bg-[#00d1b2] text-[#0a0a0a] font-semibold shadow-[0_0_10px_rgba(0,209,178,0.25)]'
-                  : 'bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:text-[#ffffff] hover:border-[#3a3a3a] hover:bg-[#222222]'
+                  ? 'bg-accent text-white font-semibold shadow-sm'
+                  : 'bg-surface border border-line text-muted hover:text-ink hover:border-line-strong hover:bg-surface-2'
               }`}
             >
               <Sparkles className="w-3 h-3" />
@@ -140,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                 filter.onlyWashlet
                   ? 'bg-[#0284c7] text-white font-medium'
-                  : 'bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:text-[#ffffff] hover:border-[#3a3a3a] hover:bg-[#222222]'
+                  : 'bg-surface border border-line text-muted hover:text-ink hover:border-line-strong hover:bg-surface-2'
               }`}
             >
               ウォシュレット
@@ -158,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                 filter.onlyMultipurpose
                   ? 'bg-[#6366f1] text-white font-medium'
-                  : 'bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:text-[#ffffff] hover:border-[#3a3a3a] hover:bg-[#222222]'
+                  : 'bg-surface border border-line text-muted hover:text-ink hover:border-line-strong hover:bg-surface-2'
               }`}
             >
               多機能・だれでも
@@ -176,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                 filter.onlyPowderRoom
                   ? 'bg-[#ec4899] text-white font-medium'
-                  : 'bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:text-[#ffffff] hover:border-[#3a3a3a] hover:bg-[#222222]'
+                  : 'bg-surface border border-line text-muted hover:text-ink hover:border-line-strong hover:bg-surface-2'
               }`}
             >
               パウダールーム
@@ -193,8 +193,8 @@ export const Header: React.FC<HeaderProps> = ({
               }
               className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                 filter.only24h
-                  ? 'bg-[#f59e0b] text-[#0a0a0a] font-semibold'
-                  : 'bg-[#1a1a1a] border border-[#262626] text-[#a0a0a0] hover:text-[#ffffff] hover:border-[#3a3a3a] hover:bg-[#222222]'
+                  ? 'bg-[#f59e0b] text-[#5b3a00] font-semibold'
+                  : 'bg-surface border border-line text-muted hover:text-ink hover:border-line-strong hover:bg-surface-2'
               }`}
             >
               24時間
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
               onChange={(e) =>
                 setFilter((prev) => ({ ...prev, dataSource: e.target.value }))
               }
-              className="bg-[#1a1a1a] border border-[#2a2a2a] text-[#e0e0e0] rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-[#00d1b2] focus:outline-none"
+              className="bg-surface border border-line text-ink-soft rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-accent focus:outline-none"
             >
               <option value="all">全データ元</option>
               <option value="osm">OpenStreetMap</option>
