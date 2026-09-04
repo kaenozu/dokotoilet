@@ -16,7 +16,8 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
 ## 調査手順
 
 1. Google Mapsで「公衆トイレ」「{エリア} トイレ」等で検索し、実在するlistingを列挙する
-2. 各施設の口コミ（新しい順・評価順の両方）を読んで清潔さの言及を抽出する
+2. 各施設の口コミ（新しい順・評価順の両方）を読んで清潔さの「傾向」を要約する
+   （例：「直近の口コミN件中M件が清潔さに好意的」）。口コミ本文は決してそのまま出力しない（転載禁止）
 3. 自治体・施設公式サイト（例：tokyotoilet.jp、区の公園ページ）で営業時間・設備を裏取りする
 
 ## スコア基準（1.0〜5.0）
@@ -32,10 +33,9 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
 
 - 実在しない施設を作らない。1件ごとにGoogle Mapsのlisting URLを添付する
 - 住所・座標はlisting記載のまま。推測で補完しない。不明は null
-- 口コミ引用は原文ママ・30字以内・最大3件。創作は厳禁
-- 各引用に `source` を付ける（確認場所。例：「Google Maps」「Yahoo!マップ」）。
-  Google Mapsの口コミ欄で直接確認した原文だけ「Google Maps」にする。
-  転載サイトで見たものはそのサイト名、不明なら付けない
+- 口コミ本文の転載は禁止（原文ママはもちろん、ほぼ同一の書き換え・翻案も不可）。
+  要約は必ず自分の文章で書き、件数と傾向は `scoreBasis` に記録する
+- 調査AIが口コミを要約する場合も、元の文章に近い言い回しのまま出力しないこと
 - スコアには必ず根拠を basis に書く（例：口コミ12件中9件が清潔に好意的）
 - listingに表示される口コミ総数も必ず記録する（externalReviewCount。口コミ本文が取れなくても件数だけは書く。「口コミなし」と「未取込」の区別に使う。0件なら0と書く）
 - 出力は下記スキーマのJSONのみ（コードブロック1つ）。 employmentの説明は不要
@@ -64,8 +64,7 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
       "hasPowderRoom": null,
       "isOpen24h": true
     },
-    "googleMapsUrl": "https://www.google.com/maps/place/...",
-    "reviewExcerpts": [{ "text": "原文引用（30字以内）", "rating": 5, "source": "Google Maps" }]
+    "googleMapsUrl": "https://www.google.com/maps/place/..."
   }
 ]
 ```

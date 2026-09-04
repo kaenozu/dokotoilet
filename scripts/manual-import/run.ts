@@ -59,7 +59,7 @@ for (const p of inPaths) {
 let geocoded = 0;
 const matchedBy: Record<string, number> = {};
 const guardRejected: string[] = [];
-const { facilities, skipped } = await convertItems(items, {
+const { facilities, skipped, warnings } = await convertItems(items, {
   geocode: async ({ name, address, geoQuery, guard }) => {
     await sleep(1200);
     const g = await geocodeBestEffort(name, address, geoQuery);
@@ -79,8 +79,9 @@ const { facilities, skipped } = await convertItems(items, {
 
 const header = `// 自動生成: bun scripts/manual-import/run.ts --in ${inPaths.map((p) => path.basename(p)).join(" --in ")}
 // 生成日: ${new Date().toISOString().split("T")[0]}
-// 由来: ChatGPT手動調査（Google口コミ・自治体調査）。座標欠落分はNominatimで補完。
-// 設備の不明値は false（未確認）として格納。信頼度lowは中立値3.0＋要確認メモ。
+// 由来: ChatGPT手動調査（Google Maps掲載情報の要約・自治体調査）。座標欠落分はNominatimで補完。
+// 規約: 口コミ本文（ユーザー投稿の転載）は取り込まない。件数と要約のみ（README「データ方針」参照）。
+// 設備の不明値は null（未確認）として格納。信頼度lowは中立値3.0＋要確認メモ。
 import type { ToiletFacility } from "../types";
 
 export const GOOGLE_SEED: ToiletFacility[] = `;
@@ -89,4 +90,5 @@ await writeFile(outPath, header + JSON.stringify(facilities, null, 2) + "\n", "u
 console.log(`input: ${items.length}件 / geocoded: ${geocoded}件 ${JSON.stringify(matchedBy)}`);
 console.log(`wrote: ${outPath}（${facilities.length}件）`);
 for (const s of skipped) console.log(`skip: ${s.name} — ${s.reason}`);
+for (const w of warnings) console.log(`warn: ${w.name} — ${w.reason}`);
 for (const r of guardRejected) console.log(`guard-reject: ${r}`);

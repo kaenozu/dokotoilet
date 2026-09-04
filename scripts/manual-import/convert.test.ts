@@ -19,7 +19,6 @@ const base: ManualItem = {
     isOpen24h: true,
   },
   googleMapsUrl: "https://www.google.com/maps/place/?q=place_id:ChIJTEST123",
-  reviewExcerpts: [{ text: "とても綺麗", rating: 5 }],
 };
 
 const noGeo = async () => {
@@ -27,9 +26,10 @@ const noGeo = async () => {
 };
 
 describe("convertItems", () => {
-  it("maps a full item with google id and excerpt reviews", async () => {
-    const { facilities, skipped } = await convertItems([base], { geocode: noGeo, today: "2026-09-04" });
+  it("maps a full item (google id + scores) without any review text", async () => {
+    const { facilities, skipped, warnings } = await convertItems([base], { geocode: noGeo });
     expect(skipped).toEqual([]);
+    expect(warnings).toEqual([]);
     expect(facilities).toHaveLength(1);
     const f = facilities[0];
     expect(f.id).toBe("google-ChIJTEST123");
@@ -37,11 +37,36 @@ describe("convertItems", () => {
     expect(f.cleanlinessScore).toBe(4.2);
     expect(f.equipmentScore).toBe(4.2);
     expect(f.attributes.hasWashlet).toBe(true);
-    expect(f.attributes.hasBabyTable).toBe(false); // null -> false
-    expect(f.reviewCount).toBe(1);
-    expect(f.reviews[0].userName).toBe("口コミ引用");
-    expect(f.reviews[0].source).toBeUndefined();
-    expect(f.reviews[0].createdAt).toBe("2026-09-04");
+    expect(f.attributes.hasBabyTable).toBeNull(); // 未調査(null)を false に潰さない
+    // 調査で確認していない項目は true/false と断定せず null（未確認）
+    expect(f.attributes.isFree).toBeNull();
+    expect(f.attributes.hasSoap).toBeNull();
+    expect(f.attributes.toiletStyle).toBeNull();
+    // 口コミ本文は取り込まない: 常に未評価で reviews は空
+    expect(f.reviewCount).toBe(0);
+    expect(f.reviews).toEqual([]);
+    expect(JSON.stringify(facilities)).not.toContain("rev-gmaps");
+  });
+
+  it("never embeds verbatim review text and warns when legacy excerpts are present", async () => {
+    const legacy = {
+      ...base,
+      reviewExcerpts: [
+        { text: "とても綺麗でした", rating: 5 },
+        { text: "汚くて臭かった", rating: 2 },
+      ],
+    } as unknown as ManualItem;
+    const { facilities, skipped, warnings } = await convertItems([legacy], { geocode: noGeo });
+    expect(skipped).toEqual([]);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].name).toBe("テスト施設");
+    expect(warnings[0].reason).toContain("転載禁止");
+    // 引用文は施設データのどこにも残らない
+    const serialized = JSON.stringify(facilities);
+    expect(serialized).not.toContain("とても綺麗でした");
+    expect(serialized).not.toContain("汚くて臭かった");
+    expect(facilities[0].reviewCount).toBe(0);
+    expect(facilities[0].reviews).toEqual([]);
   });
 
   it("null score becomes neutral 3.0 with confirmation note", async () => {
@@ -109,38 +134,11 @@ describe("convertItems", () => {
     expect(zero.facilities[0].externalReviewCount).toBe(0);
   });
 
-  it("records excerpt source when Google-confirmed", async () => {
-    const { facilities } = await convertItems(
-      [
-        {
-          ...base,
-          reviewExcerpts: [
-            { text: "とても綺麗", rating: 5, source: "Google Maps" },
-            { text: "清潔だった", rating: 4, source: "  " },
-          ],
-        },
-      ],
-      { geocode: noGeo }
-    );
-    expect(facilities[0].reviews[0].source).toBe("Google Maps");
-    expect(facilities[0].reviews[1].source).toBeUndefined();
-  });
-
   it("records coordSource in facilityNote", async () => {
     const { facilities } = await convertItems(
       [{ ...base, coordSource: "マピオン電話帳" }],
       { geocode: noGeo }
     );
     expect(facilities[0].facilityNote).toContain("マピオン電話帳");
-  });
-
-  it("caps excerpts at maxExcerpts", async () => {
-    const many = Array.from({ length: 8 }, (_, i) => ({ text: `口コミ${i}`, rating: 4 }));
-    const { facilities } = await convertItems(
-      [{ ...base, reviewExcerpts: many }],
-      { geocode: noGeo, maxExcerpts: 5 }
-    );
-    expect(facilities[0].reviews).toHaveLength(5);
-    expect(facilities[0].reviewCount).toBe(5);
   });
 });
