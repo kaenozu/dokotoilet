@@ -55,6 +55,23 @@ bun start        # 本番起動（dist/server.cjs）
   ハッシュはAPI応答に含めない。
 - フロントはAPI不通時に localStorage のみのローカル動作にフォールバックする。
 
+## Google手動調査データの取込（`scripts/manual-import/`）
+
+Places APIは使わず、ChatGPT等による手動リサーチ結果（JSON）を取込む。
+
+1. `docs/manual-research-prompt.md` をChatGPT（Deep Research推奨）に貼って調査する
+2. 出力JSONを `scripts/manual-import/inputs/{エリア}.json` に保存する
+3. 取込実行（座標欠落分はNominatimで補完、1.2秒間隔）:
+
+   ```bash
+   bun scripts/manual-import/run.ts --in scripts/manual-import/inputs/shibuya-01.json
+   ```
+
+   `src/data/googleSeed.ts` が生成される。スキップ理由はコンソールに出る
+   （座標特定不能・形式不正は取込不可）。
+4. 判定不能（score null）は中立値3.0＋要確認メモで取込む。UI上は未評価表示。
+5. 設備の不明値は `false`（未確認）として格納する。
+
 ## データ方針
 
 - `cleanlinessScore` / `cleanlinessGrade` は実測レビュー平均。

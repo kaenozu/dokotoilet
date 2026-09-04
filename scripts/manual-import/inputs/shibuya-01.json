@@ -1,0 +1,234 @@
+[
+  {
+    "name": "神宮通公園トイレ「あまやどり」",
+    "category": "park",
+    "lat": 35.6641929,
+    "lng": 139.7020557,
+    "address": "日本、〒150-0001 東京都渋谷区神宮前６丁目２２−８",
+    "openingHours": "07:00-23:00（毎日）",
+    "cleanlinessScore": 4.2,
+    "confidence": "high",
+    "scoreBasis": "渋谷区の令和6年度利用者調査N=55で「とても満足」14件、「満足」30件、「清潔」20件、「臭いがない」25件。不満2件・とても不満0件。Google Mapsは4.0/5・114件だが、星平均だけではなく自治体調査を主根拠とした。",
+    "equipment": {
+      "hasWashlet": true,
+      "hasMultipurpose": true,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
+    "reviewExcerpts": []
+  },
+  {
+    "name": "鍋島松濤公園 ﾊﾞﾘｱﾌﾘｰ公衆トイレ",
+    "category": "park",
+    "geoQuery": "鍋島松濤公園",
+    "lat": null,
+    "lng": null,
+    "address": "日本、〒150-0046 東京都渋谷区松濤２丁目１０−１０−７",
+    "openingHours": "24時間営業",
+    "cleanlinessScore": 4.7,
+    "confidence": "high",
+    "scoreBasis": "渋谷区利用者調査N=68で「とても満足」40件、「満足」22件、「清潔」46件、「臭いがない」23件。不満1件・とても不満0件。Google Mapsは3.9/5・69件。自治体調査では清潔さへの肯定が明確。",
+    "equipment": {
+      "hasWashlet": true,
+      "hasMultipurpose": true,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": true
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
+    "reviewExcerpts": []
+  },
+  {
+    "name": "渋谷駅東口 公衆トイレ",
+    "category": "station",
+    "lat": 35.6591703,
+    "lng": 139.7016171,
+    "address": "日本、〒150-0002 東京都渋谷区渋谷２丁目２３−１４",
+    "openingHours": "月-金・日 05:00-00:00、土 05:00-01:00",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "Google Mapsの公衆トイレlistingは4.6/5・26件と高評価だが、清潔さを明示する口コミ本文を今回取得できなかった。総合星評価を清潔さスコアへ推測転用しないため判定不能。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": true,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn7NPqQWLGGARN8o1-fJF74o",
+    "reviewExcerpts": []
+  },
+  {
+    "name": "京王井の頭線 渋谷駅",
+    "category": "station",
+    "lat": null,
+    "lng": null,
+    "address": "日本, 〒150-0043 東京都渋谷区道玄坂１丁目１２−１",
+    "openingHours": null,
+    "cleanlinessScore": 2.5,
+    "confidence": "medium",
+    "scoreBasis": "2026年公開の中央口改札内トイレ専門調査で総合2.8/5、清潔さ項目は約2.5/5。Google Maps listingは3.7/5・18件だが、清潔さに限定したGoogle口コミ本文の十分な抽出はできていないためmedium。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": true,
+      "hasBabyTable": true,
+      "hasPowderRoom": true,
+      "isOpen24h": null
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJe3fBYgCLGGARb1EaXbqbbc4",
+    "reviewExcerpts": []
+  },
+  {
+    "name": "渋谷ヒカリエ",
+    "category": "department",
+    "lat": null,
+    "lng": null,
+    "address": "日本、〒150-8510 東京都渋谷区渋谷２丁目２１−１",
+    "openingHours": "平日・土 11:00-21:00、日・祝 11:00-20:00",
+    "cleanlinessScore": 4.6,
+    "confidence": "medium",
+    "scoreBasis": "トイレの清潔さを明示する肯定口コミを2件確認。2025年訪問の5★口コミと4★口コミで綺麗さへの明確な言及があり、今回取得した範囲では否定的な清潔さ言及なし。ただしGoogle Maps全口コミの並べ替え監査は未完。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": true,
+      "hasBabyTable": null,
+      "hasPowderRoom": true,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJP6jlUFiLGGAR5fwuswd1KXA",
+    "reviewExcerpts": [
+      {
+        "text": "ヒカリエのトイレはとてもキレイです。",
+        "rating": 4
+      },
+      {
+        "text": "そのおしゃれなトイレが話題になりました。",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "name": "渋谷スクランブルスクエア",
+    "category": "department",
+    "lat": null,
+    "lng": null,
+    "address": "日本、〒150-0002 東京都渋谷区渋谷２丁目２４−１２",
+    "openingHours": "10:00-21:00（ショップ営業時間基準）",
+    "cleanlinessScore": 4.4,
+    "confidence": "medium",
+    "scoreBasis": "4★利用者口コミでトイレを明確に「キレイ」と評価。別の利用者投稿でもトイレの綺麗さへの強い肯定があり、施設衛生管理事例でも館内・トイレの清潔維持を確認。一方、直接の評価付き清潔口コミ数が少ないためmedium。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": true,
+      "hasBabyTable": true,
+      "hasPowderRoom": null,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJscDhJ4SLGGARbx0GlzPi9ng",
+    "reviewExcerpts": [
+      {
+        "text": "キレイなトイレです、ありがとうございました。",
+        "rating": 4
+      }
+    ]
+  },
+  {
+    "name": "渋谷PARCO",
+    "category": "department",
+    "lat": null,
+    "lng": null,
+    "address": "日本、〒150-8377 東京都渋谷区宇田川町１５−１ 渋谷パルコ・ヒューリックビル B1-10階",
+    "openingHours": "11:00-21:00（毎日）",
+    "cleanlinessScore": 4.4,
+    "confidence": "medium",
+    "scoreBasis": "3.5★旅行口コミでトイレを「ピカピカで綺麗」と明示。ほかにも改装後トイレの綺麗さへの肯定的言及を確認し、今回取得した範囲では清潔さについての明確な否定はなし。ただし清潔さを評価する最新口コミの母数が少ない。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": true,
+      "hasBabyTable": true,
+      "hasPowderRoom": true,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJcyH-4qiMGGARGzk4lZCx2xo",
+    "reviewExcerpts": [
+      {
+        "text": "トイレもピカピカで綺麗でした。",
+        "rating": 3.5
+      }
+    ]
+  },
+  {
+    "name": "ローソン 渋谷一丁目店",
+    "category": "convenience",
+    "lat": null,
+    "lng": null,
+    "address": "日本, 〒150-0002 東京都渋谷区渋谷１丁目１０−１ １階",
+    "openingHours": "24時間営業",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "Google Maps listingは3.0/5・46件。3.5★口コミでトイレを利用できることは確認できたが、トイレ自体の清潔さへの言及ではないため判定不能。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": true
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJMaI731OLGGARRjpKM-IoEkA",
+    "reviewExcerpts": [
+      {
+        "text": "都会では珍しくトイレの利用も出来る",
+        "rating": 3.5
+      }
+    ]
+  },
+  {
+    "name": "喫茶室ルノアール 渋谷宮下公園店",
+    "category": "cafe",
+    "geoQuery": "渋谷地下鉄ビル",
+    "lat": null,
+    "lng": null,
+    "address": "日本、〒150-0002 東京都渋谷区渋谷１丁目１６−１４ 渋谷地下鉄ビル 2F",
+    "openingHours": "08:00-22:00（毎日）",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "店舗口コミからビル共用トイレを使用することは確認できたが、トイレそのものの清潔さを評価した十分な口コミ本文を取得できず判定不能。Google Mapsの店舗総合3.7/5・452件は清潔さへ転用していない。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn-8w66eMGGAReKy7V_Fuh8g",
+    "reviewExcerpts": []
+  },
+  {
+    "name": "ドトールコーヒーショップ 渋谷１丁目店",
+    "category": "cafe",
+    "geoQuery": "ドトールコーヒーショップ 渋谷1丁目店",
+    "lat": null,
+    "lng": null,
+    "address": "日本, 〒150-0002 東京都渋谷区渋谷１丁目１４−１５ 森ビル",
+    "openingHours": "平日 07:00-21:00、土日祝 07:30-20:00",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "3★口コミでトイレが2つあり1つが故障中だったとの利用情報は確認したが、清潔さへの評価ではない。Google Maps店舗総合3.6/5・513件を清潔さへ推測転用せず判定不能。",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": false
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ0_O8DFiLGGARIMS75pBB_ug",
+    "reviewExcerpts": [
+      {
+        "text": "２つあるトイレのひとつが故障中",
+        "rating": 3
+      }
+    ]
+  }
+]

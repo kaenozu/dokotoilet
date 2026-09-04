@@ -14,22 +14,23 @@ export interface DataSourceComparison {
 export const DATA_SOURCES_INFO: DataSourceComparison[] = [
   {
     id: 'google',
-    name: 'Google Maps Platform (Places API New)',
-    badge: '不採用（有料のため）',
-    coverage: '日本全国・全世界（商業施設・駅・コンビニ・飲食店・公園）',
-    cost: '毎月$200の無料枠あり / 従量課金制',
+    name: 'Google Maps（手動調査＋バッチ取込）',
+    badge: '条件付き採用（API不使用）',
+    coverage: '調査済みエリアの商業施設・駅・コンビニ・飲食店・公園',
+    cost: '無料（Places APIは使わず、手動リサーチ＋取込スクリプト）',
     cleanlinessDataLevel: 'High',
     pros: [
-      '施設数・座標精度が圧倒的（百貨店、コンビニ、駅ナカ、カフェをすべて網羅）',
-      '利用者の口コミ数が膨大で、清潔度情報が自然言語で豊富に含まれる',
+      '施設数・口コミ数が圧倒的で、清潔度情報が自然言語で豊富に含まれる',
+      '調査員（ChatGPT Deep Research等）が口コミ読解＋公式裏取り＋根拠明示まで行う',
+      'API課金なし・キー管理不要',
     ],
     cons: [
-      '従量課金制のため本アプリでは不採用（無料枠超過で課金が発生するリスク）',
-      'Google利用規約により、口コミテキストや場所情報の長期ローカル保存（30日超）に制限がある',
+      'Places API自体は従量課金のため不採用（無料枠超過で課金が発生するリスク）',
+      '手動調査のためカバレッジ拡大はエリア毎の作業が必要',
       '「トイレ」そのもののオブジェクトではなく、「施設」の口コミから清潔度を抽出・判定する工夫が必要',
     ],
-    apiSpec: 'Places API (New) searchNearby, searchByText, Place.fetchFields, Maps JavaScript API',
-    recommendedRole: '不採用。地図はOSM/国土地理院タイル、きれい度はユーザー投稿でまかなう方針',
+    apiSpec: '手動調査プロンプト（docs/manual-research-prompt.md）＋ scripts/manual-import/run.ts',
+    recommendedRole: '「商業施設・コンビニ・駅」のきれい度情報の補完。APIではなく調査結果の取込',
   },
   {
     id: 'osm',
