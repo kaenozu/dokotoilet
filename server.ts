@@ -2,7 +2,6 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import path from "path";
-import crypto from "node:crypto";
 import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
 import {
@@ -10,7 +9,9 @@ import {
   createCommunityRouter,
   defaultStorePath,
 } from "./server/community";
+import { osmCacheKey, resolveCommunitySalt } from "./server/runtime";
 import {
+  formatOsmOpeningHours,
   isTheTokyoToiletTags,
   osmAttributesFromTags,
   triFromFee,
@@ -65,7 +66,10 @@ async function startServer() {
 
   // コミュニティ投稿API（ファイルストア。 ephemeral FS では再起動で消える点に注意）
   const communityStore = new CommunityStore(defaultStorePath());
-  const communitySalt = process.env.COMMUNITY_SALT || crypto.randomUUID();
+  const communitySalt = resolveCommunitySalt(
+    process.env.NODE_ENV,
+    process.env.COMMUNITY_SALT
+  );
   app.use("/api/community", createCommunityRouter(communityStore, communitySalt));
 
   // Health check
@@ -118,7 +122,7 @@ async function startServer() {
       const lng = q.lng ?? 139.7006;
       const radius = q.radius ?? 1500;
 
-      const cacheKey = `${lat.toFixed(2)}_${lng.toFixed(2)}_${radius}`;
+      const cacheKey = osmCacheKey(lat, lng, radius);
       const cached = osmCache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < OSM_CACHE_TTL) {
         res.json(cached.data);
@@ -278,7 +282,7 @@ async function startServer() {
             comfort: score,
           },
           attributes: osmAttributesFromTags(tags),
-          openingHours: tags.opening_hours ? (isOpen24h ? "24時間" : tags.opening_hours) : "常時開放",
+          openingHours: formatOsmOpeningHours(tags.opening_hours),
           description: `OpenStreetMap (Node/Way ID: ${el.id}) に登録されている実在の公衆トイレです。${
             tags.description ? tags.description : ""
           }`,
