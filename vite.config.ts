@@ -11,6 +11,17 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom'],
+            leaflet: ['leaflet'],
+            icons: ['lucide-react'],
+          },
+        },
+      },
+    },
     server: {
       // AI Studio では DISABLE_HMR=true で HMR を無効化する（エージェントの編集によるちらつき防止）。
       // その場合、ファイル監視も止めて CPU 消費を抑える。
