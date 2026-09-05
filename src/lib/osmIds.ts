@@ -31,6 +31,20 @@ export function legacyOsmIdForTyped(id: string): string | null {
   return parsed ? `osm-${parsed.numericId}` : null;
 }
 
+export function isTypedOsmAliasUnambiguous(
+  facilityId: string,
+  knownFacilityIds: Iterable<string>
+): boolean {
+  const parsed = parseTypedOsmFacilityId(facilityId);
+  if (!parsed) return false;
+  let matches = 0;
+  for (const candidate of knownFacilityIds) {
+    const candidateParsed = parseTypedOsmFacilityId(candidate);
+    if (candidateParsed?.numericId === parsed.numericId) matches += 1;
+  }
+  return matches === 1;
+}
+
 /**
  * Static seed rows already carry a typed officialOpenDataId. Canonicalize only when that
  * value is valid and refers to the same numeric OSM object as the legacy id.
@@ -83,14 +97,9 @@ export function externalReviewsForFacility(
   if (!legacyId) return exact.length > 0 ? exact : undefined;
   const legacy = externalReviews[legacyId] ?? [];
   if (legacy.length === 0) return exact.length > 0 ? exact : undefined;
-
-  const parsed = parseTypedOsmFacilityId(facilityId)!;
-  let matches = 0;
-  for (const candidate of knownFacilityIds) {
-    const candidateParsed = parseTypedOsmFacilityId(candidate);
-    if (candidateParsed?.numericId === parsed.numericId) matches += 1;
+  if (!isTypedOsmAliasUnambiguous(facilityId, knownFacilityIds)) {
+    return exact.length > 0 ? exact : undefined;
   }
-  if (matches !== 1) return exact.length > 0 ? exact : undefined;
 
   const byId = new Map<string, ToiletReview>();
   for (const review of [...exact, ...legacy]) {
