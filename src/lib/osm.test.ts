@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatOsmOpeningHours,
   isTheTokyoToiletTags,
   osmAttributesFromTags,
   triFromFee,
@@ -32,6 +33,15 @@ describe("triFromOpen24h", () => {
     expect(triFromOpen24h("24/7")).toBe(true);
     expect(triFromOpen24h("Mo-Su 06:00-22:00")).toBe(false);
     expect(triFromOpen24h(undefined)).toBeNull();
+  });
+});
+
+describe("formatOsmOpeningHours", () => {
+  it("does not infer 24-hour access from a missing tag", () => {
+    expect(formatOsmOpeningHours(undefined)).toBe("営業時間未確認");
+    expect(formatOsmOpeningHours("")).toBe("営業時間未確認");
+    expect(formatOsmOpeningHours("24/7")).toBe("24時間");
+    expect(formatOsmOpeningHours("Mo-Su 06:00-22:00")).toBe("Mo-Su 06:00-22:00");
   });
 });
 
