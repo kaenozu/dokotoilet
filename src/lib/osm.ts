@@ -36,6 +36,18 @@ export function triToiletStyle(v: string | undefined): ToiletAttributes["toiletS
   return null;
 }
 
+/** The Tokyo Toilet は明示的な network/brand タグだけで判定する。architect 単独では判定しない。 */
+export function isTheTokyoToiletTags(
+  tags: Record<string, string | undefined>
+): boolean {
+  const values = [tags.network, tags.brand, tags.operator]
+    .filter((v): v is string => typeof v === "string")
+    .map((v) => v.trim().toLowerCase());
+  return values.some(
+    (v) => v === "the tokyo toilet" || v.includes("the tokyo toilet")
+  );
+}
+
 /** OSM タグ一式 → ToiletAttributes（タグ欠落はすべて null=未確認） */
 export function osmAttributesFromTags(
   tags: Record<string, string | undefined>
