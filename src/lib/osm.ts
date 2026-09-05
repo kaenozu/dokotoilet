@@ -28,6 +28,11 @@ export function triFromOpen24h(v: string | undefined): TriState {
   return false;
 }
 
+export function formatOsmOpeningHours(v: string | undefined): string {
+  if (!v || !v.trim()) return "営業時間未確認";
+  return v === "24/7" ? "24時間" : v;
+}
+
 /** toilets:position: seated→western / squat→japanese / seated_and_squat→both / 欠落→null */
 export function triToiletStyle(v: string | undefined): ToiletAttributes["toiletStyle"] {
   if (v === "seated") return "western";
