@@ -18,6 +18,7 @@ import {
   triFromOpen24h,
   triFromYesNo,
 } from "./src/lib/osm";
+import { isOsmElementType, osmFacilityId } from "./src/lib/osmIds";
 
 /** クエリパラメータ→数値。未指定は undefined、指定があれば数値化（数値化不能は NaN）。 */
 function parseQueryNum(v: unknown): number | undefined {
@@ -194,6 +195,8 @@ async function startServer() {
         const itemLat = el.lat || el.center?.lat;
         const itemLng = el.lon || el.center?.lon;
         const tags = el.tags || {};
+        if (!isOsmElementType(el.type)) return null;
+        const facilityId = osmFacilityId(el.type, el.id);
         let name = tags.name || tags["name:ja"];
         if (!name) {
           if (tags.operator) {
@@ -259,7 +262,7 @@ async function startServer() {
             : undefined;
 
         return {
-          id: `osm-${el.id}`,
+          id: facilityId,
           name,
           facilityType: isTheTokyoToilet
             ? "THE TOKYO TOILET (渋谷区デザイン公衆トイレ)"
@@ -283,7 +286,7 @@ async function startServer() {
           },
           attributes: osmAttributesFromTags(tags),
           openingHours: formatOsmOpeningHours(tags.opening_hours),
-          description: `OpenStreetMap (Node/Way ID: ${el.id}) に登録されている実在の公衆トイレです。${
+          description: `OpenStreetMap (${el.type} ID: ${el.id}) に登録されている実在の公衆トイレです。${
             tags.description ? tags.description : ""
           }`,
           reviewCount: 0,
@@ -297,10 +300,10 @@ async function startServer() {
           pros,
           cons,
           tips: safeContact ? `公式情報: ${safeContact}` : undefined,
-          officialOpenDataId: `osm-${el.id}`,
+          officialOpenDataId: facilityId,
           googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
         };
-      }).filter((t) => t.lat && t.lng);
+      }).filter((t) => t && t.lat && t.lng);
 
       const responsePayload = {
         elements: rawElements,
