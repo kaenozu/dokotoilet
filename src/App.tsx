@@ -11,7 +11,8 @@ import { KUMAGAYA_SEED } from './data/kumagayaSeed';
 import { mergeSeedLists } from './lib/seed';
 import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
-import { osmAttributesFromTags } from './lib/osm';
+import { formatOsmOpeningHours, osmAttributesFromTags } from './lib/osm';
+import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import {
   applyDeltaToSeeds,
@@ -338,7 +339,7 @@ export default function App() {
               equipmentScore: 3.4,
               subScores: { cleanliness: 3.4, odor: 3.3, supplies: 3.5, comfort: 3.4 },
               attributes: osmAttributesFromTags(tags),
-              openingHours: tags.opening_hours || '常時開放',
+              openingHours: formatOsmOpeningHours(tags.opening_hours),
               description: `OpenStreetMap登録の実在公衆便所。`,
               reviewCount: 0,
               reviews: [],
@@ -569,37 +570,43 @@ export default function App() {
   const handleVoteHelpful = async (toiletId: string, reviewId: string) => {
     if (votedReviewIds.includes(reviewId)) return;
     setVotedReviewIds((prev) => [...prev, reviewId]);
-    const bumpVote = (t: ToiletFacility): ToiletFacility =>
-      t.id === toiletId
-        ? {
-            ...t,
-            reviews: t.reviews.map((r) =>
-              r.id === reviewId ? { ...r, helpfulCount: r.helpfulCount + 1 } : r
-            ),
-          }
-        : t;
-    setToilets((prev) => prev.map(bumpVote));
-    setSelectedToilet((cur) => (cur ? bumpVote(cur) : cur));
+    setToilets((prev) =>
+      prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, 1))
+    );
+    setSelectedToilet((cur) =>
+      cur ? adjustHelpfulCount(cur, toiletId, reviewId, 1) : cur
+    );
+
+    const rollback = () => {
+      setVotedReviewIds((prev) => prev.filter((id) => id !== reviewId));
+      setToilets((prev) =>
+        prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, -1))
+      );
+      setSelectedToilet((cur) =>
+        cur ? adjustHelpfulCount(cur, toiletId, reviewId, -1) : cur
+      );
+    };
+
     try {
       const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/helpful`, {
         method: 'POST',
       });
-      if (res.ok) {
-        const data = await res.json();
-        const syncVote = (t: ToiletFacility): ToiletFacility =>
-          t.id === toiletId
-            ? {
-                ...t,
-                reviews: t.reviews.map((r) =>
-                  r.id === reviewId ? { ...r, helpfulCount: data.helpfulCount } : r
-                ),
-              }
-            : t;
-        setToilets((prev) => prev.map(syncVote));
-        setSelectedToilet((cur) => (cur ? syncVote(cur) : cur));
+      if (!res.ok) {
+        rollback();
+        showToast('「役に立った」を送信できませんでした。再度お試しください。');
+        return;
       }
+
+      const data = await res.json();
+      setToilets((prev) =>
+        prev.map((t) => setHelpfulCount(t, toiletId, reviewId, data.helpfulCount))
+      );
+      setSelectedToilet((cur) =>
+        cur ? setHelpfulCount(cur, toiletId, reviewId, data.helpfulCount) : cur
+      );
     } catch {
-      /* offline: local count only */
+      rollback();
+      showToast('「役に立った」を送信できませんでした（オフライン）。');
     }
   };
 
