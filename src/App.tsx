@@ -15,6 +15,16 @@ import { formatOsmOpeningHours, osmAttributesFromTags } from './lib/osm';
 import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import {
+  buildFacilityIdAliases,
+  canonicalizeSeedOsmFacility,
+  externalReviewsForFacility,
+  isOsmElementType,
+  isTypedOsmAliasUnambiguous,
+  legacyOsmIdForTyped,
+  osmFacilityId,
+  remapReviewDeltaKeys,
+} from './lib/osmIds';
+import {
   applyDeltaToSeeds,
   emptyDelta,
   extractDelta,
@@ -31,10 +41,12 @@ import {
   unionServerToilet,
 } from './lib/localDeltas';
 
-const SEED_TOILETS = mergeSeedLists(
+const RAW_SEED_TOILETS = mergeSeedLists(
   GOOGLE_SEED,
   mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
 );
+const SEED_TOILETS = RAW_SEED_TOILETS.map(canonicalizeSeedOsmFacility);
+const SEED_ID_ALIASES = buildFacilityIdAliases(RAW_SEED_TOILETS, SEED_TOILETS);
 import { Header } from './components/Header';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
@@ -160,6 +172,7 @@ export default function App() {
           localStorage.removeItem(LEGACY_TOILETS_V2_KEY);
         }
       }
+      if (delta) delta = remapReviewDeltaKeys(delta, SEED_ID_ALIASES);
       const cachedOsm = parseToiletArray(localStorage.getItem(OSM_CACHE_KEY));
       const seeded = applyDeltaToSeeds(SEED_TOILETS, delta ?? emptyDelta());
       return mergeFacilityLists(seeded, cachedOsm);
@@ -280,11 +293,14 @@ export default function App() {
           });
           const localOnly = prev.filter((t) => !serverIds.has(t.id));
           const base = [...merged, ...localOnly];
+          const knownFacilityIds = base.map((t) => t.id);
           return base.map((t) => {
-            const reviews = externalReviews[t.id];
-            return reviews && reviews.length > 0
-              ? overlayExternalReviews(t, reviews)
-              : t;
+            const reviews = externalReviewsForFacility(t.id, externalReviews, knownFacilityIds);
+            if (reviews && reviews.length > 0) {
+              noteReviewsKnown(t.id, reviews.map((r) => r.id));
+              return overlayExternalReviews(t, reviews);
+            }
+            return t;
           });
         });
       } catch {
@@ -323,9 +339,9 @@ export default function App() {
             const itemLat = el.lat || el.center?.lat;
             const itemLng = el.lon || el.center?.lon;
             const tags = el.tags || {};
-            if (!itemLat || !itemLng) return null;
+            if (!itemLat || !itemLng || !isOsmElementType(el.type)) return null;
             return sanitizeToiletFacility({
-              id: `osm-${el.id}`,
+              id: osmFacilityId(el.type, el.id),
               name: tags.name || `公衆便所 (OSM #${el.id})`,
               facilityType: '公衆便所 (OpenStreetMap実在登録)',
               category: 'park' as const,
@@ -344,6 +360,7 @@ export default function App() {
               reviewCount: 0,
               reviews: [],
               facilityNote: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
+              officialOpenDataId: osmFacilityId(el.type, el.id),
             });
           })
           .filter(Boolean) as ToiletFacility[];
@@ -357,37 +374,71 @@ export default function App() {
       }
 
       setToilets((prev) => {
-        const existingIds = new Set(prev.map((t) => t.id));
-        const newFacilities: ToiletFacility[] = [];
+        const next = [...prev];
+        const existingIds = new Set(next.map((t) => t.id));
+        const knownTypedIds = [...next.map((t) => t.id), ...incoming.map((t) => t.id)];
+        let addedCount = 0;
 
         for (const item of incoming) {
-          if (!existingIds.has(item.id)) {
-            const isDuplicateCoord = prev.some(
-              (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
+          if (existingIds.has(item.id)) continue;
+
+          const legacyId = legacyOsmIdForTyped(item.id);
+          const legacyIndex = legacyId ? next.findIndex((p) => p.id === legacyId) : -1;
+          if (
+            legacyIndex >= 0 &&
+            legacyId &&
+            isTypedOsmAliasUnambiguous(item.id, knownTypedIds)
+          ) {
+            const legacy = next[legacyIndex];
+            let migrated = legacy.reviews.length > 0
+              ? recomputeFromReviews(item, legacy.reviews)
+              : item;
+            const shared = externalReviewsForFacility(
+              item.id,
+              externalReviewsRef.current,
+              knownTypedIds
             );
-            if (!isDuplicateCoord) {
-              const shared = externalReviewsRef.current[item.id];
-              newFacilities.push(
-                shared && shared.length > 0
-                  ? overlayExternalReviews(item, shared)
-                  : item
-              );
-              existingIds.add(item.id);
+            if (shared && shared.length > 0) {
+              noteReviewsKnown(item.id, shared.map((r) => r.id));
+              migrated = overlayExternalReviews(migrated, shared);
             }
+            next[legacyIndex] = migrated;
+            existingIds.delete(legacyId);
+            existingIds.add(item.id);
+            addedCount += 1;
+            continue;
+          }
+
+          const isDuplicateCoord = next.some(
+            (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
+          );
+          if (!isDuplicateCoord) {
+            const shared = externalReviewsForFacility(
+              item.id,
+              externalReviewsRef.current,
+              knownTypedIds
+            );
+            next.push(
+              shared && shared.length > 0
+                ? overlayExternalReviews(item, shared)
+                : item
+            );
+            if (shared && shared.length > 0) noteReviewsKnown(item.id, shared.map((r) => r.id));
+            existingIds.add(item.id);
+            addedCount += 1;
           }
         }
 
-        if (newFacilities.length > 0) {
+        if (addedCount > 0) {
           if (notifyUser) {
-            showToast(`新たに ${newFacilities.length} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
+            showToast(`新たに ${addedCount} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
           }
-          return [...prev, ...newFacilities];
-        } else {
-          if (notifyUser) {
-            showToast('この周辺の実在公衆トイレはすでに取得済みです。');
-          }
-          return prev;
+          return next;
         }
+        if (notifyUser) {
+          showToast('この周辺の実在公衆トイレはすでに取得済みです。');
+        }
+        return prev;
       });
     } catch {
       if (notifyUser) {
@@ -493,14 +544,17 @@ export default function App() {
           ...externalReviewsRef.current,
           [toiletId]: serverReviews,
         };
-        noteReviewsKnown(toiletId, serverReviews.map((r) => r.id));
+        const knownFacilityIds = toilets.map((t) => t.id);
+        const compatibleReviews =
+          externalReviewsForFacility(toiletId, externalReviewsRef.current, knownFacilityIds) ?? serverReviews;
+        noteReviewsKnown(toiletId, compatibleReviews.map((r) => r.id));
         setToilets((prev) =>
           prev.map((t) =>
-            t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
+            t.id === toiletId ? overlayExternalReviews(t, compatibleReviews) : t
           )
         );
         if (selectedToilet?.id === toiletId) {
-          setSelectedToilet(overlayExternalReviews(selectedToilet, serverReviews));
+          setSelectedToilet(overlayExternalReviews(selectedToilet, compatibleReviews));
         }
         return;
       }
