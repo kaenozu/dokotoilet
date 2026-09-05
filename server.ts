@@ -11,6 +11,7 @@ import {
   defaultStorePath,
 } from "./server/community";
 import {
+  isTheTokyoToiletTags,
   osmAttributesFromTags,
   triFromFee,
   triFromOpen24h,
@@ -78,9 +79,7 @@ async function startServer() {
   const OSM_CACHE_MAX = 200;
 
   function osmCacheSet(key: string, data: any) {
-    // 挿入順を最新にするため既存キーは入れ直す
     if (osmCache.has(key)) osmCache.delete(key);
-    // 上限超過分は古いものから捨てる
     while (osmCache.size >= OSM_CACHE_MAX) {
       const oldest = osmCache.keys().next();
       if (oldest.done) break;
@@ -89,7 +88,6 @@ async function startServer() {
     osmCache.set(key, { timestamp: Date.now(), data });
   }
 
-  // TTL切れエントリの定期掃除（5分毎）。タイマーはプロセス終了を妨げない
   const cacheSweeper = setInterval(() => {
     const now = Date.now();
     for (const [key, entry] of osmCache) {
@@ -98,11 +96,8 @@ async function startServer() {
   }, 5 * 60 * 1000);
   (cacheSweeper as unknown as { unref?: () => void }).unref?.();
 
-  // OpenStreetMap Overpass API Proxy for live real toilets
   app.get("/api/osm/toilets", async (req, res) => {
     try {
-      // クエリ検証（P5）: 未指定は既定値。指定がある場合は有限値かつ範囲内のみ受け付ける。
-      // NaN / Infinity / 範囲外の値が Overpass クエリやキャッシュキーに混入しないようにする。
       const q = {
         lat: parseQueryNum(req.query.lat),
         lng: parseQueryNum(req.query.lng),
@@ -130,12 +125,7 @@ async function startServer() {
         return;
       }
 
-      // nwr query: nodes + ways + relations (buildings etc.) with center coords.
-      // Limit 100 covers dense areas (e.g. Shibuya ~98 hits); ways surface only
-      // if the limit is not truncated, hence > 45.
       const overpassQuery = `[out:json][timeout:10];nwr["amenity"="toilets"](around:${radius},${lat},${lng});out center 100;`;
-
-      // Fast, resilient mirrors（高速・安定な順）
       const mirrors = [
         "https://overpass.kumi.systems/api/interpreter",
         "https://overpass-api.de/api/interpreter",
@@ -150,20 +140,16 @@ async function startServer() {
         try {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
-
           const osmResponse = await fetch(mirrorUrl, {
             method: "POST",
             body: "data=" + encodeURIComponent(overpassQuery),
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              // Overpass利用ポリシー: 連絡可能なUA必須
               "User-Agent": "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
             },
             signal: controller.signal,
           });
-
           clearTimeout(timeoutId);
-
           if (osmResponse.ok) {
             const data = await osmResponse.json();
             if (Array.isArray(data.elements) && data.elements.length > 0) {
@@ -174,12 +160,10 @@ async function startServer() {
           }
         } catch (e) {
           lastMirrorError = e;
-          // Gracefully continue to next mirror without noisy unhandled warnings
           continue;
         }
       }
 
-      // 全ミラー失敗は握りつぶさず console.error で可視化する（後段で実在OSMシードへフォールバック）
       if (!fetchSuccess) {
         console.error(
           "[osm-proxy] All Overpass mirrors returned no usable data; falling back to seed:",
@@ -189,8 +173,6 @@ async function startServer() {
         );
       }
 
-      // If live Overpass endpoints are temporarily unreachable, use verified real OSM seed data
-      // source: レスポンスの出所を明示する（クライアント・運用での障害判別用）
       let source: "overpass" | "seed" | "none" = fetchSuccess ? "overpass" : "none";
       if (!fetchSuccess || rawElements.length === 0) {
         const matchedSeed = REAL_OSM_SEED.filter((el: any) => {
@@ -204,13 +186,10 @@ async function startServer() {
         }
       }
 
-      // Convert raw OSM elements into clean ToiletFacility format (Real Data, 0 Mock Reviews)
       const toilets = rawElements.map((el: any) => {
         const itemLat = el.lat || el.center?.lat;
         const itemLng = el.lon || el.center?.lon;
         const tags = el.tags || {};
-
-        // Real name extraction
         let name = tags.name || tags["name:ja"];
         if (!name) {
           if (tags.operator) {
@@ -224,17 +203,14 @@ async function startServer() {
           name = `${name} 公衆トイレ`;
         }
 
-        const isTheTokyoToilet = tags.network === "The Tokyo Toilet" || tags.architect;
+        const isTheTokyoToilet = isTheTokyoToiletTags(tags);
         const isWheelchair = tags.wheelchair === "yes";
         const hasDiaper = tags.diaper === "yes" || tags.changing_table === "yes";
-        // 設備フラグは true/false/null の3値（null=未確認）。タグ欠落時は楽観的に
-        // true にしない。特に fee タグ欠落を「無料」と断定しない（レビューP1）。
         const hasWashlet = triFromYesNo(tags.washlet);
         const isFree = triFromFee(tags.fee);
         const isOpen24h = triFromOpen24h(tags.opening_hours);
         const isOstomate = triFromYesNo(tags.ostomate);
 
-        // Facility category
         let category: "park" | "station" | "convenience" | "hotel" | "department" | "cafe" = "park";
         if (
           tags.operator?.includes("JR") ||
@@ -246,7 +222,6 @@ async function startServer() {
           category = "station";
         }
 
-        // Equipment-derived baseline score (clearly marked as 0 reviews yet)
         let grade: "S" | "A" | "B" | "C" | "D" = "B";
         let score = 3.3;
         if (isTheTokyoToilet) {
@@ -270,11 +245,9 @@ async function startServer() {
         if (isFree) pros.push("無料利用可能");
 
         const cons: string[] = [];
-        // 未確認(null)を「非対応」と断定しない。確認済みの「なし」のみ記載する
         if (hasWashlet === false) cons.push("ウォシュレット非対応");
         if (tags.wheelchair === "no") cons.push("車椅子非対応の構造");
 
-        // OSMは誰でも編集できるため、contact:websiteはhttp(s)のみ許可する
         const rawContact = tags["contact:website"];
         const safeContact =
           typeof rawContact === "string" && /^https?:\/\/[^\\"'\s]+$/i.test(rawContact.trim())
@@ -282,8 +255,6 @@ async function startServer() {
             : undefined;
 
         return {
-          // node/way/relationでID空間は別だが、同一半径内の数値衝突は無視できるため
-          // 従来形式（osm-<id>）を維持する（保存データとの互換性優先）
           id: `osm-${el.id}`,
           name,
           facilityType: isTheTokyoToilet
@@ -296,8 +267,6 @@ async function startServer() {
           lat: itemLat,
           lng: itemLng,
           address: tags["addr:full"] || tags["addr:street"] || "周辺道路・公園内",
-          // 実測レビュー0件のため、設備推定値を表示用にも入れる。
-          // UIは reviewCount===0 を「未評価」として扱う（isEvaluated参照）
           cleanlinessGrade: grade,
           cleanlinessScore: score,
           equipmentGrade: grade,
@@ -333,18 +302,13 @@ async function startServer() {
         elements: rawElements,
         toilets,
         count: toilets.length,
-        // 出所を明示: overpass（ライブ）/ seed（実在OSMシードへフォールバック）/ none（データなし）
         source,
         timestamp: new Date().toISOString(),
       };
 
-      if (toilets.length > 0) {
-        osmCacheSet(cacheKey, responsePayload);
-      }
-
+      if (toilets.length > 0) osmCacheSet(cacheKey, responsePayload);
       res.json(responsePayload);
     } catch (err: any) {
-      // 内部エラーは成功風の空ペイロードで隠さず、エラーログと source=error で明示する
       console.error("OSM Overpass API error:", err?.message ?? err);
       res.status(502).json({
         elements: [],
@@ -357,7 +321,6 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development vs static build in production
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
