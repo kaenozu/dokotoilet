@@ -367,7 +367,7 @@ export class CommunityStore {
   }
 
   async addToilet(t: ToiletFacility): Promise<{ added: boolean }> {
-    return this.mutate((db) => {
+    return this.mutate<{ added: boolean }>((db) => {
       if (db.toilets.some((x) => x.id === t.id)) {
         return { result: { added: false }, changed: false };
       }
@@ -423,12 +423,23 @@ export class CommunityStore {
     cleanlinessGrade?: CleanlinessGrade;
     overallScore?: number;
   }> {
-    return this.mutate((db) => {
+    type AddReviewResult = {
+      error?: "not_found" | "duplicate";
+      toilet?: ToiletFacility;
+      facilityId?: string;
+      reviews?: ToiletReview[];
+      reviewCount?: number;
+      cleanlinessScore?: number;
+      cleanlinessGrade?: CleanlinessGrade;
+      overallScore?: number;
+    };
+
+    return this.mutate<AddReviewResult>((db) => {
       const t = db.toilets.find((x) => x.id === toiletId);
 
       if (t) {
         if (this.hasDuplicate(db, t.reviews, input.comment, ipHash)) {
-          return { result: { error: "duplicate" as const }, changed: false };
+          return { result: { error: "duplicate" }, changed: false };
         }
         const review = this.buildReview(input);
         db.reviewKeys[review.id] = { ipHash, at: Date.now() };
@@ -444,12 +455,12 @@ export class CommunityStore {
       }
 
       if (!isExternalFacilityId(toiletId)) {
-        return { result: { error: "not_found" as const }, changed: false };
+        return { result: { error: "not_found" }, changed: false };
       }
 
       const existing = db.externalReviews[toiletId] ?? [];
       if (this.hasDuplicate(db, existing, input.comment, ipHash)) {
-        return { result: { error: "duplicate" as const }, changed: false };
+        return { result: { error: "duplicate" }, changed: false };
       }
 
       const review = this.buildReview(input);
@@ -501,7 +512,11 @@ export class CommunityStore {
     reviewId: string,
     ipHash: string
   ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }> {
-    return this.mutate((db) => {
+    return this.mutate<{
+      helpfulCount: number;
+      voted: boolean;
+      found: boolean;
+    }>((db) => {
       const hit = this.findReview(db, reviewId);
       if (!hit) {
         return {
@@ -541,7 +556,7 @@ export class CommunityStore {
     reviewId: string,
     reason: string
   ): Promise<{ ok: boolean; found: boolean }> {
-    return this.mutate((db) => {
+    return this.mutate<{ ok: boolean; found: boolean }>((db) => {
       const t = db.toilets.find((x) => x.id === toiletId);
       const reviews = t ? t.reviews : db.externalReviews[toiletId];
       if (!reviews || !reviews.some((r) => r.id === reviewId)) {
