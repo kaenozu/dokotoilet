@@ -1,0 +1,99 @@
+name: Apply Firestore runtime wiring
+
+on:
+  push:
+    branches: [feat/firestore-community-backend]
+    paths:
+      - .github/workflows/apply-firestore-runtime.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/firestore-community-backend
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Capture branch head
+        id: head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Apply runtime wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          community = Path('server/community.ts')
+          text = community.read_text()
+          old = 'export type ExternalFacilityValidator = (facilityId: string) => boolean;'
+          new = 'export type ExternalFacilityValidator = (facilityId: string) => boolean | Promise<boolean>;'
+          if old not in text:
+              raise SystemExit('community validator type pattern not found')
+          text = text.replace(old, new, 1)
+          old = '''        isExternalFacilityId(facilityId) &&\n        !isKnownExternalFacility(facilityId)\n'''
+          new = '''        isExternalFacilityId(facilityId) &&\n        !(await isKnownExternalFacility(facilityId))\n'''
+          if old not in text:
+              raise SystemExit('community validator call pattern not found')
+          text = text.replace(old, new, 1)
+          community.write_text(text)
+
+          server = Path('server.ts')
+          text = server.read_text()
+          old = '''import {\n  CommunityStore,\n  createCommunityRouter,\n  defaultStorePath,\n} from "./server/community";\nimport { ExternalFacilityRegistry } from "./server/externalFacilityRegistry";\n'''
+          new = '''import { createCommunityRouter } from "./server/community";\nimport { createCommunityRuntime } from "./server/communityRuntime";\n'''
+          if old not in text:
+              raise SystemExit('server import pattern not found')
+          text = text.replace(old, new, 1)
+
+          old = '''  // コミュニティ投稿API（ファイルストア。ephemeral FS では再起動で消える点に注意）\n  const communityStore = new CommunityStore(defaultStorePath());\n  const communitySalt = resolveCommunitySalt(\n    process.env.NODE_ENV,\n    process.env.COMMUNITY_SALT\n  );\n\n  // 外部施設レビューは、実際にアプリが知っている施設だけを受理する。\n  // 静的seed、既存community DBに既にレビューがある施設、起動後に取得したOSMを登録する。\n  const externalFacilityRegistry = new ExternalFacilityRegistry([\n    ...INITIAL_TOILETS.map((t) => t.id),\n    ...GOOGLE_SEED.map((t) => t.id),\n    ...KUMAGAYA_SEED.map((t) => t.id),\n  ]);\n  const existingExternalReviews = await communityStore.getExternalReviews();\n  externalFacilityRegistry.registerMany(Object.keys(existingExternalReviews));\n\n  app.use(\n    "/api/community",\n    createCommunityRouter(\n      communityStore,\n      communitySalt,\n      (facilityId) => externalFacilityRegistry.has(facilityId)\n    )\n  );\n'''
+          new = '''  // Community storage is explicit in production. JSON remains the local/default\n  // development backend; Firestore is loaded only when COMMUNITY_BACKEND=firestore.\n  const communityRuntime = await createCommunityRuntime({\n    backend: process.env.COMMUNITY_BACKEND,\n    nodeEnv: process.env.NODE_ENV,\n    jsonPath: process.env.COMMUNITY_STORE_PATH,\n  });\n  const communityStore = communityRuntime.store;\n  const communitySalt = resolveCommunitySalt(\n    process.env.NODE_ENV,\n    process.env.COMMUNITY_SALT\n  );\n\n  app.use(\n    "/api/community",\n    createCommunityRouter(\n      communityStore,\n      communitySalt,\n      (facilityId) => communityRuntime.isKnownExternalFacility(facilityId)\n    )\n  );\n'''
+          if old not in text:
+              raise SystemExit('community setup block pattern not found')
+          text = text.replace(old, new, 1)
+
+          old = '''        externalFacilityRegistry.registerMany(\n          Array.isArray(cached.data?.toilets)\n            ? cached.data.toilets.map((t: any) => t?.id)\n            : []\n        );\n'''
+          new = '''        await communityRuntime.observeExternalFacilities(\n          Array.isArray(cached.data?.toilets)\n            ? cached.data.toilets\n                .map((t: any) => t?.id)\n                .filter((id: unknown): id is string => typeof id === "string")\n                .map((id: string) => ({\n                  id,\n                  source: "osm" as const,\n                  origin: "live-osm" as const,\n                }))\n            : []\n        );\n'''
+          if old not in text:
+              raise SystemExit('cached OSM registry pattern not found')
+          text = text.replace(old, new, 1)
+
+          old = '''      externalFacilityRegistry.registerMany(\n        toilets.map((t: any) => t?.id)\n      );\n'''
+          new = '''      await communityRuntime.observeExternalFacilities(\n        toilets\n          .map((t: any) => t?.id)\n          .filter((id: unknown): id is string => typeof id === "string")\n          .map((id: string) => ({\n            id,\n            source: "osm" as const,\n            origin: "live-osm" as const,\n          }))\n      );\n'''
+          if old not in text:
+              raise SystemExit('live OSM registry pattern not found')
+          text = text.replace(old, new, 1)
+
+          # Seeds are now owned by communityRuntime.defaultExternalFacilityObservations().
+          text = text.replace('import { INITIAL_TOILETS } from "./src/data/toilets";\n', '', 1)
+          text = text.replace('import { GOOGLE_SEED } from "./src/data/googleSeed";\n', '', 1)
+          text = text.replace('import { KUMAGAYA_SEED } from "./src/data/kumagayaSeed";\n', '', 1)
+          server.write_text(text)
+          PY
+      - name: Validate wired runtime
+        run: |
+          bun install --frozen-lockfile
+          bun run lint
+          bun run test
+          bun run build
+          git diff --check
+      - name: Refuse to overwrite concurrent branch updates
+        run: |
+          git fetch origin feat/firestore-community-backend
+          remote_sha=$(git rev-parse origin/feat/firestore-community-backend)
+          test "$remote_sha" = "${{ steps.head.outputs.sha }}" || {
+            echo "Branch moved during runtime wiring: start=${{ steps.head.outputs.sha }} remote=$remote_sha" >&2
+            exit 1
+          }
+      - name: Commit runtime wiring
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server.ts server/community.ts
+          git diff --cached --check
+          git commit -m "feat: wire Firestore community runtime"
+          git push origin HEAD:feat/firestore-community-backend
