@@ -60,19 +60,28 @@ describe("CommunityStore persistence failures", () => {
     expect(await fs.readFile(file, "utf-8")).toBe(corrupt);
   });
 
-  it("recovers the serialized write queue after one filesystem failure", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "community-recover-"));
+  it("does not publish or later resurrect a mutation whose persistence failed", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "community-rollback-"));
     const file = path.join(dir, "community.json");
     const store = new CommunityStore(file);
 
-    // load() first so the store is initialized, then make the destination invalid for rename().
     expect(await store.getToilets()).toEqual([]);
     await fs.mkdir(file);
     await expect(store.addToilet(seedToilet())).rejects.toBeInstanceOf(Error);
 
-    // Repair the filesystem. A poisoned promise queue would make this second save fail immediately.
     await fs.rm(file, { recursive: true, force: true });
-    const added = await store.addReview("toilet-user-r1", review("recovered"), "ip-a");
+    expect(await store.getToilets()).toEqual([]);
+    expect(
+      (await store.addReview("toilet-user-r1", review("must-not-exist"), "ip-a"))
+        .error
+    ).toBe("not_found");
+
+    await store.addToilet(seedToilet());
+    const added = await store.addReview(
+      "toilet-user-r1",
+      review("recovered"),
+      "ip-a"
+    );
     expect(added.error).toBeUndefined();
 
     const reloaded = new CommunityStore(file);
@@ -80,5 +89,35 @@ describe("CommunityStore persistence failures", () => {
     expect(toilets).toHaveLength(1);
     expect(toilets[0].reviews).toHaveLength(1);
     expect(toilets[0].reviews[0].comment).toBe("recovered");
+  });
+
+  it("serializes concurrent mutations so no review update is lost", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "community-concurrent-"));
+    const file = path.join(dir, "community.json");
+    const store = new CommunityStore(file);
+    await store.addToilet(seedToilet());
+
+    const count = 12;
+    const results = await Promise.all(
+      Array.from({ length: count }, (_, i) =>
+        store.addReview(
+          "toilet-user-r1",
+          review(`concurrent-${i}`),
+          `ip-${i}`
+        )
+      )
+    );
+
+    expect(results.every((result) => result.error === undefined)).toBe(true);
+
+    const inMemory = await store.getToilets();
+    expect(inMemory[0].reviewCount).toBe(count);
+    expect(inMemory[0].reviews).toHaveLength(count);
+
+    const reloaded = new CommunityStore(file);
+    const persisted = await reloaded.getToilets();
+    expect(persisted[0].reviewCount).toBe(count);
+    expect(persisted[0].reviews).toHaveLength(count);
+    expect(new Set(persisted[0].reviews.map((r) => r.comment)).size).toBe(count);
   });
 });
