@@ -28,12 +28,29 @@ export function triFromOpen24h(v: string | undefined): TriState {
   return false;
 }
 
+export function formatOsmOpeningHours(v: string | undefined): string {
+  if (!v || !v.trim()) return "営業時間未確認";
+  return v === "24/7" ? "24時間" : v;
+}
+
 /** toilets:position: seated→western / squat→japanese / seated_and_squat→both / 欠落→null */
 export function triToiletStyle(v: string | undefined): ToiletAttributes["toiletStyle"] {
   if (v === "seated") return "western";
   if (v === "squat") return "japanese";
   if (v === "seated_and_squat") return "both";
   return null;
+}
+
+/** The Tokyo Toilet は明示的な network/brand タグだけで判定する。architect 単独では判定しない。 */
+export function isTheTokyoToiletTags(
+  tags: Record<string, string | undefined>
+): boolean {
+  const values = [tags.network, tags.brand, tags.operator]
+    .filter((v): v is string => typeof v === "string")
+    .map((v) => v.trim().toLowerCase());
+  return values.some(
+    (v) => v === "the tokyo toilet" || v.includes("the tokyo toilet")
+  );
 }
 
 /** OSM タグ一式 → ToiletAttributes（タグ欠落はすべて null=未確認） */

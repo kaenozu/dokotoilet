@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatOsmOpeningHours,
+  isTheTokyoToiletTags,
   osmAttributesFromTags,
   triFromFee,
   triFromOpen24h,
@@ -22,7 +24,6 @@ describe("triFromFee", () => {
     expect(triFromFee("no")).toBe(true);
     expect(triFromFee("yes")).toBe(false);
     expect(triFromFee(undefined)).toBeNull();
-    // タグ欠落を「無料」と断定しない（レビューP1の修正点）
     expect(triFromFee(undefined)).not.toBe(true);
   });
 });
@@ -35,6 +36,15 @@ describe("triFromOpen24h", () => {
   });
 });
 
+describe("formatOsmOpeningHours", () => {
+  it("does not infer 24-hour access from a missing tag", () => {
+    expect(formatOsmOpeningHours(undefined)).toBe("営業時間未確認");
+    expect(formatOsmOpeningHours("")).toBe("営業時間未確認");
+    expect(formatOsmOpeningHours("24/7")).toBe("24時間");
+    expect(formatOsmOpeningHours("Mo-Su 06:00-22:00")).toBe("Mo-Su 06:00-22:00");
+  });
+});
+
 describe("triToiletStyle", () => {
   it("maps toilets:position to style or null", () => {
     expect(triToiletStyle("seated")).toBe("western");
@@ -42,6 +52,15 @@ describe("triToiletStyle", () => {
     expect(triToiletStyle("seated_and_squat")).toBe("both");
     expect(triToiletStyle(undefined)).toBeNull();
     expect(triToiletStyle("urinal")).toBeNull();
+  });
+});
+
+describe("isTheTokyoToiletTags", () => {
+  it("requires an explicit project tag and never treats architect alone as membership", () => {
+    expect(isTheTokyoToiletTags({ network: "The Tokyo Toilet" })).toBe(true);
+    expect(isTheTokyoToiletTags({ brand: "THE TOKYO TOILET" })).toBe(true);
+    expect(isTheTokyoToiletTags({ architect: "Some Architect" })).toBe(false);
+    expect(isTheTokyoToiletTags({ network: "public_toilet", architect: "Some Architect" })).toBe(false);
   });
 });
 
@@ -75,13 +94,7 @@ describe("osmAttributesFromTags", () => {
 
   it("missing tags are null, never true (no optimistic defaults)", () => {
     const attrs = osmAttributesFromTags({});
-    for (const [k, v] of Object.entries(attrs)) {
-      if (k === "toiletStyle") {
-        expect(v).toBeNull();
-      } else {
-        expect(v).toBeNull();
-      }
-    }
+    for (const v of Object.values(attrs)) expect(v).toBeNull();
   });
 
   it("fee missing is not treated as free", () => {

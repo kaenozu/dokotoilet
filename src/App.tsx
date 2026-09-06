@@ -11,9 +11,20 @@ import { KUMAGAYA_SEED } from './data/kumagayaSeed';
 import { mergeSeedLists } from './lib/seed';
 import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
-import { osmAttributesFromTags } from './lib/osm';
+import { formatOsmOpeningHours, osmAttributesFromTags } from './lib/osm';
+import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
+import {
+  buildFacilityIdAliases,
+  canonicalizeSeedOsmFacility,
+  externalReviewsForFacility,
+  isOsmElementType,
+  isTypedOsmAliasUnambiguous,
+  legacyOsmIdForTyped,
+  osmFacilityId,
+  remapReviewDeltaKeys,
+} from './lib/osmIds';
 import {
   applyDeltaToSeeds,
   emptyDelta,
@@ -31,11 +42,12 @@ import {
   unionServerToilet,
 } from './lib/localDeltas';
 
-// Google手動調査・熊谷市ODを優先し、OSM側の重複は設備フラグをOR統合して落とす
-const SEED_TOILETS = mergeSeedLists(
+const RAW_SEED_TOILETS = mergeSeedLists(
   GOOGLE_SEED,
   mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
 );
+const SEED_TOILETS = RAW_SEED_TOILETS.map(canonicalizeSeedOsmFacility);
+const SEED_ID_ALIASES = buildFacilityIdAliases(RAW_SEED_TOILETS, SEED_TOILETS);
 import { Header } from './components/Header';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
@@ -51,7 +63,6 @@ import {
   Info,
 } from 'lucide-react';
 
-// M6: シードは保存せず、ユーザーデルタとOSMキャッシュだけを localStorage に残す
 const SEED_ID_SET = new Set(SEED_TOILETS.map((t) => t.id));
 
 export function sanitizeToiletFacility(raw: any): ToiletFacility {
@@ -92,8 +103,6 @@ export function sanitizeToiletFacility(raw: any): ToiletFacility {
         : cleanlinessScore,
   };
 
-  // 設備フラグは3値（true/false/null）を維持する。欠落・非booleanは null（未確認）。
-  // 旧v2データの楽観デフォルト（isFree=true / toiletStyle=western 等）は信用しない
   const rawAttrs = (raw?.attributes ?? {}) as Record<string, unknown>;
   const tri = (v: unknown): boolean | null => (typeof v === 'boolean' ? v : null);
   const attributes = {
@@ -136,11 +145,8 @@ export function sanitizeToiletFacility(raw: any): ToiletFacility {
 }
 
 export default function App() {
-  // サーバーが保持している施設ID・レビューID（差分保存からの除外判定に使う）
   const serverFacilityIdsRef = useRef<Set<string>>(new Set());
   const serverKnownReviewsRef = useRef<Map<string, Set<string>>>(new Map());
-  // 直近の GET /api/community/toilets で取得した共有レビュー（外部施設向け）。
-  // 起動後に新規取得した OSM 施設にも既存の共有レビューを重ねるために保持する
   const externalReviewsRef = useRef<Record<string, ToiletReview[]>>({});
   const noteServerFacility = (facilityId: string, reviewIds: string[]) => {
     serverFacilityIdsRef.current.add(facilityId);
@@ -154,12 +160,10 @@ export default function App() {
     serverKnownReviewsRef.current.set(facilityId, set);
   };
 
-  // M6: 起動時は常に「最新バンドル版シード」へ差分を重ねる（シード自体は保存しない）
   const [toilets, setToilets] = useState<ToiletFacility[]>(() => {
     try {
       let delta = parseLocalDelta(localStorage.getItem(LOCAL_DELTA_KEY));
       if (!delta) {
-        // 旧形式（v3 → v2 の全体スナップショット）からユーザーデルタへ移行する
         const legacy =
           localStorage.getItem(LEGACY_TOILETS_V3_KEY) ??
           localStorage.getItem(LEGACY_TOILETS_V2_KEY);
@@ -169,7 +173,7 @@ export default function App() {
           localStorage.removeItem(LEGACY_TOILETS_V2_KEY);
         }
       }
-      // OSMリアルタイム取得分は別キーの上限付きキャッシュ
+      if (delta) delta = remapReviewDeltaKeys(delta, SEED_ID_ALIASES);
       const cachedOsm = parseToiletArray(localStorage.getItem(OSM_CACHE_KEY));
       const seeded = applyDeltaToSeeds(SEED_TOILETS, delta ?? emptyDelta());
       return mergeFacilityLists(seeded, cachedOsm);
@@ -195,16 +199,10 @@ export default function App() {
   );
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isLoadingOsm, setIsLoadingOsm] = useState<boolean>(false);
-
-  // Mobile view tab ('map' | 'list')
   const [mobileTab, setMobileTab] = useState<'map' | 'list'>('map');
-
-  // Modals state
   const [isDataSourcesModalOpen, setIsDataSourcesModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-
-  // Non-blocking toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -213,7 +211,6 @@ export default function App() {
     }, 4000);
   };
 
-  // Filters
   const [filter, setFilter] = useState<FilterState>({
     dataSource: 'all',
     onlyHighCleanliness: false,
@@ -224,7 +221,6 @@ export default function App() {
     searchQuery: '',
   });
 
-  // M6: localStorage へは「ユーザーデルタ」と「OSMキャッシュ」だけを保存する
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -236,8 +232,6 @@ export default function App() {
           })
         )
       );
-      // OSMキャッシュも「再取得可能なデータ」なので、サーバー同期済みレビューは
-      // 含めない（git運用でサーバー側から削除されたレビューが復活しないように）。
       const known = serverKnownReviewsRef.current;
       const osmCache = toilets
         .filter((t) => t.dataSource === 'osm' && !SEED_ID_SET.has(t.id))
@@ -246,7 +240,6 @@ export default function App() {
           const reviews = t.reviews ?? [];
           if (!knownIds || knownIds.size === 0 || reviews.length === 0) return t;
           const kept = reviews.filter((r) => !knownIds.has(r.id));
-          // 共有レビューだけを除いたらスコアも再計算（0件なら設備推定値＝未評価に戻す）
           return kept.length === reviews.length
             ? t
             : recomputeFromReviews(t, kept);
@@ -258,7 +251,6 @@ export default function App() {
     }
   }, [toilets]);
 
-  // 投票済みレビューID（localStorage。サーバー側はIPハッシュで重複防止）
   const [votedReviewIds, setVotedReviewIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('kirei-toilet-voted-reviews');
@@ -276,7 +268,6 @@ export default function App() {
     }
   }, [votedReviewIds]);
 
-  // Fetch shared community toilets from the server (fail-soft: static hosting etc.)
   useEffect(() => {
     (async () => {
       try {
@@ -290,9 +281,7 @@ export default function App() {
           data.externalReviews && typeof data.externalReviews === 'object'
             ? (data.externalReviews as Record<string, ToiletReview[]>)
             : {};
-        // 直近スナップショットとして保持（OSM施設の新規取得時に再利用）
         externalReviewsRef.current = externalReviews;
-        // M6: サーバーが保持している施設・レビューIDを記録（差分保存から除外する）
         for (const s of serverItems) {
           noteServerFacility(s.id, (s.reviews ?? []).map((r) => r.id));
         }
@@ -305,19 +294,20 @@ export default function App() {
         setToilets((prev) => {
           const prevById = new Map<string, ToiletFacility>(prev.map((t) => [t.id, t]));
           const serverIds = new Set(serverItems.map((t) => t.id));
-          // コミュニティトイレはサーバーを正としつつ、ローカル未同期レビューは保持する
           const merged = serverItems.map((s) => {
             const local = prevById.get(s.id);
             return local ? unionServerToilet(local, s) : s;
           });
           const localOnly = prev.filter((t) => !serverIds.has(t.id));
           const base = [...merged, ...localOnly];
-          // 外部施設（OSM/Google/OD）の共有レビューをローカル施設へ重ねる（M5）
+          const knownFacilityIds = base.map((t) => t.id);
           return base.map((t) => {
-            const reviews = externalReviews[t.id];
-            return reviews && reviews.length > 0
-              ? overlayExternalReviews(t, reviews)
-              : t;
+            const reviews = externalReviewsForFacility(t.id, externalReviews, knownFacilityIds);
+            if (reviews && reviews.length > 0) {
+              noteReviewsKnown(t.id, reviews.map((r) => r.id));
+              return overlayExternalReviews(t, reviews);
+            }
+            return t;
           });
         });
       } catch {
@@ -326,14 +316,11 @@ export default function App() {
     })();
   }, []);
 
-  // Filtered Toilets List（絞り込み＋ソートは純関数に切り出し: src/lib/filter.ts）
-  // ソートは「清潔度順」＝評価済み（口コミあり）をスコア降順→未評価は推定スコア降順。
   const filteredToilets = useMemo(
     () => filterAndSortToilets(toilets, filter),
     [toilets, filter]
   );
 
-  // Live fetch OpenStreetMap toilets around coordinates
   const handleFetchOsmNearCenter = async (
     lat: number,
     lng: number,
@@ -343,7 +330,6 @@ export default function App() {
     try {
       const res = await fetch(`/api/osm/toilets?lat=${lat}&lng=${lng}&radius=2000`);
       if (!res.ok) {
-        // 非200（レート制限・サーバー障害）を「見つからなかった」と誤表示しない
         if (notifyUser) {
           showToast('OpenStreetMapの取得に失敗しました（サーバーエラー）。時間をおいて再度お試しください。');
         }
@@ -355,15 +341,14 @@ export default function App() {
       if (Array.isArray(data.toilets) && data.toilets.length > 0) {
         incoming = (data.toilets as any[]).map(sanitizeToiletFacility);
       } else if (Array.isArray(data.elements) && data.elements.length > 0) {
-        // Fallback mapper if raw elements returned
         incoming = data.elements
           .map((el: any) => {
             const itemLat = el.lat || el.center?.lat;
             const itemLng = el.lon || el.center?.lon;
             const tags = el.tags || {};
-            if (!itemLat || !itemLng) return null;
+            if (!itemLat || !itemLng || !isOsmElementType(el.type)) return null;
             return sanitizeToiletFacility({
-              id: `osm-${el.id}`,
+              id: osmFacilityId(el.type, el.id),
               name: tags.name || `公衆便所 (OSM #${el.id})`,
               facilityType: '公衆便所 (OpenStreetMap実在登録)',
               category: 'park' as const,
@@ -376,13 +361,13 @@ export default function App() {
               equipmentGrade: 'B' as const,
               equipmentScore: 3.4,
               subScores: { cleanliness: 3.4, odor: 3.3, supplies: 3.5, comfort: 3.4 },
-              // タグ欠落は null=未確認（true/false/null の3値。fee 欠落を「無料」と断定しない）
               attributes: osmAttributesFromTags(tags),
-              openingHours: tags.opening_hours || '常時開放',
+              openingHours: formatOsmOpeningHours(tags.opening_hours),
               description: `OpenStreetMap登録の実在公衆便所。`,
               reviewCount: 0,
               reviews: [],
               facilityNote: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
+              officialOpenDataId: osmFacilityId(el.type, el.id),
             });
           })
           .filter(Boolean) as ToiletFacility[];
@@ -395,44 +380,74 @@ export default function App() {
         return;
       }
 
-      // Merge and deduplicate
       setToilets((prev) => {
-        const existingIds = new Set(prev.map((t) => t.id));
-        const newFacilities: ToiletFacility[] = [];
+        const next = [...prev];
+        const existingIds = new Set(next.map((t) => t.id));
+        const knownTypedIds = [...next.map((t) => t.id), ...incoming.map((t) => t.id)];
+        let addedCount = 0;
 
         for (const item of incoming) {
-          if (!existingIds.has(item.id)) {
-            // Coordinate distance check (< 30m)
-            const isDuplicateCoord = prev.some(
-              (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
+          if (existingIds.has(item.id)) continue;
+
+          const legacyId = legacyOsmIdForTyped(item.id);
+          const legacyIndex = legacyId ? next.findIndex((p) => p.id === legacyId) : -1;
+          if (
+            legacyIndex >= 0 &&
+            legacyId &&
+            isTypedOsmAliasUnambiguous(item.id, knownTypedIds)
+          ) {
+            const legacy = next[legacyIndex];
+            let migrated = legacy.reviews.length > 0
+              ? recomputeFromReviews(item, legacy.reviews)
+              : item;
+            const shared = externalReviewsForFacility(
+              item.id,
+              externalReviewsRef.current,
+              knownTypedIds
             );
-            if (!isDuplicateCoord) {
-              // 既存のサーバー共有レビュー（externalReviews）があれば新規取得時点で重ねる
-              const shared = externalReviewsRef.current[item.id];
-              newFacilities.push(
-                shared && shared.length > 0
-                  ? overlayExternalReviews(item, shared)
-                  : item
-              );
-              existingIds.add(item.id);
+            if (shared && shared.length > 0) {
+              noteReviewsKnown(item.id, shared.map((r) => r.id));
+              migrated = overlayExternalReviews(migrated, shared);
             }
+            next[legacyIndex] = migrated;
+            existingIds.delete(legacyId);
+            existingIds.add(item.id);
+            addedCount += 1;
+            continue;
+          }
+
+          const isDuplicateCoord = next.some(
+            (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
+          );
+          if (!isDuplicateCoord) {
+            const shared = externalReviewsForFacility(
+              item.id,
+              externalReviewsRef.current,
+              knownTypedIds
+            );
+            next.push(
+              shared && shared.length > 0
+                ? overlayExternalReviews(item, shared)
+                : item
+            );
+            if (shared && shared.length > 0) noteReviewsKnown(item.id, shared.map((r) => r.id));
+            existingIds.add(item.id);
+            addedCount += 1;
           }
         }
 
-        if (newFacilities.length > 0) {
+        if (addedCount > 0) {
           if (notifyUser) {
-            showToast(`新たに ${newFacilities.length} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
+            showToast(`新たに ${addedCount} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
           }
-          return [...prev, ...newFacilities];
-        } else {
-          if (notifyUser) {
-            showToast('この周辺の実在公衆トイレはすでに取得済みです。');
-          }
-          return prev;
+          return next;
         }
+        if (notifyUser) {
+          showToast('この周辺の実在公衆トイレはすでに取得済みです。');
+        }
+        return prev;
       });
     } catch {
-      // 通信断など。成功したかのような文言を出さない（旧M7の誤表示の修正）
       if (notifyUser) {
         showToast('OpenStreetMapの取得に失敗しました。通信環境をご確認のうえ、時間をおいて再度お試しください。');
       }
@@ -441,18 +456,15 @@ export default function App() {
     }
   };
 
-  // Auto-fetch real live OSM toilets on initial mount
   useEffect(() => {
     handleFetchOsmNearCenter(mapCenter.lat, mapCenter.lng, false);
   }, []);
 
-  // Handle City Preset Jump
   const handleCitySelect = (city: CityPreset) => {
     setMapCenter({ lat: city.lat, lng: city.lng });
     setMapZoom(city.zoom);
     handleFetchOsmNearCenter(city.lat, city.lng, false);
 
-    // Find nearest toilet in this city to select
     const nearest = toilets.find(
       (t) =>
         Math.abs(t.lat - city.lat) < 0.05 && Math.abs(t.lng - city.lng) < 0.05
@@ -462,7 +474,6 @@ export default function App() {
     }
   };
 
-  // Handle User Geolocation
   const handleLocateUser = () => {
     if (!navigator.geolocation) {
       alert('お使いのブラウザは位置情報に対応していません。');
@@ -492,10 +503,8 @@ export default function App() {
         if (item.id !== toiletId) return item;
 
         const updatedReviews = [newReview, ...item.reviews];
-        // 次元別に独立集計（総合→overallScore / 清潔さ→cleanlinessScore）
         const updated = {
           ...recomputeFromReviews(item, updatedReviews),
-          // 利用者が投稿時に清潔さを確認した旨（base〜上流の挙動を維持）
           lastCleaned: 'たった今（利用者が確認）',
         };
 
@@ -505,6 +514,8 @@ export default function App() {
   };
 
   // Submit new review (server first, local fallback for offline/static hosting)
+  // HTTP応答を受信した場合はサーバー判定を正とし、ローカル保存へフォールバックしない。
+  // ローカル保存は fetch 自体が失敗したオフライン/到達不能時だけ許可する。
   const handleSubmitReview = async (toiletId: string, newReview: ToiletReview): Promise<boolean> => {
     try {
       const res = await fetch(`/api/community/toilets/${encodeURIComponent(toiletId)}/reviews`, {
@@ -529,10 +540,14 @@ export default function App() {
           ...externalReviewsRef.current,
           [toiletId]: serverReviews,
         };
-        noteReviewsKnown(toiletId, serverReviews.map((r) => r.id));
+        // 旧ID/新IDの型エイリアス互換を確認してから重ねる（混在防止）
+        const knownFacilityIds = toilets.map((t) => t.id);
+        const compatibleReviews =
+          externalReviewsForFacility(toiletId, externalReviewsRef.current, knownFacilityIds) ?? serverReviews;
+        noteReviewsKnown(toiletId, compatibleReviews.map((r) => r.id));
         setToilets((prev) =>
           prev.map((t) =>
-            t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
+            t.id === toiletId ? overlayExternalReviews(t, compatibleReviews) : t
           )
         );
         return true;
@@ -548,7 +563,7 @@ export default function App() {
       }
     } catch {
       // 通信断・静的ホスティングでは端末内に保存する。
-      showToast('サーバーに接続できないため、この端末のみに保存しました。');
+      showToast('サーバーに接続できないため、この端末のみに口コミを保存しました。');
     }
     applyLocalReview(toiletId, newReview);
     return true;
@@ -591,7 +606,6 @@ export default function App() {
         const serverToilet = data?.toilet;
         if (serverToilet) {
           noteServerFacility(serverToilet.id, []);
-          // サーバー保存版（reviewCount: 0 / reviews: [] に正規化済み）を正として同期する
           setToilets((prev) =>
             prev.map((t) =>
               t.id === serverToilet.id ? unionServerToilet(t, serverToilet) : t
@@ -608,46 +622,42 @@ export default function App() {
     }
   };
 
-  // Helpful vote (once per browser; server enforces once per IP)
   const handleVoteHelpful = async (toiletId: string, reviewId: string) => {
     if (votedReviewIds.includes(reviewId)) return;
     setVotedReviewIds((prev) => [...prev, reviewId]);
-    // 開いている詳細パネル（selectedToilet）と一覧/地図（toilets）の両方を更新する。
-    // 片方だけだと drawer の「役に立った」件数が古いまま残る。
-    const bumpVote = (t: ToiletFacility): ToiletFacility =>
-      t.id === toiletId
-        ? {
-            ...t,
-            reviews: t.reviews.map((r) =>
-              r.id === reviewId ? { ...r, helpfulCount: r.helpfulCount + 1 } : r
-            ),
-          }
-        : t;
-    setToilets((prev) => prev.map(bumpVote));
+    setToilets((prev) =>
+      prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, 1))
+    );
+
+    // 失敗時は楽観カウントと投票済み印を巻き戻す
+    const rollback = () => {
+      setVotedReviewIds((prev) => prev.filter((id) => id !== reviewId));
+      setToilets((prev) =>
+        prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, -1))
+      );
+    };
+
     try {
       const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/helpful`, {
         method: 'POST',
       });
-      if (res.ok) {
-        const data = await res.json();
-        // サーバー確定値で同期（投票済みなら楽観カウントは巻き戻る）
-        const syncVote = (t: ToiletFacility): ToiletFacility =>
-          t.id === toiletId
-            ? {
-                ...t,
-                reviews: t.reviews.map((r) =>
-                  r.id === reviewId ? { ...r, helpfulCount: data.helpfulCount } : r
-                ),
-              }
-            : t;
-        setToilets((prev) => prev.map(syncVote));
+      if (!res.ok) {
+        rollback();
+        showToast('「役に立った」を送信できませんでした。再度お試しください。');
+        return;
       }
+
+      const data = await res.json();
+      // サーバー確定値で同期（投票済みなら楽観カウントは巻き戻る）
+      setToilets((prev) =>
+        prev.map((t) => setHelpfulCount(t, toiletId, reviewId, data.helpfulCount))
+      );
     } catch {
-      /* offline: local count only */
+      rollback();
+      showToast('「役に立った」を送信できませんでした（オフライン）。');
     }
   };
 
-  // Report a review (moderation queue on the server)
   const handleReportReview = async (toiletId: string, reviewId: string) => {
     const reason = window.prompt('通報理由を入力してください（不適切な内容・いたずら等）');
     if (!reason || !reason.trim()) return;
@@ -665,7 +675,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-canvas text-ink-soft font-sans antialiased">
-      {/* App Header */}
       <Header
         filter={filter}
         setFilter={setFilter}
@@ -676,9 +685,7 @@ export default function App() {
         isLocating={isLocating}
       />
 
-      {/* Main Layout Body */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Left Side: Toilet List (Desktop: always visible, Mobile: hidden if map tab) */}
         <div
           className={`w-full md:w-80 lg:w-96 shrink-0 h-full z-10 ${
             mobileTab === 'list' ? 'block' : 'hidden md:block'
@@ -699,7 +706,6 @@ export default function App() {
           />
         </div>
 
-        {/* Center: Interactive Map */}
         <div
           className={`flex-1 h-full relative ${
             mobileTab === 'map' ? 'block' : 'hidden md:block'
@@ -723,7 +729,6 @@ export default function App() {
           />
         </div>
 
-        {/* Right Side: Selected Toilet Details Drawer */}
         {selectedToilet && (
           <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
             <ToiletDetails
@@ -738,7 +743,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Mobile Bottom Tab Switcher (Visible only on small screens) */}
       <div className="md:hidden flex items-center justify-around border-t border-line bg-surface py-2 px-4 z-30">
         <button
           type="button"
@@ -772,7 +776,6 @@ export default function App() {
         </button>
       </div>
 
-      {/* Modals */}
       <DataSourceModal
         isOpen={isDataSourcesModalOpen}
         onClose={() => setIsDataSourcesModalOpen(false)}
@@ -792,7 +795,6 @@ export default function App() {
         defaultLocation={mapCenter}
       />
 
-      {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink/95 backdrop-blur-md text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/10 shadow-2xl flex items-center gap-2 pointer-events-auto">
           <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
