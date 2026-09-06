@@ -4,15 +4,8 @@ import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
-import { INITIAL_TOILETS } from "./src/data/toilets";
-import { GOOGLE_SEED } from "./src/data/googleSeed";
-import { KUMAGAYA_SEED } from "./src/data/kumagayaSeed";
-import {
-  CommunityStore,
-  createCommunityRouter,
-  defaultStorePath,
-} from "./server/community";
-import { ExternalFacilityRegistry } from "./server/externalFacilityRegistry";
+import { createCommunityRouter } from "./server/community";
+import { createCommunityRuntime } from "./server/communityRuntime";
 import { osmCacheKey, resolveCommunitySalt } from "./server/runtime";
 import {
   formatOsmOpeningHours,
@@ -70,29 +63,25 @@ async function startServer() {
   });
   app.use("/api/", apiLimiter);
 
-  // コミュニティ投稿API（ファイルストア。ephemeral FS では再起動で消える点に注意）
-  const communityStore = new CommunityStore(defaultStorePath());
+  // Community storage is explicit in production. JSON remains the local/default
+  // development backend; Firestore is loaded only when COMMUNITY_BACKEND=firestore.
+  const communityRuntime = await createCommunityRuntime({
+    backend: process.env.COMMUNITY_BACKEND,
+    nodeEnv: process.env.NODE_ENV,
+    jsonPath: process.env.COMMUNITY_STORE_PATH,
+  });
+  const communityStore = communityRuntime.store;
   const communitySalt = resolveCommunitySalt(
     process.env.NODE_ENV,
     process.env.COMMUNITY_SALT
   );
-
-  // 外部施設レビューは、実際にアプリが知っている施設だけを受理する。
-  // 静的seed、既存community DBに既にレビューがある施設、起動後に取得したOSMを登録する。
-  const externalFacilityRegistry = new ExternalFacilityRegistry([
-    ...INITIAL_TOILETS.map((t) => t.id),
-    ...GOOGLE_SEED.map((t) => t.id),
-    ...KUMAGAYA_SEED.map((t) => t.id),
-  ]);
-  const existingExternalReviews = await communityStore.getExternalReviews();
-  externalFacilityRegistry.registerMany(Object.keys(existingExternalReviews));
 
   app.use(
     "/api/community",
     createCommunityRouter(
       communityStore,
       communitySalt,
-      (facilityId) => externalFacilityRegistry.has(facilityId)
+      (facilityId) => communityRuntime.isKnownExternalFacility(facilityId)
     )
   );
 
@@ -150,9 +139,16 @@ async function startServer() {
       const cacheKey = osmCacheKey(lat, lng, radius);
       const cached = osmCache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < OSM_CACHE_TTL) {
-        externalFacilityRegistry.registerMany(
+        await communityRuntime.observeExternalFacilities(
           Array.isArray(cached.data?.toilets)
-            ? cached.data.toilets.map((t: any) => t?.id)
+            ? cached.data.toilets
+                .map((t: any) => t?.id)
+                .filter((id: unknown): id is string => typeof id === "string")
+                .map((id: string) => ({
+                  id,
+                  source: "osm" as const,
+                  origin: "live-osm" as const,
+                }))
             : []
         );
         res.json(cached.data);
@@ -364,8 +360,15 @@ async function startServer() {
         })
         .filter((t) => t && t.lat && t.lng);
 
-      externalFacilityRegistry.registerMany(
-        toilets.map((t: any) => t?.id)
+      await communityRuntime.observeExternalFacilities(
+        toilets
+          .map((t: any) => t?.id)
+          .filter((id: unknown): id is string => typeof id === "string")
+          .map((id: string) => ({
+            id,
+            source: "osm" as const,
+            origin: "live-osm" as const,
+          }))
       );
 
       const responsePayload = {
