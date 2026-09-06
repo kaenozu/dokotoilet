@@ -14,6 +14,7 @@ import {
   hashIp,
   publicToilets,
 } from "./community";
+import { applyReportResolution } from "../scripts/community-ops/curate";
 
 const goodToilet = () => ({
   id: "toilet-user-abc123",
@@ -289,6 +290,37 @@ describe("CommunityStore", () => {
     const results = await Promise.all([storeA.addToilet(t1), storeB.addToilet(t2)]);
     expect(results.every((r) => r.added)).toBe(true);
     expect((await new CommunityStore(path.join(dir, "community.json")).getToilets()).map((t) => t.id).sort()).toEqual(["toilet-user-a", "toilet-user-b"]);
+  });
+
+  it("does not resurrect a curator deletion through a live store cache", async () => {
+    const reviewResult = await store.addReview("osm-live-curator", goodReview() as any, "ip-live");
+    const reviewId = reviewResult.reviews![0].id;
+    await store.addReport("osm-live-curator", reviewId, "削除テスト");
+    const dbPath = path.join(dir, "community.json");
+    await applyReportResolution(dbPath, (await store.load()).reports[0].id);
+    expect((await store.getExternalReviews())["osm-live-curator"]).toBeUndefined();
+    const next = await store.addReview("osm-live-curator", { ...goodReview(), comment: "次の投稿" } as any, "ip-next");
+    expect(next.reviews).toHaveLength(1);
+    expect((await store.getExternalReviews())["osm-live-curator"]).toHaveLength(1);
+  });
+
+  it("preserves concurrent cold store review updates", async () => {
+    const file = path.join(dir, "community.json");
+    const stores = Array.from({ length: 4 }, () => new CommunityStore(file));
+    const results = await Promise.all(stores.map((s, i) => s.addReview(
+      "google-concurrent",
+      { ...goodReview(), comment: `同時投稿 ${i}` } as any,
+      `ip-${i}`,
+    )));
+    expect(results.every((r) => r.error === undefined)).toBe(true);
+    expect((await new CommunityStore(file).getExternalReviews())["google-concurrent"]).toHaveLength(4);
+  });
+
+  it("does not overwrite a malformed database", async () => {
+    const file = path.join(dir, "community.json");
+    await fs.writeFile(file, "{broken database");
+    await expect(store.addToilet(seedToilet())).rejects.toThrow();
+    expect(await fs.readFile(file, "utf8")).toBe("{broken database");
   });
 
   it("votes and reports external-facility reviews", async () => {

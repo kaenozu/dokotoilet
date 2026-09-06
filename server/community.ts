@@ -227,13 +227,21 @@ const EMPTY_DB: CommunityDB = {
   externalReviews: {},
 };
 
+export interface ReviewResult {
+  error?: "not_found" | "duplicate";
+  toilet?: ToiletFacility;
+  facilityId?: string;
+  reviews?: ToiletReview[];
+  reviewCount?: number;
+  cleanlinessScore?: number;
+  cleanlinessGrade?: CleanlinessGrade;
+  overallScore?: number;
+}
+
 // レビュー集計は src/lib/scoring.ts の summarizeReviews（次元別平均）を共有する。
 // 総合→overallScore / 清潔さ→cleanlinessScore+cleanlinessGrade を独立に算出。
 
 export class CommunityStore {
-  private data: CommunityDB | null = null;
-  private queue: Promise<void> = Promise.resolve();
-
   constructor(private filePath: string) {}
 
   private parse(raw: string): CommunityDB {
@@ -244,7 +252,8 @@ export class CommunityStore {
         toilets: parsed.toilets,
         helpfulVotes: parsed.helpfulVotes ?? {},
         reports: parsed.reports ?? [],
-        reviewKeys: parsed.reviewKeys ?? {},
+        reviewKeys:
+          parsed.reviewKeys && typeof parsed.reviewKeys === "object" ? parsed.reviewKeys : {},
         externalReviews:
           parsed.externalReviews && typeof parsed.externalReviews === "object"
             ? (parsed.externalReviews as Record<string, ToiletReview[]>)
@@ -254,19 +263,11 @@ export class CommunityStore {
 
   private async readDisk(): Promise<CommunityDB> {
     try { return this.parse(await fs.readFile(this.filePath, "utf-8")); }
-    catch (e: any) { if (e?.code === "ENOENT") return { ...EMPTY_DB, toilets: [], helpfulVotes: {}, reports: [], externalReviews: {} }; throw e; }
+    catch (e: any) { if (e?.code === "ENOENT") return structuredClone(EMPTY_DB); throw e; }
   }
 
   async load(): Promise<CommunityDB> {
-    return withFileLock(this.filePath, async () => { this.data = await this.readDisk(); return this.data; });
-  }
-
-  private save(): Promise<void> {
-    this.queue = this.queue.then(async () => {
-      const db = this.data ?? EMPTY_DB;
-      await atomicWriteFile(this.filePath, JSON.stringify(db));
-    });
-    return this.queue;
+    return withFileLock(this.filePath, () => this.readDisk());
   }
 
   async getToilets(): Promise<ToiletFacility[]> {
@@ -275,7 +276,7 @@ export class CommunityStore {
 
   async addToilet(t: ToiletFacility): Promise<{ added: boolean }> {
     return withFileLock(this.filePath, async () => {
-      const db = await this.readDisk(); this.data = db;
+      const db = await this.readDisk();
       if (db.toilets.some((x) => x.id === t.id)) return { added: false };
       db.toilets.unshift(t); await atomicWriteFile(this.filePath, JSON.stringify(db)); return { added: true };
     });
@@ -315,21 +316,12 @@ export class CommunityStore {
     toiletId: string,
     input: ReviewInput,
     ipHash: string
-  ): Promise<{
-    error?: "not_found" | "duplicate";
-    toilet?: ToiletFacility;
-    facilityId?: string;
-    reviews?: ToiletReview[];
-    reviewCount?: number;
-    cleanlinessScore?: number;
-    cleanlinessGrade?: CleanlinessGrade;
-    overallScore?: number;
-  }> {
+  ): Promise<ReviewResult> {
     return withFileLock(this.filePath, async () => this.addReviewLocked(toiletId, input, ipHash));
   }
 
-  private async addReviewLocked(toiletId: string, input: ReviewInput, ipHash: string): Promise<any> {
-    const db = await this.readDisk(); this.data = db;
+  private async addReviewLocked(toiletId: string, input: ReviewInput, ipHash: string): Promise<ReviewResult> {
+    const db = await this.readDisk();
     const t = db.toilets.find((x) => x.id === toiletId);
 
     if (t) {
@@ -397,17 +389,17 @@ export class CommunityStore {
     ipHash: string
   ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }> {
     return withFileLock(this.filePath, async () => {
-    const db = await this.readDisk(); this.data = db;
-    const hit = this.findReview(db, reviewId);
-    if (!hit) return { helpfulCount: 0, voted: false, found: false };
-    const { review } = hit;
-    const voters = db.helpfulVotes[reviewId] ?? [];
-    if (voters.includes(ipHash)) return { helpfulCount: review.helpfulCount, voted: false, found: true };
-    voters.push(ipHash);
-    db.helpfulVotes[reviewId] = voters;
-    review.helpfulCount += 1;
-    await atomicWriteFile(this.filePath, JSON.stringify(db));
-    return { helpfulCount: review.helpfulCount, voted: true, found: true };
+      const db = await this.readDisk();
+      const hit = this.findReview(db, reviewId);
+      if (!hit) return { helpfulCount: 0, voted: false, found: false };
+      const { review } = hit;
+      const voters = db.helpfulVotes[reviewId] ?? [];
+      if (voters.includes(ipHash)) return { helpfulCount: review.helpfulCount, voted: false, found: true };
+      voters.push(ipHash);
+      db.helpfulVotes[reviewId] = voters;
+      review.helpfulCount += 1;
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { helpfulCount: review.helpfulCount, voted: true, found: true };
     });
   }
 
@@ -417,19 +409,19 @@ export class CommunityStore {
     reason: string
   ): Promise<{ ok: boolean; found: boolean }> {
     return withFileLock(this.filePath, async () => {
-    const db = await this.readDisk(); this.data = db;
-    const t = db.toilets.find((x) => x.id === toiletId);
-    const reviews = t ? t.reviews : db.externalReviews[toiletId];
-    if (!reviews || !reviews.some((r) => r.id === reviewId)) return { ok: false, found: false };
-    db.reports.push({
-      id: `report-${crypto.randomUUID()}`,
-      toiletId,
-      reviewId,
-      reason,
-      createdAt: new Date().toISOString(),
-    });
-    await atomicWriteFile(this.filePath, JSON.stringify(db));
-    return { ok: true, found: true };
+      const db = await this.readDisk();
+      const t = db.toilets.find((x) => x.id === toiletId);
+      const reviews = t ? t.reviews : db.externalReviews[toiletId];
+      if (!reviews || !reviews.some((r) => r.id === reviewId)) return { ok: false, found: false };
+      db.reports.push({
+        id: `report-${crypto.randomUUID()}`,
+        toiletId,
+        reviewId,
+        reason,
+        createdAt: new Date().toISOString(),
+      });
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { ok: true, found: true };
     });
   }
 }

@@ -117,6 +117,19 @@ export async function saveRawDb(filePath: string, db: RawDb): Promise<void> {
   await withFileLock(filePath, () => atomicWriteFile(filePath, JSON.stringify(db)));
 }
 
+/** Read, mutate, and write one snapshot while holding the shared disk lock. */
+export async function applyReportResolution(filePath: string, reportId: string): Promise<RemovalPlan> {
+  return withFileLock(filePath, async () => {
+    const db = await loadRawDbUnlocked(filePath);
+    const report = (db.reports ?? []).find((r) => r.id === reportId);
+    if (!report?.reviewId) throw new Error(`通報が見つかりません: ${reportId}`);
+    const plan = removeReview(db, report.reviewId);
+    if (!plan) throw new Error(`対象レビュー ${report.reviewId} がファイル内に見つかりません`);
+    await atomicWriteFile(filePath, JSON.stringify(db));
+    return plan;
+  });
+}
+
 export function cloneDb(db: RawDb): RawDb {
   return JSON.parse(JSON.stringify(db)) as RawDb;
 }
@@ -251,6 +264,7 @@ export function removeReview(db: RawDb, reviewId: string): RemovalPlan | null {
       else delete t.overallScore;
     }
   } else {
+    if (reviewsAfter === 0 && db.externalReviews) delete db.externalReviews[loc.facilityId];
     scoreAfter = meanOf(loc.reviews, cleanlinessOf);
   }
 
@@ -413,16 +427,9 @@ async function main(): Promise<void> {
     }
     const apply = args.includes("--apply");
     if (apply) {
-      await withFileLock(file, async () => {
-        const lockedDb = await loadRawDbUnlocked(file);
-        const lockedReport = (lockedDb.reports ?? []).find((r) => r.id === reportId);
-        if (!lockedReport?.reviewId) throw new Error(`通報が見つかりません: ${reportId}`);
-        const lockedPlan = removeReview(lockedDb, lockedReport.reviewId);
-        if (!lockedPlan) throw new Error(`対象レビュー ${lockedReport.reviewId} がファイル内に見つかりません`);
-        process.stdout.write(formatPlan(lockedPlan, true) + "\n");
-        await atomicWriteFile(file, JSON.stringify(lockedDb));
-        process.stdout.write(`保存先: ${file}\n`);
-      });
+      const lockedPlan = await applyReportResolution(file, reportId);
+      process.stdout.write(formatPlan(lockedPlan, true) + "\n");
+      process.stdout.write(`保存先: ${file}\n`);
       return;
     }
     const target = apply ? db : cloneDb(db);

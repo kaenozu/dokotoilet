@@ -7,7 +7,11 @@ import {
   locateReview,
   parseRawDb,
   removeReview,
+  applyReportResolution,
 } from "./curate";
+import { promises as fs } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
 // ── フィクスチャ ──
 
@@ -217,6 +221,23 @@ describe("locateReview", () => {
     expect(external?.kind).toBe("external");
     expect(external?.facilityId).toBe("osm-1");
     expect(locateReview(d, "zzz")).toBeNull();
+  });
+});
+
+describe("applyReportResolution", () => {
+  it("does one locked read modify write transaction", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "curate-test-"));
+    const file = path.join(dir, "community.json");
+    const d = db({
+      toilets: [facility("toilet-user-1", "A", { reviews: [review("r1", 5)] })],
+      reports: [report("rep-1", "r1")],
+    });
+    await fs.writeFile(file, JSON.stringify(d));
+    const plan = await applyReportResolution(file, "rep-1");
+    expect(plan.review.id).toBe("r1");
+    const after = JSON.parse(await fs.readFile(file, "utf8")) as RawDb;
+    expect(after.toilets[0].reviews).toEqual([]);
+    expect(after.reports).toEqual([]);
   });
 });
 
