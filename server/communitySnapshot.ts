@@ -43,6 +43,7 @@ export function analyzeCommunitySnapshot(db: CommunityDB): CommunitySnapshotAnal
 
   const facilityIds = new Set<string>();
   const reviewFacility = new Map<string, string>();
+  const reviewHelpfulCount = new Map<string, number>();
   let communityReviews = 0;
 
   for (const toilet of db.toilets) {
@@ -52,6 +53,7 @@ export function analyzeCommunitySnapshot(db: CommunityDB): CommunitySnapshotAnal
       communityReviews += 1;
       if (reviewFacility.has(review.id)) errors.push(`duplicate review id: ${review.id}`);
       reviewFacility.set(review.id, toilet.id);
+      reviewHelpfulCount.set(review.id, Number(review.helpfulCount ?? 0));
     }
   }
 
@@ -61,13 +63,33 @@ export function analyzeCommunitySnapshot(db: CommunityDB): CommunitySnapshotAnal
       externalReviews += 1;
       if (reviewFacility.has(review.id)) errors.push(`duplicate review id: ${review.id}`);
       reviewFacility.set(review.id, facilityId);
+      reviewHelpfulCount.set(review.id, Number(review.helpfulCount ?? 0));
     }
   }
 
   let helpfulVotes = 0;
   for (const [reviewId, voters] of Object.entries(db.helpfulVotes ?? {})) {
-    if (!reviewFacility.has(reviewId)) errors.push(`helpful vote references missing review: ${reviewId}`);
-    helpfulVotes += Array.isArray(voters) ? voters.length : 0;
+    if (!reviewFacility.has(reviewId)) {
+      errors.push(`helpful vote references missing review: ${reviewId}`);
+      helpfulVotes += Array.isArray(voters) ? voters.length : 0;
+      continue;
+    }
+    const voteCount = Array.isArray(voters) ? voters.length : 0;
+    helpfulVotes += voteCount;
+    const storedCount = reviewHelpfulCount.get(reviewId) ?? 0;
+    if (storedCount !== voteCount) {
+      errors.push(
+        `helpful count mismatch for ${reviewId}: review=${storedCount} votes=${voteCount}`
+      );
+    }
+  }
+
+  for (const [reviewId, storedCount] of reviewHelpfulCount) {
+    if (storedCount > 0 && !(reviewId in (db.helpfulVotes ?? {}))) {
+      errors.push(
+        `helpful count mismatch for ${reviewId}: review=${storedCount} votes=0`
+      );
+    }
   }
 
   for (const report of db.reports ?? []) {
