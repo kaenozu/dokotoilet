@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { CommunityStore } from "./community";
 import {
-  FirestoreCommunityStoreAdapter,
   createConfiguredCommunityStore,
+  type ConfiguredCommunityStore,
 } from "./communityStoreFactory";
+import { FirestoreCommunityStore } from "./firestoreCommunityStore";
+import type { CommunityRepository } from "./communityRepository";
 
 describe("createConfiguredCommunityStore", () => {
   it("uses JSON by default outside production", () => {
@@ -18,15 +20,27 @@ describe("createConfiguredCommunityStore", () => {
     ).toThrow("no Firestore client");
   });
 
-  it("returns a router-compatible adapter when a Firestore client is injected", () => {
+  it("returns the Firestore implementation directly when a client is injected", () => {
     const firestore = {} as any;
-    const result = createConfiguredCommunityStore({
+    const result: ConfiguredCommunityStore = createConfiguredCommunityStore({
       backend: "firestore",
       nodeEnv: "production",
       firestore,
     });
     expect(result.backend).toBe("firestore");
-    expect(result.store).toBeInstanceOf(FirestoreCommunityStoreAdapter);
-    expect(result.store).toBeInstanceOf(CommunityStore);
+    // 継承アダプターではなく、Firestore 実装そのものが返る。
+    expect(result.store).toBeInstanceOf(FirestoreCommunityStore);
+    expect(result.store).not.toBeInstanceOf(CommunityStore);
+  });
+
+  it("satisfies the CommunityRepository contract for both backends", () => {
+    const json = createConfiguredCommunityStore({ nodeEnv: "test", jsonPath: "/tmp/x.json" });
+    const firestore = createConfiguredCommunityStore({
+      backend: "firestore",
+      nodeEnv: "production",
+      firestore: {} as any,
+    });
+    const repositories: CommunityRepository[] = [json.store, firestore.store];
+    expect(repositories).toHaveLength(2);
   });
 });
