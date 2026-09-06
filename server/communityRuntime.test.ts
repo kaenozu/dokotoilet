@@ -107,13 +107,14 @@ describe("createCommunityRuntime", () => {
 
   it("persists and validates external facilities through Firestore", async () => {
     const db = new FakeFirestore();
+    const initial = [
+      { id: "google-seed-1", source: "google", origin: "static-seed" },
+    ] as const;
     const runtime = await createCommunityRuntime({
       backend: "firestore",
       nodeEnv: "test",
       firestore: db,
-      initialExternalFacilities: [
-        { id: "google-seed-1", source: "google", origin: "static-seed" },
-      ],
+      initialExternalFacilities: [...initial],
     });
 
     expect(runtime.backend).toBe("firestore");
@@ -128,5 +129,15 @@ describe("createCommunityRuntime", () => {
       source: "osm",
       origin: "live-osm",
     });
+
+    // A process restart may attempt create-if-absent registration again. It must
+    // remain safe and preserve the durable registry rather than failing startup.
+    const restarted = await createCommunityRuntime({
+      backend: "firestore",
+      nodeEnv: "test",
+      firestore: db,
+      initialExternalFacilities: [...initial],
+    });
+    expect(await restarted.isKnownExternalFacility("google-seed-1")).toBe(true);
   });
 });
