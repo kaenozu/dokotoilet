@@ -126,4 +126,13 @@ describe("community snapshot migration analysis", () => {
     );
     expect(() => assertCommunitySnapshotValid(db)).toThrow("invalid community snapshot");
   });
+
+  it("rejects helpfulCount that disagrees with stored voter cardinality", () => {
+    const db = sample();
+    db.toilets[0].reviews[0].helpfulCount = 2;
+    const analysis = analyzeCommunitySnapshot(db);
+    expect(analysis.errors).toContain(
+      "helpful count mismatch for rev-a: review=2 votes=1"
+    );
+  });
 });
