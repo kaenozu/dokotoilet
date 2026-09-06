@@ -13,7 +13,7 @@ import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
 import { osmAttributesFromTags } from './lib/osm';
 import { overlayExternalReviews } from './lib/externalReviews';
-import { findSelectedToilet, reviewHttpOutcome } from './lib/uiState';
+import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
 import {
   applyDeltaToSeeds,
   emptyDelta,
@@ -512,36 +512,38 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ review: newReview }),
       });
-      if (res.ok) {
-        const data = await res.json().catch(() => null);
-        if (data?.toilet) {
-          const updated = data.toilet as ToiletFacility;
-          noteServerFacility(updated.id, (updated.reviews ?? []).map((r) => r.id));
-          setToilets((prev) =>
-            prev.map((t) => (t.id === toiletId ? unionServerToilet(t, updated) : t))
-          );
-          return true;
-        }
-        // 外部施設（OSM/Google/OD）: サーバーが共有レビュー一覧を返すので重ねる（M5）
-        if (data?.facilityId === toiletId && Array.isArray(data.reviews)) {
-          const serverReviews = data.reviews as ToiletReview[];
-          // この施設の最新スナップショットを反映（同じ施設の再取得時にも使えるように）
-          externalReviewsRef.current = {
-            ...externalReviewsRef.current,
-            [toiletId]: serverReviews,
-          };
-          noteReviewsKnown(toiletId, serverReviews.map((r) => r.id));
-          setToilets((prev) =>
-            prev.map((t) =>
-              t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
-            )
-          );
-          return true;
-        }
+      const outcome = await classifyReviewResponse(res, toiletId);
+      if (outcome.kind === 'server-toilet') {
+        const updated = outcome.toilet;
+        noteServerFacility(updated.id, (updated.reviews ?? []).map((r) => r.id));
+        setToilets((prev) =>
+          prev.map((t) => (t.id === toiletId ? unionServerToilet(t, updated) : t))
+        );
         return true;
-      } else if (reviewHttpOutcome(res.status) === 'rejected') {
-        const err = await res.json().catch(() => null);
-        showToast(`投稿できませんでした: ${err?.error ?? `サーバーがHTTP ${res.status}で拒否しました`}`);
+      }
+      // 外部施設（OSM/Google/OD）: サーバーが共有レビュー一覧を返すので重ねる（M5）
+      if (outcome.kind === 'server-external') {
+        const serverReviews = outcome.reviews;
+        // この施設の最新スナップショットを反映（同じ施設の再取得時にも使えるように）
+        externalReviewsRef.current = {
+          ...externalReviewsRef.current,
+          [toiletId]: serverReviews,
+        };
+        noteReviewsKnown(toiletId, serverReviews.map((r) => r.id));
+        setToilets((prev) =>
+          prev.map((t) =>
+            t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
+          )
+        );
+        return true;
+      }
+      if (outcome.kind === 'local') {
+        showToast(outcome.message);
+        applyLocalReview(toiletId, newReview);
+        return true;
+      }
+      if (outcome.kind === 'rejected' || outcome.kind === 'invalid') {
+        showToast(outcome.message);
         return false;
       }
     } catch {

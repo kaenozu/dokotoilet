@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { findSelectedToilet, isViewportAlreadyAt, reviewHttpOutcome } from './uiState';
+import {
+  classifyReviewResponse,
+  findSelectedToilet,
+  isViewportAlreadyAt,
+  reviewHttpOutcome,
+} from './uiState';
 import { ToiletFacility } from '../types';
 
 const toilet = (id: string, name: string): ToiletFacility => ({
@@ -24,5 +29,50 @@ describe('UI state behavior', () => {
 
   it.each([400, 404, 409, 429])('treats HTTP %s as rejected', (status) => {
     expect(reviewHttpOutcome(status)).toBe('rejected');
+  });
+
+  it('accepts a structured 201 community response and returns the server snapshot', async () => {
+    const serverToilet = toilet('a', 'server');
+    const result = await classifyReviewResponse(
+      new Response(JSON.stringify({ toilet: serverToilet }), {
+        status: 201,
+        headers: { 'content-type': 'application/json' },
+      }),
+      'a'
+    );
+    expect(result).toEqual({ kind: 'server-toilet', toilet: serverToilet });
+  });
+
+  it('recognizes a static host HTML response as local-only fallback', async () => {
+    const result = await classifyReviewResponse(
+      new Response('<!doctype html><html><body>app</body></html>', {
+        status: 200,
+        headers: { 'content-type': 'text/html' },
+      }),
+      'a'
+    );
+    expect(result.kind).toBe('local');
+  });
+
+  it.each([
+    [204, ''],
+    [200, '{broken'],
+  ])('rejects HTTP %s without silently accepting a review', async (status, body) => {
+    const result = await classifyReviewResponse(
+      new Response(status === 204 ? null : body, { status, headers: { 'content-type': 'application/json' } }),
+      'a'
+    );
+    expect(result.kind).toBe('invalid');
+  });
+
+  it.each([400, 404, 409, 429])('keeps explicit HTTP %s API rejection', async (status) => {
+    const result = await classifyReviewResponse(
+      new Response(JSON.stringify({ error: '拒否理由' }), {
+        status,
+        headers: { 'content-type': 'application/json' },
+      }),
+      'a'
+    );
+    expect(result).toEqual({ kind: 'rejected', message: '投稿できませんでした: 拒否理由' });
   });
 });

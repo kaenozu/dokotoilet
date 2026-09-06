@@ -1,4 +1,4 @@
-import { ToiletFacility } from '../types';
+import { ToiletFacility, ToiletReview } from '../types';
 
 export const findSelectedToilet = (
   toilets: ToiletFacility[],
@@ -15,3 +15,59 @@ export const isViewportAlreadyAt = (
 
 export const reviewHttpOutcome = (status: number) =>
   status >= 200 && status < 300 ? 'accepted' : 'rejected';
+
+export type ReviewResponseOutcome =
+  | { kind: 'server-toilet'; toilet: ToiletFacility }
+  | { kind: 'server-external'; facilityId: string; reviews: ToiletReview[] }
+  | { kind: 'local'; message: string }
+  | { kind: 'rejected'; message: string }
+  | { kind: 'invalid'; message: string };
+
+const isHtmlResponse = (res: Response, body: string) => {
+  const contentType = res.headers.get('content-type')?.toLowerCase() ?? '';
+  return contentType.includes('text/html') || /^\s*(<!doctype\s+html|<html[\s>])/i.test(body);
+};
+
+/** Classifies the review endpoint response without treating an empty/malformed success as accepted. */
+export const classifyReviewResponse = async (
+  res: Response,
+  toiletId: string
+): Promise<ReviewResponseOutcome> => {
+  const body = await res.text();
+  let data: unknown = null;
+  if (body.trim()) {
+    try {
+      data = JSON.parse(body);
+    } catch {
+      if (res.ok && isHtmlResponse(res, body)) {
+        return {
+          kind: 'local',
+          message: 'サーバーが利用できないため、この端末のみに保存しました。',
+        };
+      }
+      return { kind: 'invalid', message: 'サーバーから不正な応答が返りました。入力内容を保持しています。' };
+    }
+  }
+
+  if (!res.ok) {
+    const error =
+      typeof data === 'object' && data !== null && 'error' in data && typeof data.error === 'string'
+        ? data.error
+        : `サーバーがHTTP ${res.status}で拒否しました`;
+    return { kind: 'rejected', message: `投稿できませんでした: ${error}` };
+  }
+
+  if (typeof data === 'object' && data !== null) {
+    if ('toilet' in data && data.toilet && typeof data.toilet === 'object') {
+      return { kind: 'server-toilet', toilet: data.toilet as ToiletFacility };
+    }
+    if (
+      'facilityId' in data && data.facilityId === toiletId &&
+      'reviews' in data && Array.isArray(data.reviews)
+    ) {
+      return { kind: 'server-external', facilityId: toiletId, reviews: data.reviews as ToiletReview[] };
+    }
+  }
+
+  return { kind: 'invalid', message: 'サーバーの応答に投稿結果が含まれていません。入力内容を保持しています。' };
+};
