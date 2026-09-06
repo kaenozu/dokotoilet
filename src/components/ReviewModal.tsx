@@ -10,7 +10,7 @@ interface ReviewModalProps {
   toilet: ToiletFacility | null;
   isOpen: boolean;
   onClose: () => void;
-  onSubmitReview: (toiletId: string, review: ToiletReview) => void;
+  onSubmitReview: (toiletId: string, review: ToiletReview) => Promise<boolean>;
 }
 
 export const ReviewModal: React.FC<ReviewModalProps> = ({
@@ -25,12 +25,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   const [odorScore, setOdorScore] = useState(5);
   const [suppliesScore, setSuppliesScore] = useState(5);
   const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen || !toilet) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comment.trim()) return;
+    if (!comment.trim() || isSubmitting) return;
+    setSubmitError(null);
+    setIsSubmitting(true);
 
     const newReview: ToiletReview = {
       id: `rev-${crypto.randomUUID()}`,
@@ -45,10 +49,19 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       helpfulCount: 0,
     };
 
-    onSubmitReview(toilet.id, newReview);
-    onClose();
-    // reset form
-    setComment('');
+    try {
+      const accepted = await onSubmitReview(toilet.id, newReview);
+      if (accepted) {
+        onClose();
+        setComment('');
+      } else {
+        setSubmitError('投稿が拒否されました。内容を確認して、もう一度お試しください。');
+      }
+    } catch {
+      setSubmitError('投稿に失敗しました。入力内容を保持しています。');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -183,11 +196,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>きれい度評価を投稿する</span>
+            <span>{isSubmitting ? '投稿中...' : 'きれい度評価を投稿する'}</span>
           </button>
+          {submitError && <p role="alert" className="text-danger text-xs">{submitError}</p>}
         </form>
       </div>
     </div>

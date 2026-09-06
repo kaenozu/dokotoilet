@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
 import type { DbFile, FacilityEntry, ReportEntry, ReviewEntry } from "./store";
 import {
   buildCommitBody,
@@ -111,6 +115,57 @@ describe("parseDb", () => {
 describe("loadDbFile", () => {
   it("throws a readable error for a missing file", async () => {
     await expect(loadDbFile("data/__no_such_community__.json")).rejects.toThrow();
+  });
+});
+
+describe("export CLI", () => {
+  it("round-trips complete raw JSON fields while rejecting malformed input before writing", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-export-"));
+    const source = path.join(dir, "community.json");
+    const destination = path.join(dir, "backup.json");
+    const raw = {
+      version: 2,
+      toilets: [{ id: "toilet-user-full", name: "全項目", lat: 35.1, lng: 139.2, category: "park", dataSource: "community", equipmentScore: 3.5, subScores: { cleanliness: 4, odor: 2, supplies: 5, comfort: 3 }, attributes: { hasWashlet: true }, reviews: [{ id: "review-full", overallScore: 4, rating: 5, cleanlinessScore: 4, odorScore: 2, suppliesScore: 5, helpfulCount: 7, comment: "本文", ipHash: "secret", extraReviewField: { x: 1 } }] }],
+      helpfulVotes: { "review-full": ["vote-a", "vote-b"] },
+      reports: [{ id: "report-full", reviewId: "review-full", reason: "理由", extraReportField: true }],
+      reviewKeys: { "review-full": { createdAt: "now", extra: "kept" } },
+      externalReviews: { "osm-full": [{ id: "external-full", overallScore: 3, rating: 2, comment: "外部", extraExternalField: "kept" }] },
+      unknownTopLevel: { preserve: true },
+    };
+    await writeFile(source, JSON.stringify(raw), "utf8");
+    const original = JSON.stringify(raw);
+    execFileSync("bun", [path.resolve("scripts/community-ops/export.ts"), "--out", destination], { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8" });
+    expect(JSON.parse(await readFile(destination, "utf8"))).toEqual(raw);
+
+    await writeFile(source, "{broken", "utf8");
+    await writeFile(destination, original, "utf8");
+    expect(() => execFileSync("bun", [path.resolve("scripts/community-ops/export.ts"), "--out", destination], { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8", stdio: "pipe" })).toThrow();
+    expect(await readFile(destination, "utf8")).toBe(original);
+  });
+});
+
+describe("commit CLI", () => {
+  it("commits only the selected data file and preserves unrelated staged changes", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-commit-"));
+    const selected = path.join(dir, "community data.json");
+    const unrelated = path.join(dir, "unrelated.txt");
+    execFileSync("git", ["init", "-q"], { cwd: dir });
+    execFileSync("git", ["config", "user.name", "Test"], { cwd: dir });
+    execFileSync("git", ["config", "user.email", "test@example.com"], { cwd: dir });
+    await writeFile(selected, JSON.stringify({ version: 2, toilets: [], helpfulVotes: {}, reports: [], reviewKeys: {}, externalReviews: {} }), "utf8");
+    await writeFile(unrelated, "baseline\n", "utf8");
+    execFileSync("git", ["add", "."], { cwd: dir });
+    execFileSync("git", ["commit", "-qm", "baseline"], { cwd: dir });
+    await writeFile(selected, JSON.stringify({ version: 2, toilets: [{ id: "toilet-user-1", name: "追加", reviews: [] }], helpfulVotes: {}, reports: [], reviewKeys: {}, externalReviews: {} }), "utf8");
+    await writeFile(unrelated, "staged unrelated\n", "utf8");
+    execFileSync("git", ["add", "--", unrelated, selected], { cwd: dir });
+    await writeFile(selected, JSON.stringify({ version: 2, toilets: [{ id: "toilet-user-1", name: "追加（未ステージ変更）", reviews: [] }], helpfulVotes: {}, reports: [], reviewKeys: {}, externalReviews: {} }), "utf8");
+    await writeFile(unrelated, "staged unrelated plus unstaged\n", "utf8");
+    execFileSync("bun", [path.resolve("scripts/community-ops/commit.ts"), "--commit", "--new", selected], { cwd: dir, env: { ...process.env, COMMUNITY_STORE_PATH: selected }, encoding: "utf8" });
+    const committed = execFileSync("git", ["show", "HEAD:community data.json"], { cwd: dir, encoding: "utf8" });
+    expect(JSON.parse(committed).toilets[0].name).toBe("追加（未ステージ変更）");
+    expect(execFileSync("git", ["diff", "--cached", "--name-only"], { cwd: dir, encoding: "utf8" }).trim()).toBe("unrelated.txt");
+    expect(await readFile(unrelated, "utf8")).toBe("staged unrelated plus unstaged\n");
   });
 });
 

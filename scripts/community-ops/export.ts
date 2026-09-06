@@ -6,7 +6,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { formatStats, loadDbFile, type DbFile } from "./store";
+import { formatStats, loadRawDbFile, parseDb } from "./store";
 
 export function storePath(): string {
   return (
@@ -36,21 +36,22 @@ export function defaultBackupPath(): string {
 }
 
 export async function runExport(
-  db: DbFile,
+  db: unknown,
   dest: string,
   sourceLabel: string
 ): Promise<void> {
+  const summary = parseDb(JSON.stringify(db), sourceLabel);
   await mkdir(path.dirname(dest), { recursive: true });
   // 整形して保存（git運用での人間によるレビューを想定）
   await writeFile(dest, `${JSON.stringify(db, null, 2)}\n`, "utf-8");
   process.stdout.write(`保存先: ${dest}\n`);
-  process.stdout.write(`データ: ${formatStats(db, sourceLabel)}\n`);
+  process.stdout.write(`データ: ${formatStats(summary, sourceLabel)}\n`);
 }
 
 async function main(): Promise<void> {
   const src = storePath();
   const dest = arg("--out") ?? defaultBackupPath();
-  const db = await loadDbFile(src); // 壊れていればここでエラー終了
+  const db = await loadRawDbFile(src); // 壊れていればここでエラー終了
   await runExport(db, dest, src);
 }
 

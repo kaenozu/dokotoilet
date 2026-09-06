@@ -54,6 +54,10 @@ bun start        # 本番起動（dist/server.cjs）
   コミットのタイミングは投稿が溜まったとき or 運用スクリプト（任意）で定期化する。
   なお、Cloud Run 等の ephemeral FS では**再起動時に未コミット分が消える**ため、
   コミット前に消えても良い量か、永続ボリュームの併用を検討すること。
+  サーバーと運用スクリプトは同じ `data/community.json.lock` を使うディスクロックで、
+  読み込み・変更・書き込みを直列化する。プロセスが強制終了してロックが残った場合は、
+  **すべての書き込み元を停止してから** `data/community.json.lock` を手動で削除すること。
+  ロックは自動で奪回しないため、稼働中の書き込みを壊さない。
   運用スクリプト（`scripts/community-ops/`、リポジトリ直下から実行）:
   - 差分サマリ（作業ツリー vs HEAD、`--old`/`--new`/`--counts-only` オプション）:
     `bun scripts/community-ops/summarize.ts`

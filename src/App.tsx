@@ -14,6 +14,7 @@ import { gradeForScore } from './lib/scoring';
 import { formatOsmOpeningHours, osmAttributesFromTags } from './lib/osm';
 import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
+import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
 import {
   buildFacilityIdAliases,
   canonicalizeSeedOsmFacility,
@@ -182,14 +183,20 @@ export default function App() {
     return SEED_TOILETS.map(sanitizeToiletFacility);
   });
 
-  const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(() =>
-    SEED_TOILETS[0] ? sanitizeToiletFacility(SEED_TOILETS[0]) : null
+  const [selectedToiletId, setSelectedToiletId] = useState<string | null>(
+    SEED_TOILETS[0]?.id ?? null
   );
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
     lat: 35.6590,
     lng: 139.7034,
   });
   const [mapZoom, setMapZoom] = useState<number>(15);
+  // Keep the drawer selection as an ID so shared GET updates replace the
+  // selected facility object instead of leaving a stale startup snapshot.
+  const selectedToilet = useMemo(
+    () => findSelectedToilet(toilets, selectedToiletId),
+    [toilets, selectedToiletId]
+  );
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isLoadingOsm, setIsLoadingOsm] = useState<boolean>(false);
   const [mobileTab, setMobileTab] = useState<'map' | 'list'>('map');
@@ -463,7 +470,7 @@ export default function App() {
         Math.abs(t.lat - city.lat) < 0.05 && Math.abs(t.lng - city.lng) < 0.05
     );
     if (nearest) {
-      setSelectedToilet(nearest);
+      setSelectedToiletId(nearest.id);
     }
   };
 
@@ -501,49 +508,39 @@ export default function App() {
           lastCleaned: 'たった今（利用者が確認）',
         };
 
-        if (selectedToilet?.id === toiletId) {
-          setSelectedToilet(updated);
-        }
-
         return updated;
       })
     );
   };
 
+  // Submit new review (server first, local fallback for offline/static hosting)
   // HTTP応答を受信した場合はサーバー判定を正とし、ローカル保存へフォールバックしない。
   // ローカル保存は fetch 自体が失敗したオフライン/到達不能時だけ許可する。
-  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview) => {
+  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview): Promise<boolean> => {
     try {
       const res = await fetch(`/api/community/toilets/${encodeURIComponent(toiletId)}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ review: newReview }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        showToast(`投稿できませんでした${err?.error ? `: ${err.error}` : ''}`);
-        return;
-      }
-
-      const data = await res.json().catch(() => null);
-      if (data?.toilet) {
-        const updated = data.toilet as ToiletFacility;
+      const outcome = await classifyReviewResponse(res, toiletId);
+      if (outcome.kind === 'server-toilet') {
+        const updated = outcome.toilet;
         noteServerFacility(updated.id, (updated.reviews ?? []).map((r) => r.id));
         setToilets((prev) =>
           prev.map((t) => (t.id === toiletId ? unionServerToilet(t, updated) : t))
         );
-        if (selectedToilet?.id === toiletId) {
-          setSelectedToilet((cur) => (cur ? unionServerToilet(cur, updated) : cur));
-        }
-        return;
+        return true;
       }
-
-      if (data?.facilityId === toiletId && Array.isArray(data.reviews)) {
-        const serverReviews = data.reviews as ToiletReview[];
+      // 外部施設（OSM/Google/OD）: サーバーが共有レビュー一覧を返すので重ねる（M5）
+      if (outcome.kind === 'server-external') {
+        const serverReviews = outcome.reviews;
+        // この施設の最新スナップショットを反映（同じ施設の再取得時にも使えるように）
         externalReviewsRef.current = {
           ...externalReviewsRef.current,
           [toiletId]: serverReviews,
         };
+        // 旧ID/新IDの型エイリアス互換を確認してから重ねる（混在防止）
         const knownFacilityIds = toilets.map((t) => t.id);
         const compatibleReviews =
           externalReviewsForFacility(toiletId, externalReviewsRef.current, knownFacilityIds) ?? serverReviews;
@@ -553,23 +550,30 @@ export default function App() {
             t.id === toiletId ? overlayExternalReviews(t, compatibleReviews) : t
           )
         );
-        if (selectedToilet?.id === toiletId) {
-          setSelectedToilet(overlayExternalReviews(selectedToilet, compatibleReviews));
-        }
-        return;
+        return true;
       }
-
-      showToast('投稿結果を確認できませんでした。再投稿せず画面を更新してください。');
+      if (outcome.kind === 'local') {
+        showToast(outcome.message);
+        applyLocalReview(toiletId, newReview);
+        return true;
+      }
+      if (outcome.kind === 'rejected' || outcome.kind === 'invalid') {
+        showToast(outcome.message);
+        return false;
+      }
     } catch {
-      applyLocalReview(toiletId, newReview);
+      // 通信断・静的ホスティングでは端末内に保存する。
       showToast('サーバーに接続できないため、この端末のみに口コミを保存しました。');
     }
+    applyLocalReview(toiletId, newReview);
+    return true;
   };
 
+  // Add new toilet (server first, local fallback)
   const handleAddToilet = async (newFacility: ToiletFacility) => {
     const sanitized = sanitizeToiletFacility(newFacility);
     setToilets((prev) => [sanitized, ...prev]);
-    setSelectedToilet(sanitized);
+    setSelectedToiletId(sanitized.id);
     setMapCenter({ lat: sanitized.lat, lng: sanitized.lng });
     setMapZoom(16);
     try {
@@ -607,9 +611,6 @@ export default function App() {
               t.id === serverToilet.id ? unionServerToilet(t, serverToilet) : t
             )
           );
-          setSelectedToilet((cur) =>
-            cur?.id === serverToilet.id ? unionServerToilet(cur, serverToilet) : cur
-          );
           return;
         }
       } else {
@@ -627,17 +628,12 @@ export default function App() {
     setToilets((prev) =>
       prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, 1))
     );
-    setSelectedToilet((cur) =>
-      cur ? adjustHelpfulCount(cur, toiletId, reviewId, 1) : cur
-    );
 
+    // 失敗時は楽観カウントと投票済み印を巻き戻す
     const rollback = () => {
       setVotedReviewIds((prev) => prev.filter((id) => id !== reviewId));
       setToilets((prev) =>
         prev.map((t) => adjustHelpfulCount(t, toiletId, reviewId, -1))
-      );
-      setSelectedToilet((cur) =>
-        cur ? adjustHelpfulCount(cur, toiletId, reviewId, -1) : cur
       );
     };
 
@@ -652,11 +648,9 @@ export default function App() {
       }
 
       const data = await res.json();
+      // サーバー確定値で同期（投票済みなら楽観カウントは巻き戻る）
       setToilets((prev) =>
         prev.map((t) => setHelpfulCount(t, toiletId, reviewId, data.helpfulCount))
-      );
-      setSelectedToilet((cur) =>
-        cur ? setHelpfulCount(cur, toiletId, reviewId, data.helpfulCount) : cur
       );
     } catch {
       rollback();
@@ -701,7 +695,7 @@ export default function App() {
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
-              setSelectedToilet(t);
+              setSelectedToiletId(t.id);
               setMapCenter({ lat: t.lat, lng: t.lng });
               if (mobileTab === 'list') {
                 setMobileTab('map');
@@ -721,10 +715,14 @@ export default function App() {
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
-              setSelectedToilet(t);
+              setSelectedToiletId(t.id);
             }}
             center={mapCenter}
             zoom={mapZoom}
+            onViewportChange={(nextCenter, nextZoom) => {
+              setMapCenter(nextCenter);
+              setMapZoom(nextZoom);
+            }}
             onFetchOsmNearCenter={handleFetchOsmNearCenter}
             isLoadingOsm={isLoadingOsm}
             detailsOpen={selectedToilet !== null}
@@ -735,7 +733,7 @@ export default function App() {
           <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
             <ToiletDetails
               toilet={selectedToilet}
-              onClose={() => setSelectedToilet(null)}
+              onClose={() => setSelectedToiletId(null)}
               onOpenReviewModal={() => setIsReviewModalOpen(true)}
               onVoteHelpful={handleVoteHelpful}
               onReportReview={handleReportReview}
