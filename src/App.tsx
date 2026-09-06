@@ -13,6 +13,7 @@ import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
 import { osmAttributesFromTags } from './lib/osm';
 import { overlayExternalReviews } from './lib/externalReviews';
+import { findSelectedToilet, reviewHttpOutcome } from './lib/uiState';
 import {
   applyDeltaToSeeds,
   emptyDelta,
@@ -178,14 +179,20 @@ export default function App() {
     return SEED_TOILETS.map(sanitizeToiletFacility);
   });
 
-  const [selectedToilet, setSelectedToilet] = useState<ToiletFacility | null>(() =>
-    SEED_TOILETS[0] ? sanitizeToiletFacility(SEED_TOILETS[0]) : null
+  const [selectedToiletId, setSelectedToiletId] = useState<string | null>(
+    SEED_TOILETS[0]?.id ?? null
   );
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
     lat: 35.6590,
     lng: 139.7034,
   });
   const [mapZoom, setMapZoom] = useState<number>(15);
+  // Keep the drawer selection as an ID so shared GET updates replace the
+  // selected facility object instead of leaving a stale startup snapshot.
+  const selectedToilet = useMemo(
+    () => findSelectedToilet(toilets, selectedToiletId),
+    [toilets, selectedToiletId]
+  );
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isLoadingOsm, setIsLoadingOsm] = useState<boolean>(false);
 
@@ -451,7 +458,7 @@ export default function App() {
         Math.abs(t.lat - city.lat) < 0.05 && Math.abs(t.lng - city.lng) < 0.05
     );
     if (nearest) {
-      setSelectedToilet(nearest);
+      setSelectedToiletId(nearest.id);
     }
   };
 
@@ -492,17 +499,13 @@ export default function App() {
           lastCleaned: 'たった今（利用者が確認）',
         };
 
-        if (selectedToilet?.id === toiletId) {
-          setSelectedToilet(updated);
-        }
-
         return updated;
       })
     );
   };
 
   // Submit new review (server first, local fallback for offline/static hosting)
-  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview) => {
+  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview): Promise<boolean> => {
     try {
       const res = await fetch(`/api/community/toilets/${encodeURIComponent(toiletId)}/reviews`, {
         method: 'POST',
@@ -517,10 +520,7 @@ export default function App() {
           setToilets((prev) =>
             prev.map((t) => (t.id === toiletId ? unionServerToilet(t, updated) : t))
           );
-          if (selectedToilet?.id === toiletId) {
-            setSelectedToilet((cur) => (cur ? unionServerToilet(cur, updated) : cur));
-          }
-          return;
+          return true;
         }
         // 外部施設（OSM/Google/OD）: サーバーが共有レビュー一覧を返すので重ねる（M5）
         if (data?.facilityId === toiletId && Array.isArray(data.reviews)) {
@@ -536,26 +536,27 @@ export default function App() {
               t.id === toiletId ? overlayExternalReviews(t, serverReviews) : t
             )
           );
-          if (selectedToilet?.id === toiletId) {
-            setSelectedToilet(overlayExternalReviews(selectedToilet, serverReviews));
-          }
-          return;
+          return true;
         }
-      } else {
+        return true;
+      } else if (reviewHttpOutcome(res.status) === 'rejected') {
         const err = await res.json().catch(() => null);
-        if (err?.error) showToast(`投稿できませんでした: ${err.error}`);
+        showToast(`投稿できませんでした: ${err?.error ?? `サーバーがHTTP ${res.status}で拒否しました`}`);
+        return false;
       }
     } catch {
-      /* offline: fall through to local */
+      // 通信断・静的ホスティングでは端末内に保存する。
+      showToast('サーバーに接続できないため、この端末のみに保存しました。');
     }
     applyLocalReview(toiletId, newReview);
+    return true;
   };
 
   // Add new toilet (server first, local fallback)
   const handleAddToilet = async (newFacility: ToiletFacility) => {
     const sanitized = sanitizeToiletFacility(newFacility);
     setToilets((prev) => [sanitized, ...prev]);
-    setSelectedToilet(sanitized);
+    setSelectedToiletId(sanitized.id);
     setMapCenter({ lat: sanitized.lat, lng: sanitized.lng });
     setMapZoom(16);
     try {
@@ -594,9 +595,6 @@ export default function App() {
               t.id === serverToilet.id ? unionServerToilet(t, serverToilet) : t
             )
           );
-          setSelectedToilet((cur) =>
-            cur?.id === serverToilet.id ? unionServerToilet(cur, serverToilet) : cur
-          );
           return;
         }
       } else {
@@ -624,7 +622,6 @@ export default function App() {
           }
         : t;
     setToilets((prev) => prev.map(bumpVote));
-    setSelectedToilet((cur) => (cur ? bumpVote(cur) : cur));
     try {
       const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/helpful`, {
         method: 'POST',
@@ -642,7 +639,6 @@ export default function App() {
               }
             : t;
         setToilets((prev) => prev.map(syncVote));
-        setSelectedToilet((cur) => (cur ? syncVote(cur) : cur));
       }
     } catch {
       /* offline: local count only */
@@ -690,7 +686,7 @@ export default function App() {
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
-              setSelectedToilet(t);
+              setSelectedToiletId(t.id);
               setMapCenter({ lat: t.lat, lng: t.lng });
               if (mobileTab === 'list') {
                 setMobileTab('map');
@@ -711,10 +707,14 @@ export default function App() {
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
-              setSelectedToilet(t);
+              setSelectedToiletId(t.id);
             }}
             center={mapCenter}
             zoom={mapZoom}
+            onViewportChange={(nextCenter, nextZoom) => {
+              setMapCenter(nextCenter);
+              setMapZoom(nextZoom);
+            }}
             onFetchOsmNearCenter={handleFetchOsmNearCenter}
             isLoadingOsm={isLoadingOsm}
             detailsOpen={selectedToilet !== null}
@@ -726,7 +726,7 @@ export default function App() {
           <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
             <ToiletDetails
               toilet={selectedToilet}
-              onClose={() => setSelectedToilet(null)}
+              onClose={() => setSelectedToiletId(null)}
               onOpenReviewModal={() => setIsReviewModalOpen(true)}
               onVoteHelpful={handleVoteHelpful}
               onReportReview={handleReportReview}
