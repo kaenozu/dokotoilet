@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ToiletFacility, ToiletReview } from '../types';
+import { canSubmitReview } from '../lib/reviewForm';
 import {
   Sparkles,
   Star,
@@ -19,20 +20,26 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   onClose,
   onSubmitReview,
 }) => {
+  // 総合満足度は未選択のまま送信できない（惰性的な満点投稿の防止）。
+  // 細分化スコアは未調整なら選択済みの総合満足度を初期値として送信する。
   const [userName, setUserName] = useState('');
-  const [rating, setRating] = useState(5);
-  const [cleanlinessScore, setCleanlinessScore] = useState(5);
-  const [odorScore, setOdorScore] = useState(5);
-  const [suppliesScore, setSuppliesScore] = useState(5);
+  const [rating, setRating] = useState<number | null>(null);
+  const [cleanlinessScore, setCleanlinessScore] = useState<number | null>(null);
+  const [odorScore, setOdorScore] = useState<number | null>(null);
+  const [suppliesScore, setSuppliesScore] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen || !toilet) return null;
 
+  const canSubmit = canSubmitReview(rating, comment);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comment.trim() || isSubmitting) return;
+    // この早期リターンで rating が number に絞り込まれる
+    if (rating === null || !canSubmitReview(rating, comment) || isSubmitting) return;
+
     setSubmitError(null);
     setIsSubmitting(true);
 
@@ -41,9 +48,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       userName: userName.trim() || '匿名の利用者',
       rating,
       overallScore: rating, // 総合満足度（rating は旧名の別名として両方保存）
-      cleanlinessScore,
-      odorScore,
-      suppliesScore,
+      cleanlinessScore: cleanlinessScore ?? rating,
+      odorScore: odorScore ?? rating,
+      suppliesScore: suppliesScore ?? rating,
       comment: comment.trim(),
       createdAt: new Date().toISOString().split('T')[0],
       helpfulCount: 0,
@@ -54,6 +61,10 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       if (accepted) {
         onClose();
         setComment('');
+        setRating(null);
+        setCleanlinessScore(null);
+        setOdorScore(null);
+        setSuppliesScore(null);
       } else {
         setSubmitError('投稿が拒否されました。内容を確認して、もう一度お試しください。');
       }
@@ -104,10 +115,10 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             />
           </div>
 
-          {/* Overall Stars */}
+          {/* Overall Stars（未選択のまま送信不可。rating は明示選択のみ） */}
           <div>
             <label className="block text-ink-soft font-semibold mb-1">
-              総合満足度
+              総合満足度 <span className="text-danger">*</span>
             </label>
             <div className="flex items-center gap-1 text-[#f27d26]">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -119,62 +130,75 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 >
                   <Star
                     className={`w-6 h-6 ${
-                      star <= rating ? 'fill-[#f27d26] text-[#f27d26]' : 'text-line-strong'
+                      rating !== null && star <= rating
+                        ? 'fill-[#f27d26] text-[#f27d26]'
+                        : 'text-line-strong'
                     }`}
                   />
                 </button>
               ))}
-              <span className="ml-2 font-bold text-ink">{rating} / 5</span>
+              <span className="ml-2 font-bold text-ink">
+                {rating === null ? '未選択' : `${rating} / 5`}
+              </span>
             </div>
           </div>
 
-          {/* Sub-Score Sliders */}
+          {/* Sub-Score Sliders（総合満足度を選ぶまで操作できない。未調整なら総合値を送信） */}
           <div className="space-y-2.5 bg-surface-2 p-3 rounded-xl border border-line">
             <div>
               <div className="flex justify-between font-medium text-muted mb-1">
                 <span>便器・床の清潔さ</span>
-                <span className="font-bold text-accent">{cleanlinessScore}点</span>
+                <span className="font-bold text-accent">
+                  {cleanlinessScore === null ? '未調整' : `${cleanlinessScore}点`}
+                </span>
               </div>
               <input
                 type="range"
                 min="1"
                 max="5"
                 step="1"
-                value={cleanlinessScore}
+                value={cleanlinessScore ?? rating ?? 3}
                 onChange={(e) => setCleanlinessScore(parseInt(e.target.value))}
-                className="w-full accent-[#0b6e52] cursor-pointer"
+                disabled={rating === null}
+                className="w-full accent-[#0b6e52] cursor-pointer disabled:opacity-50"
               />
             </div>
 
             <div>
               <div className="flex justify-between font-medium text-muted mb-1">
                 <span>におい・換気状態</span>
-                <span className="font-bold text-sky-500">{odorScore}点</span>
+                <span className="font-bold text-sky-500">
+                  {odorScore === null ? '未調整' : `${odorScore}点`}
+                </span>
               </div>
               <input
                 type="range"
                 min="1"
                 max="5"
                 step="1"
-                value={odorScore}
+                value={odorScore ?? rating ?? 3}
                 onChange={(e) => setOdorScore(parseInt(e.target.value))}
-                className="w-full accent-[#38bdf8] cursor-pointer"
+                disabled={rating === null}
+                className="w-full accent-[#38bdf8] cursor-pointer disabled:opacity-50"
               />
             </div>
 
             <div>
               <div className="flex justify-between font-medium text-muted mb-1">
                 <span>石鹸・ペーパー・除菌</span>
-                <span className="font-bold text-violet-500">{suppliesScore}点</span>
+                <span className="font-bold text-violet-500">
+                  {suppliesScore === null ? '未調整' : `${suppliesScore}点`}
+                </span>
               </div>
               <input
                 type="range"
                 min="1"
                 max="5"
                 step="1"
-                value={suppliesScore}
+                value={suppliesScore ?? rating ?? 3}
                 onChange={(e) => setSuppliesScore(parseInt(e.target.value))}
-                className="w-full accent-[#a78bfa] cursor-pointer"
+                disabled={rating === null}
+                className="w-full accent-[#a78bfa] cursor-pointer disabled:opacity-50"
               />
             </div>
           </div>
@@ -196,8 +220,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all flex items-center justify-center gap-2"
+            disabled={isSubmitting || !canSubmit}
+            title={canSubmit ? undefined : '総合満足度の選択と口コミの入力が必要です'}
+            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>{isSubmitting ? '投稿中...' : 'きれい度評価を投稿する'}</span>

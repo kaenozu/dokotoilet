@@ -40,8 +40,11 @@ describe("mapKumagayaRows", () => {
     expect(f.dataSource).toBe("opendata");
     expect(f.cleanlinessScore).toBe(3.4);
     expect(f.reviewCount).toBe(0);
-    expect(f.attributes.isOpen24h).toBe(true);
+    // 利用時間列が空でも「24時間」とは断定しない（未確認 = null）
+    expect(f.attributes.isOpen24h).toBeNull();
     expect(f.openingHours).toBe("常時開放");
+    // 和式・洋式の件数が両方 0（情報なし）でも "both" とは断定しない
+    expect(f.attributes.toiletStyle).toBeNull();
   });
 
   it("uniquifies facilities that share the same 町字ID", () => {
@@ -64,6 +67,13 @@ describe("mapKumagayaRows", () => {
     ]);
     expect(facilities[0].cleanlinessScore).toBe(4.2);
     expect(facilities[0].category).toBe("station");
+  });
+
+  it("derives 'both' style only when both counts are positive", () => {
+    const { facilities } = mapKumagayaRows(HEADER, [
+      row({ "男性トイレ数_和式": "1", "男性トイレ数_洋式": "1" }),
+    ]);
+    expect(facilities[0].attributes.toiletStyle).toBe("both");
   });
 
   it("derives western style and opening hours", () => {

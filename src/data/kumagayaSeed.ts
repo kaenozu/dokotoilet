@@ -31,7 +31,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -72,7 +72,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -113,7 +113,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -154,7 +154,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -195,7 +195,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -236,7 +236,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -318,7 +318,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -359,7 +359,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -400,7 +400,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -441,7 +441,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -482,7 +482,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
@@ -523,11 +523,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -564,11 +564,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -605,11 +605,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -646,11 +646,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -687,11 +687,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -728,11 +728,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -769,11 +769,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -810,11 +810,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -851,11 +851,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -892,11 +892,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -933,11 +933,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -974,11 +974,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1015,11 +1015,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1056,11 +1056,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1097,11 +1097,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1138,11 +1138,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1179,11 +1179,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1220,11 +1220,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1261,11 +1261,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1302,11 +1302,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1343,11 +1343,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1384,11 +1384,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1425,11 +1425,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1466,11 +1466,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1507,11 +1507,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1548,11 +1548,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1589,11 +1589,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1630,11 +1630,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1671,11 +1671,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1712,11 +1712,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1753,11 +1753,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1794,11 +1794,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1835,11 +1835,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1876,11 +1876,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1917,11 +1917,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1958,11 +1958,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -1999,11 +1999,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2040,11 +2040,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2081,11 +2081,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2122,11 +2122,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2163,11 +2163,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2204,11 +2204,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2245,11 +2245,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2286,11 +2286,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2327,11 +2327,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2368,11 +2368,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2409,11 +2409,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2450,11 +2450,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2491,11 +2491,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2532,11 +2532,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2573,11 +2573,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2614,11 +2614,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2655,11 +2655,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2696,11 +2696,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2737,11 +2737,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2778,11 +2778,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2819,11 +2819,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2860,11 +2860,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2901,11 +2901,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2942,11 +2942,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -2983,11 +2983,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": true,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3028,7 +3028,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "7:30:00～18:30:00（3月から10月は6:30～19:30）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園北西側　公園北東側",
@@ -3065,11 +3065,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 石原公園南西 サンシティ熊谷西側",
@@ -3110,7 +3110,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:00:00（4月から10月は8:00～18:00）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 本球場北西　テニスコート西　多目的広場西　第3球場北　事務所",
@@ -3151,7 +3151,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 芝生広場南西　イベント広場南　遊具広場東　ピクニック広場東",
@@ -3192,7 +3192,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 子供広場北東　野球場南西　サッカー場南",
@@ -3229,11 +3229,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3270,11 +3270,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3311,11 +3311,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3352,11 +3352,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的ゴルフ広場　大野サッカー場、葛和田サッカー場",
@@ -3397,7 +3397,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的広場北　野球場東",
@@ -3434,11 +3434,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 緑化センター内",
@@ -3475,11 +3475,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -3516,11 +3516,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3557,11 +3557,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3598,11 +3598,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3639,11 +3639,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3680,11 +3680,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3721,11 +3721,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3762,11 +3762,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3803,11 +3803,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 南側（上段）　北側（下段）",
@@ -3844,11 +3844,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3885,11 +3885,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3926,11 +3926,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -3967,11 +3967,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -4008,11 +4008,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -4049,11 +4049,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -4090,11 +4090,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園内",
@@ -4135,7 +4135,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "7:30:00～18:30:00（3月から10月は6:30～19:30）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 公園北西側　公園北東側",
@@ -4172,11 +4172,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 石原公園南西 サンシティ熊谷西側",
@@ -4217,7 +4217,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:00:00（4月から10月は8:00～18:00）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 野球場北西　テニスコート西　多目的広場西　第3球場北",
@@ -4258,7 +4258,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:00:00（4月から10月は8:00～18:00）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 野球場北西　テニスコート西　多目的広場西　第3球場北",
@@ -4299,7 +4299,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:00:00（4月から10月は8:00～18:00）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 野球場北西　テニスコート西　多目的広場西　第3球場北",
@@ -4340,7 +4340,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:00:00（4月から10月は8:00～18:00）",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 野球場北西　テニスコート西　多目的広場西　第3球場北",
@@ -4381,7 +4381,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 芝生広場南西　イベント広場南　遊具広場東　ピクニック広場東",
@@ -4422,7 +4422,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 芝生広場南西　イベント広場南　遊具広場東　ピクニック広場東",
@@ -4463,7 +4463,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 芝生広場南西　イベント広場南　遊具広場東　ピクニック広場東",
@@ -4504,7 +4504,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 子供広場北東　野球場南西　サッカー場南",
@@ -4545,7 +4545,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 子供広場北東　野球場南西　サッカー場南",
@@ -4586,7 +4586,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "8:00:00～17:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 子供広場北東　野球場南西　サッカー場南",
@@ -4623,11 +4623,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的ゴルフ広場　大野サッカー場、葛和田サッカー場",
@@ -4664,11 +4664,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的ゴルフ広場　大野サッカー場、葛和田サッカー場",
@@ -4705,11 +4705,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的ゴルフ広場　大野サッカー場、葛和田サッカー場",
@@ -4750,7 +4750,7 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "6:30:00～19:30:00",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 多目的広場北　野球場東",
@@ -4787,11 +4787,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 南側（上段）　北側（下段）",
@@ -4828,11 +4828,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -4869,11 +4869,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -4910,11 +4910,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -4951,11 +4951,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -4992,11 +4992,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -5033,11 +5033,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -5074,11 +5074,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -5115,11 +5115,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",
@@ -5156,11 +5156,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
       "hasPowderRoom": null,
       "hasOstomate": false,
       "isFree": null,
-      "isOpen24h": true,
+      "isOpen24h": null,
       "hasSoap": null,
       "hasAlcohol": null,
       "hasPaperTowelOrDryer": null,
-      "toiletStyle": "both"
+      "toiletStyle": null
     },
     "openingHours": "常時開放",
     "description": "熊谷市「公衆トイレ一覧」（2023年10月2日掲載）に基づく設備情報。実測口コミなし。設置位置: 運動広場1，2，3，4、ソフトボール場4，8、市民いきいき広場自由広場、ラグビー場東側",

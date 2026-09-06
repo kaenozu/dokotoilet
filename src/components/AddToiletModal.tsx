@@ -5,6 +5,7 @@ import {
   TriState,
 } from '../types';
 import { gradeForScore } from '../lib/scoring';
+import { facilityTypeForCategory } from '../lib/grade';
 import { PlusCircle } from 'lucide-react';
 
 /** あり / 不明 / なし の3値ピッカー（不明=未確認。「なし」と区別する） */
@@ -77,16 +78,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
     const newFacility: ToiletFacility = {
       id: `toilet-user-${crypto.randomUUID()}`,
       name: name.trim(),
-      facilityType:
-        category === 'department'
-          ? '商業施設・デパート'
-          : category === 'station'
-          ? '駅・交通施設'
-          : category === 'convenience'
-          ? 'コンビニ'
-          : category === 'park'
-          ? '公衆トイレ'
-          : 'その他施設',
+      facilityType: facilityTypeForCategory(category),
       category,
       dataSource: 'community',
       // 地図中心の正確な位置で登録する（ずらさない）

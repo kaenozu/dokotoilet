@@ -8,21 +8,18 @@ import {
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
 import { GOOGLE_SEED } from './data/googleSeed';
 import { KUMAGAYA_SEED } from './data/kumagayaSeed';
-import { mergeSeedLists } from './lib/seed';
 import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
-import { formatOsmOpeningHours, osmAttributesFromTags } from './lib/osm';
 import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
+import { mergeOsmBatch } from './lib/osmMerge';
+import { mergeSeedLists } from './lib/seed';
 import {
   buildFacilityIdAliases,
   canonicalizeSeedOsmFacility,
   externalReviewsForFacility,
-  isOsmElementType,
-  isTypedOsmAliasUnambiguous,
   legacyOsmIdForTyped,
-  osmFacilityId,
   remapReviewDeltaKeys,
 } from './lib/osmIds';
 import {
@@ -337,41 +334,11 @@ export default function App() {
       }
       const data = await res.json();
 
-      let incoming: ToiletFacility[] = [];
-      if (Array.isArray(data.toilets) && data.toilets.length > 0) {
-        incoming = (data.toilets as any[]).map(sanitizeToiletFacility);
-      } else if (Array.isArray(data.elements) && data.elements.length > 0) {
-        incoming = data.elements
-          .map((el: any) => {
-            const itemLat = el.lat || el.center?.lat;
-            const itemLng = el.lon || el.center?.lon;
-            const tags = el.tags || {};
-            if (!itemLat || !itemLng || !isOsmElementType(el.type)) return null;
-            return sanitizeToiletFacility({
-              id: osmFacilityId(el.type, el.id),
-              name: tags.name || `公衆便所 (OSM #${el.id})`,
-              facilityType: '公衆便所 (OpenStreetMap実在登録)',
-              category: 'park' as const,
-              dataSource: 'osm' as const,
-              lat: itemLat,
-              lng: itemLng,
-              address: tags['addr:full'] || '周辺道路・公園内',
-              cleanlinessGrade: 'B' as const,
-              cleanlinessScore: 3.4,
-              equipmentGrade: 'B' as const,
-              equipmentScore: 3.4,
-              subScores: { cleanliness: 3.4, odor: 3.3, supplies: 3.5, comfort: 3.4 },
-              attributes: osmAttributesFromTags(tags),
-              openingHours: formatOsmOpeningHours(tags.opening_hours),
-              description: `OpenStreetMap登録の実在公衆便所。`,
-              reviewCount: 0,
-              reviews: [],
-              facilityNote: '実在の公衆トイレ。利用者の最新きれい度口コミ募集中。',
-              officialOpenDataId: osmFacilityId(el.type, el.id),
-            });
-          })
-          .filter(Boolean) as ToiletFacility[];
-      }
+      // サーバーが正規化済みの toilets を必ず返すので、クライアント側の
+      // elements→施設 変換（旧フォールバック二重実装）は廃止した。
+      const incoming: ToiletFacility[] = Array.isArray(data.toilets)
+        ? (data.toilets as any[]).map(sanitizeToiletFacility)
+        : [];
 
       if (incoming.length === 0) {
         if (notifyUser) {
@@ -380,73 +347,43 @@ export default function App() {
         return;
       }
 
-      setToilets((prev) => {
-        const next = [...prev];
-        const existingIds = new Set(next.map((t) => t.id));
-        const knownTypedIds = [...next.map((t) => t.id), ...incoming.map((t) => t.id)];
-        let addedCount = 0;
-
-        for (const item of incoming) {
-          if (existingIds.has(item.id)) continue;
-
-          const legacyId = legacyOsmIdForTyped(item.id);
-          const legacyIndex = legacyId ? next.findIndex((p) => p.id === legacyId) : -1;
-          if (
-            legacyIndex >= 0 &&
-            legacyId &&
-            isTypedOsmAliasUnambiguous(item.id, knownTypedIds)
-          ) {
-            const legacy = next[legacyIndex];
-            let migrated = legacy.reviews.length > 0
-              ? recomputeFromReviews(item, legacy.reviews)
-              : item;
-            const shared = externalReviewsForFacility(
-              item.id,
-              externalReviewsRef.current,
-              knownTypedIds
-            );
-            if (shared && shared.length > 0) {
-              noteReviewsKnown(item.id, shared.map((r) => r.id));
-              migrated = overlayExternalReviews(migrated, shared);
-            }
-            next[legacyIndex] = migrated;
-            existingIds.delete(legacyId);
-            existingIds.add(item.id);
-            addedCount += 1;
-            continue;
-          }
-
-          const isDuplicateCoord = next.some(
-            (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
-          );
-          if (!isDuplicateCoord) {
-            const shared = externalReviewsForFacility(
-              item.id,
-              externalReviewsRef.current,
-              knownTypedIds
-            );
-            next.push(
-              shared && shared.length > 0
-                ? overlayExternalReviews(item, shared)
-                : item
-            );
-            if (shared && shared.length > 0) noteReviewsKnown(item.id, shared.map((r) => r.id));
-            existingIds.add(item.id);
-            addedCount += 1;
-          }
+      // マージ本体は純関数（lib/osmMerge）。トースト等の副作用は更新関数の外に出す
+      // （StrictMode の開発環境で更新関数が2回呼れても状態が壊れないようにする）。
+      // noteReviewsKnown は Set への追加で冪等なので、overlay 内でも安全。
+      const knownIds = [...toilets.map((t) => t.id), ...incoming.map((t) => t.id)];
+      const overlayShared = (facility: ToiletFacility): ToiletFacility => {
+        const shared = externalReviewsForFacility(
+          facility.id,
+          externalReviewsRef.current,
+          knownIds
+        );
+        if (shared && shared.length > 0) {
+          noteReviewsKnown(facility.id, shared.map((r) => r.id));
+          const legacyId = legacyOsmIdForTyped(facility.id);
+          const legacy = legacyId
+            ? toilets.find((t) => t.id === legacyId)
+            : undefined;
+          const migrated =
+            legacy && legacy.reviews.length > 0
+              ? recomputeFromReviews(facility, legacy.reviews)
+              : facility;
+          return overlayExternalReviews(migrated, shared);
         }
+        return facility;
+      };
 
-        if (addedCount > 0) {
-          if (notifyUser) {
-            showToast(`新たに ${addedCount} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
-          }
-          return next;
-        }
+      // トースト文言の判定は、副作用なしで現在の状態に対する純粋なプレビューで行う
+      // （レース時のみ実件数とずれ得るが、表示専用の近似として許容）。
+      const preview = mergeOsmBatch(toilets, incoming);
+      setToilets((prev) => mergeOsmBatch(prev, incoming, overlayShared).facilities);
+
+      if (preview.addedCount > 0) {
         if (notifyUser) {
-          showToast('この周辺の実在公衆トイレはすでに取得済みです。');
+          showToast(`新たに ${preview.addedCount} 件の実在公衆トイレをOpenStreetMapから取得しました！`);
         }
-        return prev;
-      });
+      } else if (notifyUser) {
+        showToast('この周辺の実在公衆トイレはすでに取得済みです。');
+      }
     } catch {
       if (notifyUser) {
         showToast('OpenStreetMapの取得に失敗しました。通信環境をご確認のうえ、時間をおいて再度お試しください。');
