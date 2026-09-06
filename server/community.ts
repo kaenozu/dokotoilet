@@ -582,7 +582,7 @@ export function defaultStorePath(): string {
   );
 }
 
-export type ExternalFacilityValidator = (facilityId: string) => boolean;
+export type ExternalFacilityValidator = (facilityId: string) => boolean | Promise<boolean>;
 
 export function createCommunityRouter(
   store: CommunityStore,
@@ -702,7 +702,7 @@ export function createCommunityRouter(
       const facilityId = req.params.id;
       if (
         isExternalFacilityId(facilityId) &&
-        !isKnownExternalFacility(facilityId)
+        !(await isKnownExternalFacility(facilityId))
       ) {
         res.status(404).json({ error: "toilet not found" });
         return;
