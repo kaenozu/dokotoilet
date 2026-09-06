@@ -96,7 +96,29 @@ Fields:
 - `helpfulCount`
 - `createdAt`
 
-Indexes should be kept minimal. The required query is primarily `facilityId == X` ordered by `createdAt` descending. Avoid broad automatic indexing of long text fields such as `comment` where possible.
+The required query is primarily `facilityId == X` ordered by `createdAt` descending. Avoid indexing long text fields such as `comment` where Firestore configuration permits it.
+
+### `facility_aggregates/{facilityId}`
+
+Stores transactionally maintained score inputs so adding one review does not require scanning every historical review.
+
+Fields:
+
+- `facilityId`
+- `reviewCount`
+- `sumOverall`
+- `sumCleanliness`
+- `sumOdor`
+- `sumSupplies`
+- `updatedAt`
+
+Derived averages/grade returned by the API must be calculated from these exact sums using the same rounding and `gradeForScore` semantics as the JSON implementation.
+
+For community facilities, `community_toilets` may duplicate the derived display fields for efficient list reads, but `facility_aggregates` is the transactional source for aggregate inputs. Both documents must be updated in the same review transaction.
+
+For external facilities, the aggregate document avoids rescanning all external reviews after every post.
+
+Migration and moderation must maintain these sums exactly. Removing a review must decrement the aggregate in the same transaction that deletes the review and its related vote/dedup state.
 
 ### `review_dedup/{dedupKey}`
 
@@ -147,13 +169,17 @@ Fields:
 - `id`
 - `source: "osm" | "google" | "od"`
 - `firstSeenAt`
-- `lastSeenAt`
 - `origin: "static-seed" | "live-osm" | "migration"`
 - optional `legacyId`
+- optional `lastSeenAt`
 
 For static OSM seed rows, register the exact canonical typed ID from `officialOpenDataId`. Do not register all possible `node/way/relation` aliases for a legacy numeric OSM ID.
 
+`lastSeenAt` is not required for correctness and must not be updated on every map/OSM request. Registry writes should be create-if-absent (or explicitly throttled) to avoid turning read traffic into Firestore write amplification.
+
 ## Transaction boundaries
+
+Firestore transaction callbacks may retry. They must be free of external side effects and must not mutate application state outside the transaction result.
 
 ### Add community facility
 
@@ -162,27 +188,33 @@ Transaction:
 1. Read `community_toilets/{facilityId}`.
 2. If present, return duplicate.
 3. Create facility document.
+4. Create zeroed `facility_aggregates/{facilityId}`.
 
 ### Add review to community facility
 
 Transaction:
 
 1. Read facility document.
-2. Read deterministic `review_dedup/{dedupKey}`.
-3. If a non-expired dedup document exists, return duplicate.
-4. Create `reviews/{reviewId}`.
-5. Create/replace dedup document.
-6. Update facility derived score/count fields using the authoritative set required by the implementation.
+2. Read `facility_aggregates/{facilityId}`.
+3. Read deterministic `review_dedup/{dedupKey}`.
+4. If a non-expired dedup document exists, return duplicate.
+5. Create `reviews/{reviewId}`.
+6. Create/replace dedup document.
+7. Increment aggregate sums/count.
+8. Recompute derived score fields from the new sums and update `community_toilets/{facilityId}`.
 
-The implementation must not rely on an in-memory read followed by an out-of-transaction write.
+No historical review query is needed on the normal write path.
 
 ### Add review to external facility
 
-Transaction or pre-transaction validation:
+Transaction:
 
-1. Confirm `external_facilities/{facilityId}` exists.
-2. Check `review_dedup/{dedupKey}`.
-3. Create review and dedup documents atomically.
+1. Read `external_facilities/{facilityId}` and reject if absent.
+2. Read `facility_aggregates/{facilityId}` (treat absent as zero only for a known external facility).
+3. Read `review_dedup/{dedupKey}`.
+4. If non-expired duplicate exists, return duplicate.
+5. Create review and dedup documents.
+6. Create/update aggregate sums atomically.
 
 Unknown syntactically valid IDs remain 404.
 
@@ -198,21 +230,31 @@ Transaction:
 
 ### Report
 
-Validate review/facility association before creating the report. The report write itself may be a single atomic create once validation is complete.
+Use a transaction, not a preflight read followed by an unrelated create:
 
-## Score aggregation
+1. Read `reviews/{reviewId}`.
+2. Verify it exists and its `facilityId` equals the supplied facility ID.
+3. Create `reports/{reportId}` in the same transaction.
 
-Do not load every review for a facility on every write indefinitely.
+This prevents a report from being created for a review that was concurrently removed between validation and write.
 
-For the first migration, preserving current behavior is more important than premature optimization. The implementation may query all reviews for that facility inside the service layer when review counts are small, but the derived fields on `community_toilets` must be updated transactionally or via a transaction-safe aggregate strategy.
+### Moderation removal
 
-Before public scale, replace O(n) recomputation with stored aggregate sums/counts if review volume makes contention or read cost material. This is a later optimization and must preserve `summarizeReviews` semantics.
+A Firestore-backed moderation operation must atomically maintain referential and aggregate state:
+
+1. Read review and aggregate.
+2. Delete review.
+3. Decrement aggregate count/sums and update community derived fields when applicable.
+4. Delete known dedup guard for that review when addressable.
+5. Delete related reports and helpful votes via bounded follow-up batches/transactions with a resumable operation if fan-out exceeds one transaction.
+
+The first Firestore implementation must document how partial fan-out cleanup resumes safely; it must not silently leave aggregate corruption.
 
 ## Authentication and permissions
 
 The browser must not receive Firestore credentials. The Express server uses the Google Cloud server client through Application Default Credentials / workload identity provided by the runtime.
 
-The Cloud Run service account should receive only the minimum Firestore permissions required by this service. IAM changes are deployment operations and require explicit approval.
+The production service identity should receive only the minimum Firestore permissions required by this service. IAM changes are deployment operations and require explicit approval.
 
 ## Migration plan
 
@@ -224,7 +266,7 @@ Migration is deliberately separated from implementation.
 - `main` CI green.
 - Production compute project and region confirmed.
 - Firestore Standard/default database choice explicitly approved.
-- Service account / IAM plan explicitly approved.
+- Service identity / IAM plan explicitly approved.
 - Current `data/community.json` exported and checksum recorded.
 
 ### Phase 1: implementation with no production cutover
@@ -236,6 +278,7 @@ Add:
 - `FirestoreCommunityStore`
 - backend factory using `COMMUNITY_BACKEND`
 - migration CLI with `--dry-run` as default
+- reverse-export CLI
 - parity verifier
 - Firestore emulator tests
 
@@ -253,6 +296,7 @@ The migration CLI reads a frozen JSON snapshot and validates:
 - report references
 - duplicate-guard references
 - external facility IDs and typed OSM aliases
+- aggregate sums/counts recomputed from reviews
 
 Print counts and a deterministic digest. No writes unless `--apply` is explicitly provided.
 
@@ -265,7 +309,9 @@ Import into a non-production emulator/test database and run parity checks:
 - external review count per facility
 - report count
 - helpful vote cardinality
+- aggregate sums/counts
 - derived score/count parity
+- external facility registry parity
 - API contract tests against JSON and Firestore implementations
 
 ### Phase 4: production cutover (explicit approval required)
@@ -296,7 +342,7 @@ Required rollback sequence:
 
 1. Freeze community writes.
 2. Export Firestore into the JSON-compatible snapshot format.
-3. Verify counts, referential integrity, and digest.
+3. Verify counts, referential integrity, aggregates, and digest.
 4. Store a backup of the pre-cutover JSON snapshot separately.
 5. Replace the rollback JSON snapshot only after verification.
 6. Switch backend to JSON and redeploy.
@@ -317,12 +363,14 @@ Implementation is not complete until all of the following pass:
 - concurrent review creation test
 - same-IP duplicate review test
 - concurrent duplicate helpful-vote test
-- transaction failure / retry test
-- partial-failure test proving no half-written review/vote state
+- transaction retry test proving callback side-effect safety
+- partial-failure test proving no half-written review/vote/aggregate state
+- report-vs-review-delete race test
 - restart persistence test
+- external facility create-if-absent/throttling test
 - migration dry-run test
 - migration idempotency test
-- JSON -> Firestore parity test
+- JSON -> Firestore parity test including aggregate sums
 - Firestore -> JSON rollback-export parity test
 
 No test may rely on production Firestore.
@@ -359,7 +407,7 @@ Implementation must not start until the following are explicitly approved:
 
 1. Firestore Standard as the backend.
 2. Default database and deployment region (same region as production compute).
-3. The normalized schema above.
+3. The normalized schema above, including `facility_aggregates` and durable `external_facilities`.
 4. Short write-freeze migration instead of initial dual-write.
 5. Rollback behavior after post-cutover writes.
 
