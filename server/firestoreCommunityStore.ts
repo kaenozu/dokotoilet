@@ -148,14 +148,25 @@ export class FirestoreCommunityStore implements CommunityRepository {
   }
 
   async getToilets(): Promise<ToiletFacility[]> {
-    const snap = await this.col("community_toilets").get();
-    const items = await Promise.all(
-      snap.docs.map(async (doc) => {
-        const raw = doc.data() ?? {};
-        return publicFacilityFromDoc(raw, await this.reviewsForFacility(doc.id));
-      })
+    const [facilities, communityReviews] = await Promise.all([
+      this.col("community_toilets").get(),
+      this.col("reviews").where("facilityKind", "==", "community").get(),
+    ]);
+    const reviewsByFacility = new Map<string, ToiletReview[]>();
+    for (const doc of communityReviews.docs) {
+      const data = doc.data() ?? {};
+      const facilityId = String(data.facilityId ?? "");
+      if (!facilityId) continue;
+      const list = reviewsByFacility.get(facilityId) ?? [];
+      list.push(reviewFromDoc(doc));
+      reviewsByFacility.set(facilityId, list);
+    }
+    for (const list of reviewsByFacility.values()) {
+      list.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+    }
+    return facilities.docs.map((doc) =>
+      publicFacilityFromDoc(doc.data() ?? {}, reviewsByFacility.get(doc.id) ?? [])
     );
-    return items;
   }
 
   async getExternalReviews(): Promise<Record<string, ToiletReview[]>> {
@@ -316,17 +327,19 @@ export class FirestoreCommunityStore implements CommunityRepository {
   }
 
   async registerExternalFacilities(facilities: ExternalFacilityObservation[]): Promise<void> {
-    for (const facility of facilities) {
-      const ref = this.col("external_facilities").doc(facility.id);
-      try {
-        await ref.create({
-          ...facility,
-          firstSeenAt: new Date().toISOString(),
-        });
-      } catch (error) {
-        if (!isAlreadyExists(error)) throw error;
-      }
-    }
+    await Promise.all(
+      facilities.map(async (facility) => {
+        const ref = this.col("external_facilities").doc(facility.id);
+        try {
+          await ref.create({
+            ...facility,
+            firstSeenAt: new Date().toISOString(),
+          });
+        } catch (error) {
+          if (!isAlreadyExists(error)) throw error;
+        }
+      })
+    );
   }
 
   async isKnownExternalFacility(facilityId: string): Promise<boolean> {

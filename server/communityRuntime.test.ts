@@ -18,7 +18,8 @@ afterEach(async () => {
 class FakeDoc implements FirestoreDocumentRefLike {
   constructor(
     readonly id: string,
-    private readonly dataMap: Map<string, Record<string, unknown>>
+    private readonly dataMap: Map<string, Record<string, unknown>>,
+    private readonly onCreate: () => void
   ) {}
 
   async get(): Promise<FirestoreDocumentSnapshotLike> {
@@ -27,6 +28,7 @@ class FakeDoc implements FirestoreDocumentRefLike {
   }
 
   async create(data: Record<string, unknown>): Promise<void> {
+    this.onCreate();
     if (this.dataMap.has(this.id)) {
       const error = new Error("already exists") as Error & { code?: number };
       error.code = 6;
@@ -43,15 +45,16 @@ class FakeDoc implements FirestoreDocumentRefLike {
 class FakeCollection implements FirestoreCollectionLike {
   constructor(
     private readonly dataMap: Map<string, Record<string, unknown>>,
+    private readonly onCreate: () => void,
     private readonly filter?: { field: string; value: unknown }
   ) {}
 
   doc(id = "auto"): FirestoreDocumentRefLike {
-    return new FakeDoc(id, this.dataMap);
+    return new FakeDoc(id, this.dataMap, this.onCreate);
   }
 
   where(field: string, _op: "==", value: unknown): FirestoreCollectionLike {
-    return new FakeCollection(this.dataMap, { field, value });
+    return new FakeCollection(this.dataMap, this.onCreate, { field, value });
   }
 
   async get() {
@@ -65,6 +68,7 @@ class FakeCollection implements FirestoreCollectionLike {
 
 class FakeFirestore implements FirestoreLike {
   readonly collections = new Map<string, Map<string, Record<string, unknown>>>();
+  createCalls = 0;
 
   collection(name: string): FirestoreCollectionLike {
     let data = this.collections.get(name);
@@ -72,7 +76,9 @@ class FakeFirestore implements FirestoreLike {
       data = new Map();
       this.collections.set(name, data);
     }
-    return new FakeCollection(data);
+    return new FakeCollection(data, () => {
+      this.createCalls += 1;
+    });
   }
 
   async runTransaction<T>(): Promise<T> {
@@ -121,14 +127,21 @@ describe("createCommunityRuntime", () => {
     expect(await runtime.isKnownExternalFacility("google-seed-1")).toBe(true);
     expect(await runtime.isKnownExternalFacility("osm-node-9")).toBe(false);
 
+    db.createCalls = 0;
     await runtime.observeExternalFacilities([
       { id: "osm-node-9", source: "osm", origin: "live-osm" },
     ]);
+    expect(db.createCalls).toBe(1);
     expect(await runtime.isKnownExternalFacility("osm-node-9")).toBe(true);
     expect(db.collections.get("external_facilities")?.get("osm-node-9")).toMatchObject({
       source: "osm",
       origin: "live-osm",
     });
+
+    await runtime.observeExternalFacilities([
+      { id: "osm-node-9", source: "osm", origin: "live-osm" },
+    ]);
+    expect(db.createCalls).toBe(1);
 
     // A process restart may attempt create-if-absent registration again. It must
     // remain safe and preserve the durable registry rather than failing startup.

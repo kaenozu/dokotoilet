@@ -6,7 +6,11 @@ import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
 import { createCommunityRouter } from "./server/community";
 import { createCommunityRuntime } from "./server/communityRuntime";
-import { osmCacheKey, resolveCommunitySalt } from "./server/runtime";
+import {
+  isWithinRadius,
+  osmCacheKey,
+  resolveCommunitySalt,
+} from "./server/runtime";
 import {
   formatOsmOpeningHours,
   isTheTokyoToiletTags,
@@ -163,31 +167,38 @@ async function startServer() {
       ];
 
       let rawElements: any[] = [];
-      let fetchSuccess = false;
+      let upstreamSucceeded = false;
       let lastMirrorError: unknown = null;
 
       for (const mirrorUrl of mirrors) {
         try {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
-          const osmResponse = await fetch(mirrorUrl, {
-            method: "POST",
-            body: "data=" + encodeURIComponent(overpassQuery),
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "User-Agent":
-                "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
-            },
-            signal: controller.signal,
-          });
-          clearTimeout(timeoutId);
-          if (osmResponse.ok) {
-            const data = await osmResponse.json();
-            if (Array.isArray(data.elements) && data.elements.length > 0) {
-              rawElements = data.elements;
-              fetchSuccess = true;
-              break;
+          try {
+            const osmResponse = await fetch(mirrorUrl, {
+              method: "POST",
+              body: "data=" + encodeURIComponent(overpassQuery),
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent":
+                  "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
+              },
+              signal: controller.signal,
+            });
+            if (!osmResponse.ok) {
+              lastMirrorError = new Error(`HTTP ${osmResponse.status}`);
+              continue;
             }
+            const data = await osmResponse.json();
+            if (!Array.isArray(data.elements)) {
+              lastMirrorError = new Error("Overpass response missing elements array");
+              continue;
+            }
+            rawElements = data.elements;
+            upstreamSucceeded = true;
+            break;
+          } finally {
+            clearTimeout(timeoutId);
           }
         } catch (e) {
           lastMirrorError = e;
@@ -195,23 +206,29 @@ async function startServer() {
         }
       }
 
-      if (!fetchSuccess) {
+      if (!upstreamSucceeded) {
         console.error(
-          "[osm-proxy] All Overpass mirrors returned no usable data; falling back to seed:",
+          "[osm-proxy] All Overpass mirrors failed; falling back to seed:",
           lastMirrorError instanceof Error
             ? lastMirrorError.message
-            : "(empty / non-200 responses)"
+            : "(non-200 / malformed responses)"
         );
       }
 
-      let source: "overpass" | "seed" | "none" = fetchSuccess
+      let source: "overpass" | "seed" | "none" = upstreamSucceeded
         ? "overpass"
         : "none";
-      if (!fetchSuccess || rawElements.length === 0) {
+      if (!upstreamSucceeded) {
         const matchedSeed = REAL_OSM_SEED.filter((el: any) => {
-          const dLat = Math.abs((el.lat || 0) - lat);
-          const dLng = Math.abs((el.lon || 0) - lng);
-          return dLat < 0.04 && dLng < 0.04;
+          const itemLat = el.lat ?? el.center?.lat;
+          const itemLng = el.lon ?? el.center?.lon;
+          return (
+            typeof itemLat === "number" &&
+            Number.isFinite(itemLat) &&
+            typeof itemLng === "number" &&
+            Number.isFinite(itemLng) &&
+            isWithinRadius(lat, lng, itemLat, itemLng, radius)
+          );
         });
         if (matchedSeed.length > 0) {
           rawElements = matchedSeed;
@@ -221,8 +238,8 @@ async function startServer() {
 
       const toilets = rawElements
         .map((el: any) => {
-          const itemLat = el.lat || el.center?.lat;
-          const itemLng = el.lon || el.center?.lon;
+          const itemLat = el.lat ?? el.center?.lat;
+          const itemLng = el.lon ?? el.center?.lon;
           const tags = el.tags || {};
           if (!isOsmElementType(el.type)) return null;
           const facilityId = osmFacilityId(el.type, el.id);
@@ -358,7 +375,14 @@ async function startServer() {
             googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
           };
         })
-        .filter((t) => t && t.lat && t.lng);
+        .filter(
+          (t) =>
+            t &&
+            typeof t.lat === "number" &&
+            Number.isFinite(t.lat) &&
+            typeof t.lng === "number" &&
+            Number.isFinite(t.lng)
+        );
 
       await communityRuntime.observeExternalFacilities(
         toilets
@@ -379,7 +403,9 @@ async function startServer() {
         timestamp: new Date().toISOString(),
       };
 
-      if (toilets.length > 0) osmCacheSet(cacheKey, responsePayload);
+      if (upstreamSucceeded || toilets.length > 0) {
+        osmCacheSet(cacheKey, responsePayload);
+      }
       res.json(responsePayload);
     } catch (err: any) {
       console.error("OSM Overpass API error:", err?.message ?? err);

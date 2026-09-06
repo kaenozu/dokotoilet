@@ -22,6 +22,7 @@ class Snap implements FirestoreDocumentSnapshotLike {
 class FakeFirestore implements FirestoreLike {
   readonly data = new Map<string, Map<string, Plain>>();
   private queue: Promise<void> = Promise.resolve();
+  queryGetCount = 0;
 
   bucket(name: string) {
     let bucket = this.data.get(name);
@@ -82,6 +83,7 @@ class Collection implements FirestoreCollectionLike {
     return new Collection(this.db, this.name, [...this.filters, [field, value]]);
   }
   async get(): Promise<FirestoreQuerySnapshotLike> {
+    this.db.queryGetCount += 1;
     const docs: FirestoreDocumentSnapshotLike[] = [];
     for (const [id, value] of this.db.bucket(this.name)) {
       if (this.filters.every(([field, expected]) => value[field] === expected)) {
@@ -133,10 +135,10 @@ class Tx implements FirestoreTransactionLike {
   commit() { for (const write of this.writes) write(); }
 }
 
-function facility(): ToiletFacility {
+function facility(id = "toilet-user-a"): ToiletFacility {
   return {
-    id: "toilet-user-a",
-    name: "A",
+    id,
+    name: id,
     facilityType: "公衆トイレ",
     category: "park",
     dataSource: "community",
@@ -190,6 +192,22 @@ describe("FirestoreCommunityStore", () => {
     expect(result.toilet?.reviewCount).toBe(1);
     expect(result.toilet?.cleanlinessScore).toBe(4);
     expect(result.toilet?.overallScore).toBe(5);
+  });
+
+  it("loads all community facilities with two collection queries instead of N+1", async () => {
+    const db = new FakeFirestore();
+    const store = new FirestoreCommunityStore(db);
+    await store.addToilet(facility("toilet-user-a"));
+    await store.addToilet(facility("toilet-user-b"));
+    await store.addReview("toilet-user-a", review("a"), "ip-a");
+    await store.addReview("toilet-user-b", review("b"), "ip-b");
+
+    db.queryGetCount = 0;
+    const toilets = await store.getToilets();
+
+    expect(db.queryGetCount).toBe(2);
+    expect(toilets).toHaveLength(2);
+    expect(toilets.every((toilet) => toilet.reviewCount === 1)).toBe(true);
   });
 
   it("rejects unknown external ids and enforces 24h duplicate review guards", async () => {

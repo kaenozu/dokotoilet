@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { osmCacheKey, resolveCommunitySalt } from "./runtime";
+import {
+  distanceMeters,
+  isWithinRadius,
+  osmCacheKey,
+  resolveCommunitySalt,
+} from "./runtime";
 
 describe("resolveCommunitySalt", () => {
   it("uses the configured salt when present", () => {
@@ -31,6 +36,25 @@ describe("osmCacheKey", () => {
   it("includes radius", () => {
     expect(osmCacheKey(35.659, 139.7006, 1500)).not.toBe(
       osmCacheKey(35.659, 139.7006, 2000)
+    );
+  });
+});
+
+describe("OSM fallback radius helpers", () => {
+  it("computes zero distance for the same point", () => {
+    expect(distanceMeters(35.659, 139.7006, 35.659, 139.7006)).toBe(0);
+  });
+
+  it("keeps fallback facilities inside the requested radius", () => {
+    const center = { lat: 35.659, lng: 139.7006 };
+    expect(isWithinRadius(center.lat, center.lng, 35.6595, 139.7006, 100)).toBe(
+      true
+    );
+    expect(isWithinRadius(center.lat, center.lng, 35.661, 139.7006, 100)).toBe(
+      false
+    );
+    expect(isWithinRadius(center.lat, center.lng, 35.661, 139.7006, 300)).toBe(
+      true
     );
   });
 });

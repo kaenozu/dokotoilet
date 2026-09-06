@@ -122,11 +122,17 @@ export async function createCommunityRuntime(
     return {
       backend,
       store,
-      isKnownExternalFacility: (facilityId) =>
-        firestoreStore.isKnownExternalFacility(facilityId),
+      isKnownExternalFacility: async (facilityId) => {
+        if (registry.has(facilityId)) return true;
+        const known = await firestoreStore.isKnownExternalFacility(facilityId);
+        if (known) registry.register(facilityId);
+        return known;
+      },
       observeExternalFacilities: async (facilities) => {
-        registry.registerMany(facilities.map((item) => item.id));
-        await firestoreStore.registerExternalFacilities(facilities);
+        const unseen = facilities.filter((item) => !registry.has(item.id));
+        if (unseen.length === 0) return;
+        await firestoreStore.registerExternalFacilities(unseen);
+        registry.registerMany(unseen.map((item) => item.id));
       },
     };
   }
