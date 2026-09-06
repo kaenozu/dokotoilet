@@ -1,30 +1,19 @@
-import type { ToiletFacility, ToiletReview } from "../src/types";
-
-export type ReviewInput = Omit<ToiletReview, "id" | "helpfulCount" | "createdAt"> & {
-  id?: string;
-  createdAt?: string;
-};
+import type {
+  CleanlinessGrade,
+  ToiletFacility,
+  ToiletReview,
+} from "../src/types";
+import type { ReviewInput } from "./community";
 
 export interface AddReviewResult {
-  added: boolean;
-  duplicate?: boolean;
-  notFound?: boolean;
-  facilityId: string;
-  review?: ToiletReview;
-  reviews: ToiletReview[];
+  error?: "not_found" | "duplicate";
   toilet?: ToiletFacility;
-}
-
-export interface HelpfulVoteResult {
-  found: boolean;
-  voted: boolean;
-  helpfulCount: number;
-}
-
-export interface ReportResult {
-  added: boolean;
-  found: boolean;
-  reportId?: string;
+  facilityId?: string;
+  reviews?: ToiletReview[];
+  reviewCount?: number;
+  cleanlinessScore?: number;
+  cleanlinessGrade?: CleanlinessGrade;
+  overallScore?: number;
 }
 
 export interface ExternalFacilityObservation {
@@ -34,14 +23,29 @@ export interface ExternalFacilityObservation {
   legacyId?: string;
 }
 
-/** Storage boundary for durable community data. */
+/**
+ * Storage boundary for community data. Implementations must preserve the
+ * current router-visible contract and make each mutation atomic from the
+ * caller's perspective.
+ */
 export interface CommunityRepository {
   getToilets(): Promise<ToiletFacility[]>;
   getExternalReviews(): Promise<Record<string, ToiletReview[]>>;
-  addToilet(toilet: ToiletFacility): Promise<{ added: boolean; toilet?: ToiletFacility }>;
-  addReview(facilityId: string, input: ReviewInput, ipHash: string): Promise<AddReviewResult>;
-  voteHelpful(reviewId: string, ipHash: string): Promise<HelpfulVoteResult>;
-  addReport(facilityId: string, reviewId: string, reason: string): Promise<ReportResult>;
+  addToilet(toilet: ToiletFacility): Promise<{ added: boolean }>;
+  addReview(
+    facilityId: string,
+    input: ReviewInput,
+    ipHash: string
+  ): Promise<AddReviewResult>;
+  voteHelpful(
+    reviewId: string,
+    ipHash: string
+  ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }>;
+  addReport(
+    facilityId: string,
+    reviewId: string,
+    reason: string
+  ): Promise<{ ok: boolean; found: boolean }>;
   registerExternalFacilities?(facilities: ExternalFacilityObservation[]): Promise<void>;
   isKnownExternalFacility?(facilityId: string): Promise<boolean>;
 }
