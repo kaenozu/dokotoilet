@@ -98,4 +98,4 @@ jobs:
           echo FIRESTORE_RUNTIME_HTTP_ACCEPTANCE_PASS
           SH
           chmod +x /tmp/runtime-smoke.sh
-          bunx firebase-tools@latest emulators:exec --project demo-dokotoilet --only firestore "/tmp/runtime-smoke.sh"
+          bunx firebase-tools@latest emulators:exec --project demo-dokotoilet --only firestore "bash /tmp/runtime-smoke.sh"
