@@ -1,14 +1,18 @@
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { REAL_OSM_SEED } from "./src/data/realOsmSeed";
+import { INITIAL_TOILETS } from "./src/data/toilets";
+import { GOOGLE_SEED } from "./src/data/googleSeed";
+import { KUMAGAYA_SEED } from "./src/data/kumagayaSeed";
 import {
   CommunityStore,
   createCommunityRouter,
   defaultStorePath,
 } from "./server/community";
+import { ExternalFacilityRegistry } from "./server/externalFacilityRegistry";
 import { osmCacheKey, resolveCommunitySalt } from "./server/runtime";
 import {
   formatOsmOpeningHours,
@@ -56,6 +60,7 @@ async function startServer() {
     })
   );
   app.use(express.json({ limit: "100kb" }));
+
   // OSMプロキシの踏み台化を防ぐ（/api/配下は1分60リクエスト/IP）
   const apiLimiter = rateLimit({
     windowMs: 60 * 1000,
@@ -65,13 +70,31 @@ async function startServer() {
   });
   app.use("/api/", apiLimiter);
 
-  // コミュニティ投稿API（ファイルストア。 ephemeral FS では再起動で消える点に注意）
+  // コミュニティ投稿API（ファイルストア。ephemeral FS では再起動で消える点に注意）
   const communityStore = new CommunityStore(defaultStorePath());
   const communitySalt = resolveCommunitySalt(
     process.env.NODE_ENV,
     process.env.COMMUNITY_SALT
   );
-  app.use("/api/community", createCommunityRouter(communityStore, communitySalt));
+
+  // 外部施設レビューは、実際にアプリが知っている施設だけを受理する。
+  // 静的seed、既存community DBに既にレビューがある施設、起動後に取得したOSMを登録する。
+  const externalFacilityRegistry = new ExternalFacilityRegistry([
+    ...INITIAL_TOILETS.map((t) => t.id),
+    ...GOOGLE_SEED.map((t) => t.id),
+    ...KUMAGAYA_SEED.map((t) => t.id),
+  ]);
+  const existingExternalReviews = await communityStore.getExternalReviews();
+  externalFacilityRegistry.registerMany(Object.keys(existingExternalReviews));
+
+  app.use(
+    "/api/community",
+    createCommunityRouter(
+      communityStore,
+      communitySalt,
+      (facilityId) => externalFacilityRegistry.has(facilityId)
+    )
+  );
 
   // Health check
   app.get("/api/health", (_req, res) => {
@@ -115,17 +138,23 @@ async function startServer() {
       ) {
         console.warn("[osm-proxy] invalid query parameters:", req.query);
         res.status(400).json({
-          error: "invalid query parameter: lat (-90..90), lng (-180..180), radius (1..3000)",
+          error:
+            "invalid query parameter: lat (-90..90), lng (-180..180), radius (1..3000)",
         });
         return;
       }
-      const lat = q.lat ?? 35.6590;
+      const lat = q.lat ?? 35.659;
       const lng = q.lng ?? 139.7006;
       const radius = q.radius ?? 1500;
 
       const cacheKey = osmCacheKey(lat, lng, radius);
       const cached = osmCache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < OSM_CACHE_TTL) {
+        externalFacilityRegistry.registerMany(
+          Array.isArray(cached.data?.toilets)
+            ? cached.data.toilets.map((t: any) => t?.id)
+            : []
+        );
         res.json(cached.data);
         return;
       }
@@ -150,7 +179,8 @@ async function startServer() {
             body: "data=" + encodeURIComponent(overpassQuery),
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              "User-Agent": "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
+              "User-Agent":
+                "kirei-toilet/1.0 (+https://github.com/kaenozu/dokotoilet)",
             },
             signal: controller.signal,
           });
@@ -178,7 +208,9 @@ async function startServer() {
         );
       }
 
-      let source: "overpass" | "seed" | "none" = fetchSuccess ? "overpass" : "none";
+      let source: "overpass" | "seed" | "none" = fetchSuccess
+        ? "overpass"
+        : "none";
       if (!fetchSuccess || rawElements.length === 0) {
         const matchedSeed = REAL_OSM_SEED.filter((el: any) => {
           const dLat = Math.abs((el.lat || 0) - lat);
@@ -191,119 +223,150 @@ async function startServer() {
         }
       }
 
-      const toilets = rawElements.map((el: any) => {
-        const itemLat = el.lat || el.center?.lat;
-        const itemLng = el.lon || el.center?.lon;
-        const tags = el.tags || {};
-        if (!isOsmElementType(el.type)) return null;
-        const facilityId = osmFacilityId(el.type, el.id);
-        let name = tags.name || tags["name:ja"];
-        if (!name) {
-          if (tags.operator) {
-            name = `${tags.operator} 公衆トイレ`;
-          } else if (tags.description) {
-            name = `公衆トイレ (${tags.description})`;
-          } else {
-            name = `公衆便所 (OSM #${el.id})`;
+      const toilets = rawElements
+        .map((el: any) => {
+          const itemLat = el.lat || el.center?.lat;
+          const itemLng = el.lon || el.center?.lon;
+          const tags = el.tags || {};
+          if (!isOsmElementType(el.type)) return null;
+          const facilityId = osmFacilityId(el.type, el.id);
+          let name = tags.name || tags["name:ja"];
+          if (!name) {
+            if (tags.operator) {
+              name = `${tags.operator} 公衆トイレ`;
+            } else if (tags.description) {
+              name = `公衆トイレ (${tags.description})`;
+            } else {
+              name = `公衆便所 (OSM #${el.id})`;
+            }
+          } else if (!name.includes("トイレ") && !name.includes("便所")) {
+            name = `${name} 公衆トイレ`;
           }
-        } else if (!name.includes("トイレ") && !name.includes("便所")) {
-          name = `${name} 公衆トイレ`;
-        }
 
-        const isTheTokyoToilet = isTheTokyoToiletTags(tags);
-        const isWheelchair = tags.wheelchair === "yes";
-        const hasDiaper = tags.diaper === "yes" || tags.changing_table === "yes";
-        const hasWashlet = triFromYesNo(tags.washlet);
-        const isFree = triFromFee(tags.fee);
-        const isOpen24h = triFromOpen24h(tags.opening_hours);
-        const isOstomate = triFromYesNo(tags.ostomate);
+          const isTheTokyoToilet = isTheTokyoToiletTags(tags);
+          const isWheelchair = tags.wheelchair === "yes";
+          const hasDiaper =
+            tags.diaper === "yes" || tags.changing_table === "yes";
+          const hasWashlet = triFromYesNo(tags.washlet);
+          const isFree = triFromFee(tags.fee);
+          const isOpen24h = triFromOpen24h(tags.opening_hours);
+          const isOstomate = triFromYesNo(tags.ostomate);
 
-        let category: "park" | "station" | "convenience" | "hotel" | "department" | "cafe" = "park";
-        if (
-          tags.operator?.includes("JR") ||
-          tags.operator?.includes("メトロ") ||
-          tags.operator?.includes("地下鉄") ||
-          tags.location === "underground" ||
-          tags.description?.includes("駅")
-        ) {
-          category = "station";
-        }
+          let category:
+            | "park"
+            | "station"
+            | "convenience"
+            | "hotel"
+            | "department"
+            | "cafe" = "park";
+          if (
+            tags.operator?.includes("JR") ||
+            tags.operator?.includes("メトロ") ||
+            tags.operator?.includes("地下鉄") ||
+            tags.location === "underground" ||
+            tags.description?.includes("駅")
+          ) {
+            category = "station";
+          }
 
-        let grade: "S" | "A" | "B" | "C" | "D" = "B";
-        let score = 3.3;
-        if (isTheTokyoToilet) {
-          grade = "S";
-          score = 4.7;
-        } else if (isWheelchair && (hasWashlet || hasDiaper || isOstomate)) {
-          grade = "A";
-          score = 4.2;
-        } else if (tags.wheelchair === "no" && tags["toilets:position"] === "squat;urinal") {
-          grade = "C";
-          score = 2.6;
-        }
+          let grade: "S" | "A" | "B" | "C" | "D" = "B";
+          let score = 3.3;
+          if (isTheTokyoToilet) {
+            grade = "S";
+            score = 4.7;
+          } else if (
+            isWheelchair &&
+            (hasWashlet || hasDiaper || isOstomate)
+          ) {
+            grade = "A";
+            score = 4.2;
+          } else if (
+            tags.wheelchair === "no" &&
+            tags["toilets:position"] === "squat;urinal"
+          ) {
+            grade = "C";
+            score = 2.6;
+          }
 
-        const pros: string[] = [];
-        if (isTheTokyoToilet) pros.push("The Tokyo Toilet プロジェクト (有名建築家デザイン)");
-        if (isWheelchair) pros.push("多機能・だれでもトイレ / 車椅子対応");
-        if (hasWashlet) pros.push("温水洗浄便座 (ウォシュレット完備)");
-        if (hasDiaper) pros.push("おむつ交換台・ベビーシート設置");
-        if (isOstomate) pros.push("オストメイト対応設備あり");
-        if (isOpen24h) pros.push("24時間利用可能");
-        if (isFree) pros.push("無料利用可能");
+          const pros: string[] = [];
+          if (isTheTokyoToilet)
+            pros.push(
+              "The Tokyo Toilet プロジェクト (有名建築家デザイン)"
+            );
+          if (isWheelchair)
+            pros.push("多機能・だれでもトイレ / 車椅子対応");
+          if (hasWashlet)
+            pros.push("温水洗浄便座 (ウォシュレット完備)");
+          if (hasDiaper)
+            pros.push("おむつ交換台・ベビーシート設置");
+          if (isOstomate) pros.push("オストメイト対応設備あり");
+          if (isOpen24h) pros.push("24時間利用可能");
+          if (isFree) pros.push("無料利用可能");
 
-        const cons: string[] = [];
-        if (hasWashlet === false) cons.push("ウォシュレット非対応");
-        if (tags.wheelchair === "no") cons.push("車椅子非対応の構造");
+          const cons: string[] = [];
+          if (hasWashlet === false)
+            cons.push("ウォシュレット非対応");
+          if (tags.wheelchair === "no")
+            cons.push("車椅子非対応の構造");
 
-        const rawContact = tags["contact:website"];
-        const safeContact =
-          typeof rawContact === "string" && /^https?:\/\/[^\\"'\s]+$/i.test(rawContact.trim())
-            ? rawContact.trim()
-            : undefined;
+          const rawContact = tags["contact:website"];
+          const safeContact =
+            typeof rawContact === "string" &&
+            /^https?:\/\/[^\\"'\s]+$/i.test(rawContact.trim())
+              ? rawContact.trim()
+              : undefined;
 
-        return {
-          id: facilityId,
-          name,
-          facilityType: isTheTokyoToilet
-            ? "THE TOKYO TOILET (渋谷区デザイン公衆トイレ)"
-            : tags.operator
-            ? `${tags.operator} 管理公衆便所`
-            : "公衆便所 (OpenStreetMap実在登録)",
-          category,
-          dataSource: "osm" as const,
-          lat: itemLat,
-          lng: itemLng,
-          address: tags["addr:full"] || tags["addr:street"] || "周辺道路・公園内",
-          cleanlinessGrade: grade,
-          cleanlinessScore: score,
-          equipmentGrade: grade,
-          equipmentScore: score,
-          subScores: {
-            cleanliness: score,
-            odor: score,
-            supplies: score,
-            comfort: score,
-          },
-          attributes: osmAttributesFromTags(tags),
-          openingHours: formatOsmOpeningHours(tags.opening_hours),
-          description: `OpenStreetMap (${el.type} ID: ${el.id}) に登録されている実在の公衆トイレです。${
-            tags.description ? tags.description : ""
-          }`,
-          reviewCount: 0,
-          reviews: [],
-          facilitySummary: isTheTokyoToilet
-            ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
-            : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
-          facilityNote: isTheTokyoToilet
-            ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
-            : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
-          pros,
-          cons,
-          tips: safeContact ? `公式情報: ${safeContact}` : undefined,
-          officialOpenDataId: facilityId,
-          googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
-        };
-      }).filter((t) => t && t.lat && t.lng);
+          return {
+            id: facilityId,
+            name,
+            facilityType: isTheTokyoToilet
+              ? "THE TOKYO TOILET (渋谷区デザイン公衆トイレ)"
+              : tags.operator
+              ? `${tags.operator} 管理公衆便所`
+              : "公衆便所 (OpenStreetMap実在登録)",
+            category,
+            dataSource: "osm" as const,
+            lat: itemLat,
+            lng: itemLng,
+            address:
+              tags["addr:full"] ||
+              tags["addr:street"] ||
+              "周辺道路・公園内",
+            cleanlinessGrade: grade,
+            cleanlinessScore: score,
+            equipmentGrade: grade,
+            equipmentScore: score,
+            subScores: {
+              cleanliness: score,
+              odor: score,
+              supplies: score,
+              comfort: score,
+            },
+            attributes: osmAttributesFromTags(tags),
+            openingHours: formatOsmOpeningHours(tags.opening_hours),
+            description: `OpenStreetMap (${el.type} ID: ${el.id}) に登録されている実在の公衆トイレです。${
+              tags.description ? tags.description : ""
+            }`,
+            reviewCount: 0,
+            reviews: [],
+            facilitySummary: isTheTokyoToilet
+              ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
+              : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
+            facilityNote: isTheTokyoToilet
+              ? "著名建築家が設計した渋谷区の最新デザイン公衆トイレ。設備充実。"
+              : "OpenStreetMapに実在登録されている公衆トイレ。利用者の最新口コミ募集中。",
+            pros,
+            cons,
+            tips: safeContact ? `公式情報: ${safeContact}` : undefined,
+            officialOpenDataId: facilityId,
+            googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
+          };
+        })
+        .filter((t) => t && t.lat && t.lng);
+
+      externalFacilityRegistry.registerMany(
+        toilets.map((t: any) => t?.id)
+      );
 
       const responsePayload = {
         elements: rawElements,
@@ -327,6 +390,25 @@ async function startServer() {
       });
     }
   });
+
+  app.use(
+    (
+      err: unknown,
+      _req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      console.error(
+        "Unhandled request error:",
+        err instanceof Error ? err.message : err
+      );
+      if (res.headersSent) {
+        next(err);
+        return;
+      }
+      res.status(500).json({ error: "internal server error" });
+    }
+  );
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
