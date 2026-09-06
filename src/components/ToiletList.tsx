@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToiletFacility } from '../types';
-import { getGradeColor, isEvaluated } from './ToiletMap';
+import { getGradeColor, isEvaluated } from '../lib/grade';
 import {
   Sparkles,
   MapPin,

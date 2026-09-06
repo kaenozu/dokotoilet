@@ -4,7 +4,7 @@ import {
   CleanlinessGrade,
   DataSourceType,
 } from '../types';
-import { getGradeColor, isEvaluated } from './ToiletMap';
+import { getGradeColor, isEvaluated } from '../lib/grade';
 import { summarizeReviews } from '../lib/scoring';
 import {
   Sparkles,

@@ -1,5 +1,6 @@
 import type { FacilityCategory, ToiletFacility } from "../../src/types";
 import { gradeForScore } from "../../src/lib/scoring";
+import { facilityTypeForCategory } from "../../src/lib/grade";
 
 // ChatGPT手動調査プロンプト（docs/manual-research-prompt.md）の出力形式
 //
@@ -75,14 +76,7 @@ const CATEGORIES: FacilityCategory[] = [
   "cafe",
 ];
 
-const FACILITY_TYPE: Record<FacilityCategory, string> = {
-  department: "商業施設・デパート",
-  station: "駅・交通施設",
-  convenience: "コンビニ",
-  park: "公衆トイレ",
-  hotel: "ホテル・オフィス",
-  cafe: "カフェ・飲食店",
-};
+const FACILITY_TYPE = facilityTypeForCategory;
 
 function round1(n: number): number {
   return Math.round(n * 10) / 10;
