@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
 
+# Temporary non-writing workflow used to regenerate package metadata as a CI artifact.
 jobs:
   generate:
     if: github.event.pull_request.head.ref == 'feat/firestore-community-backend'
