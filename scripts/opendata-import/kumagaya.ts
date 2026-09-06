@@ -130,7 +130,16 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
 
     const yoshiki = num(r[c.mYoshiki]) + num(r[c.wYoshiki]) + num(r[c.uYoshiki]);
     const washiki = num(r[c.mWashiki]) + num(r[c.wWashiki]) + num(r[c.uWashiki]);
-    const toiletStyle = yoshiki > 0 && washiki === 0 ? "western" : washiki > 0 && yoshiki === 0 ? "japanese" : "both";
+    // 両方 0 は「情報なし」。和式・洋式のどちらかが確認できる場合のみ断定する。
+    // 全セル空（0件）を "both"（両方あり）と断定するのは過剰解釈。
+    const toiletStyle: "western" | "japanese" | "both" | null =
+      yoshiki > 0 && washiki === 0
+        ? "western"
+        : washiki > 0 && yoshiki === 0
+        ? "japanese"
+        : yoshiki > 0 && washiki > 0
+        ? "both"
+        : null;
 
     const start = (r[c.start] || "").trim();
     const end = (r[c.end] || "").trim();
@@ -139,6 +148,9 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
     const openingHours = hasHours
       ? `${start || "?"}～${end || "?"}${timeNote ? `（${timeNote}）` : ""}`
       : "常時開放";
+    // 利用時間列が無いことは「24時間営業」の根拠にならない。
+    // 常時開放と断定せず null（未確認）とする。表示文言（常時開放）は openingHours 側。
+    const isOpen24h: boolean | null = hasHours ? false : null;
     const category: FacilityCategory = name.includes("駅") ? "station" : "park";
     const place = (r[c.place] || "").trim();
 
@@ -165,7 +177,7 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
         hasPowderRoom: null,
         hasOstomate: ostomate,
         isFree: null,
-        isOpen24h: !hasHours,
+        isOpen24h,
         hasSoap: null,
         hasAlcohol: null,
         hasPaperTowelOrDryer: null,
