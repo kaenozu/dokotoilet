@@ -5,18 +5,18 @@ import { KUMAGAYA_SEED } from "../src/data/kumagayaSeed";
 import { INITIAL_TOILETS } from "../src/data/toilets";
 import { canonicalizeSeedOsmFacility } from "../src/lib/osmIds";
 import { resolveCommunityBackend, type CommunityBackend } from "./communityBackend";
-import type { ExternalFacilityObservation } from "./communityRepository";
+import type {
+  CommunityRepository,
+  ExternalFacilityObservation,
+} from "./communityRepository";
 import { ExternalFacilityRegistry, isExternalFacilityIdFormat } from "./externalFacilityRegistry";
-import type { CommunityStore } from "./community";
-import {
-  createConfiguredCommunityStore,
-  FirestoreCommunityStoreAdapter,
-} from "./communityStoreFactory";
+import { createConfiguredCommunityStore } from "./communityStoreFactory";
 import type { FirestoreLike } from "./firestoreCommunityStore";
 
 export interface CommunityRuntime {
   backend: CommunityBackend;
-  store: CommunityStore;
+  /** ルーター・運用スクリプトは CommunityRepository 契約のみを前提とする。 */
+  store: CommunityRepository;
   isKnownExternalFacility(facilityId: string): boolean | Promise<boolean>;
   observeExternalFacilities(facilities: ExternalFacilityObservation[]): Promise<void>;
 }
@@ -103,25 +103,25 @@ export async function createCommunityRuntime(
       ? options.firestore ??
         (options.loadFirestore ?? loadGoogleCloudFirestore)()
       : undefined;
+  // 判別ユニオンなので、backend の分岐で store の具象型も絞り込める。
   const configured = createConfiguredCommunityStore({
     backend,
     nodeEnv: options.nodeEnv,
     jsonPath: options.jsonPath,
     firestore,
   });
-  const store = configured.store;
 
   // Existing JSON reviews remain accepted review targets. Firestore migrations
   // create external_facilities explicitly; this local registration is only for
   // the legacy JSON validator path.
-  registry.registerMany(Object.keys(await store.getExternalReviews()));
+  registry.registerMany(Object.keys(await configured.store.getExternalReviews()));
 
-  if (backend === "firestore") {
-    const firestoreStore = store as FirestoreCommunityStoreAdapter;
+  if (configured.backend === "firestore") {
+    const firestoreStore = configured.store;
     await firestoreStore.registerExternalFacilities(initial);
     return {
       backend,
-      store,
+      store: firestoreStore,
       isKnownExternalFacility: async (facilityId) => {
         if (registry.has(facilityId)) return true;
         const known = await firestoreStore.isKnownExternalFacility(facilityId);
@@ -139,7 +139,7 @@ export async function createCommunityRuntime(
 
   return {
     backend,
-    store,
+    store: configured.store,
     isKnownExternalFacility: (facilityId) => registry.has(facilityId),
     observeExternalFacilities: async (facilities) => {
       registry.registerMany(facilities.map((item) => item.id));

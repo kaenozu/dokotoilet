@@ -10,13 +10,16 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import type {
-  CleanlinessGrade,
   ToiletFacility,
   ToiletReview,
   TriState,
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
+import type {
+  AddReviewResult,
+  CommunityRepository,
+} from "./communityRepository";
 
 const MAX = {
   name: 100,
@@ -379,16 +382,7 @@ export class CommunityStore {
     toiletId: string,
     input: ReviewInput,
     ipHash: string
-  ): Promise<{
-    error?: "not_found" | "duplicate";
-    toilet?: ToiletFacility;
-    facilityId?: string;
-    reviews?: ToiletReview[];
-    reviewCount?: number;
-    cleanlinessScore?: number;
-    cleanlinessGrade?: CleanlinessGrade;
-    overallScore?: number;
-  }> {
+  ): Promise<AddReviewResult> {
     return withFileLock(this.filePath, async () => {
       const db = await this.readDisk();
       const t = db.toilets.find((x) => x.id === toiletId);
@@ -513,8 +507,10 @@ export function defaultStorePath(): string {
 
 export type ExternalFacilityValidator = (facilityId: string) => boolean | Promise<boolean>;
 
+// ルーターはストレージの実装（JSON / Firestore / テスト用フェイク）に依存せず、
+// CommunityRepository 契約のみを要求する（docs/durable-community-backend.md）。
 export function createCommunityRouter(
-  store: CommunityStore,
+  store: CommunityRepository,
   salt: string,
   isKnownExternalFacility: ExternalFacilityValidator = () => true
 ): Router {
