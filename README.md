@@ -68,8 +68,13 @@ bun start        # 本番起動（dist/server.cjs）
     `bun scripts/community-ops/commit.ts`
   - 通報対応（`list` で一覧、`resolve <reportId>` は既定dry-runの削除プレビュー。
     `--apply` で該当レビューを削除し、同一レビューへの全通報・投票・重複ガードを
-    掃除してスコアを再計算したうえで書き込む）:
+    掃除してスコアを再計算したうえで書き込む。外部施設のレビューが0件になっても
+    `externalReviews` のキーは空配列で保持され、再起動後もその施設への投稿が可能）:
     `bun scripts/community-ops/curate.ts resolve <reportId> --apply`
+  - 外部施設の再登録（既定dry-run。`--apply` でコミュニティデータや `--from <backup.json>`
+    に痕跡のある外部施設IDを CommunityRepository 経由でバックエンドに再登録する。
+    curation でレビューごと消えた OSM 施設の投稿可否復元や、JSON→Firestore 引き継ぎに使用）:
+    `bun scripts/community-ops/restore.ts [--apply] [--from <backup.json>] [--backend firestore]`
 - `COMMUNITY_SALT` は**必ず固定値**を設定すること（未設定だと起動毎にランダムになり、
   「IP毎1回」の投票・重複ガードが再起動のたびにリセットされる）。
   IPはソルト付きSHA-256ハッシュのみ保存し、ハッシュはAPI応答に含めない。

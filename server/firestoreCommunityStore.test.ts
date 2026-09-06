@@ -253,4 +253,15 @@ describe("FirestoreCommunityStore", () => {
     expect(await store.addReport("osm-node-1", reviewId, "reason")).toEqual({ ok: true, found: true });
     expect(db.bucket("reports").size).toBe(1);
   });
+
+  it("lists known external facility ids after registration", async () => {
+    const db = new FakeFirestore();
+    const store = new FirestoreCommunityStore(db);
+    expect(await store.listKnownExternalFacilityIds()).toEqual([]);
+    await store.registerExternalFacilities!([
+      { id: "osm-node-b", source: "osm", origin: "restore" },
+      { id: "google-node-a", source: "google", origin: "restore" },
+    ]);
+    expect(await store.listKnownExternalFacilityIds()).toEqual(["google-node-a", "osm-node-b"]);
+  });
 });

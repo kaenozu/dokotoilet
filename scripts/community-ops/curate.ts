@@ -14,6 +14,9 @@
 //     なったら設備推定値（equipmentScore/equipmentGrade）へ戻し overallScore と
 //     lastCleaned を削除。
 //   - 外部施設（osm-*/google-*/od-*）: スコアは施設側に保持されないため配列からの除去のみ。
+//     ただし externalReviews の**キーは空配列で残す**。キーはサーバー起動時の外部施設
+//     登録（リストア経路）に使われるため、削除すると再起動後にその施設への投稿が
+//     404 になる。誤って消した場合は scripts/community-ops/restore.ts で再登録できる。
 //   - 対象レビューを指す全 report（兄弟通報含む）を削除。helpfulVotes / reviewKeys も掃除。
 // 書き込みはサーバーと同じ compact JSON（JSON.stringify のまま）で、将来のサーバー書き込みと
 // 差分ノイズが出ないようにする。プライバシー: ipHash 等のハッシュ値は一切出力しない。
@@ -264,7 +267,9 @@ export function removeReview(db: RawDb, reviewId: string): RemovalPlan | null {
       else delete t.overallScore;
     }
   } else {
-    if (reviewsAfter === 0 && db.externalReviews) delete db.externalReviews[loc.facilityId];
+    // レビューが0件になっても外部施設のキーは空配列で保持する。
+    // サーバーは起動時に externalReviews のキー一覧を既知外部施設として登録するため、
+    // キーを消すと再起動後にその施設への口コミ投稿が 404 になる（リストア経路の喪失）。
     scoreAfter = meanOf(loc.reviews, cleanlinessOf);
   }
 
