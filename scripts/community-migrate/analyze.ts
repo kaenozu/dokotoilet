@@ -2,6 +2,10 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { CommunityDB } from "../../server/community";
 import { analyzeCommunitySnapshot } from "../../server/communitySnapshot";
+import {
+  buildFirestoreMigrationPlan,
+  migrationPlanDigest,
+} from "../../server/communityMigrationPlan";
 
 function argValue(flag: string): string | undefined {
   const i = process.argv.indexOf(flag);
@@ -15,11 +19,20 @@ async function main() {
   const raw = await fs.readFile(filePath, "utf-8");
   const db = JSON.parse(raw) as CommunityDB;
   const analysis = analyzeCommunitySnapshot(db);
+  const plan = analysis.errors.length === 0 ? buildFirestoreMigrationPlan(db) : null;
 
   const output = {
     mode: "dry-run",
     input: filePath,
     ...analysis,
+    firestorePlan: plan
+      ? {
+          sourceDigest: plan.sourceDigest,
+          planDigest: migrationPlanDigest(plan),
+          documentCount: plan.documents.length,
+          countsByCollection: plan.countsByCollection,
+        }
+      : null,
   };
   process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
   if (analysis.errors.length > 0) process.exitCode = 2;
