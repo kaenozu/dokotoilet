@@ -1,9 +1,20 @@
-import { Router, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type RequestHandler,
+  type Response,
+} from "express";
 import rateLimit from "express-rate-limit";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import type { CleanlinessGrade, ToiletFacility, ToiletReview, TriState } from "../src/types";
+import type {
+  CleanlinessGrade,
+  ToiletFacility,
+  ToiletReview,
+  TriState,
+} from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 
 const MAX = {
@@ -43,6 +54,10 @@ function isShortString(v: unknown, max: number): v is string {
   return typeof v === "string" && v.length <= max;
 }
 
+export function isExternalFacilityId(id: string): boolean {
+  return EXTERNAL_FACILITY_ID_RE.test(id);
+}
+
 export interface ToiletInput {
   id: string;
   name: string;
@@ -63,12 +78,14 @@ export interface ToiletInput {
 }
 
 export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
-  if (!body || typeof body !== "object") return { ok: false, error: "invalid body" };
+  if (!body || typeof body !== "object")
+    return { ok: false, error: "invalid body" };
   if (typeof body.id !== "string" || !TOILET_ID_RE.test(body.id))
     return { ok: false, error: "invalid id" };
   if (!isShortString(body.name, MAX.name) || !body.name.trim())
     return { ok: false, error: "invalid name" };
-  if (!CATEGORIES.includes(body.category)) return { ok: false, error: "invalid category" };
+  if (!CATEGORIES.includes(body.category))
+    return { ok: false, error: "invalid category" };
   if (typeof body.lat !== "number" || body.lat < -90 || body.lat > 90)
     return { ok: false, error: "invalid lat" };
   if (typeof body.lng !== "number" || body.lng < -180 || body.lng > 180)
@@ -77,23 +94,49 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     return { ok: false, error: "invalid address" };
   if (body.floorInfo !== undefined && !isShortString(body.floorInfo, MAX.floor))
     return { ok: false, error: "invalid floorInfo" };
-  if (body.description !== undefined && !isShortString(body.description, MAX.description))
+  if (
+    body.description !== undefined &&
+    !isShortString(body.description, MAX.description)
+  )
     return { ok: false, error: "invalid description" };
-  if (typeof body.cleanlinessScore !== "number" || body.cleanlinessScore < 1 || body.cleanlinessScore > 5)
+  if (
+    typeof body.cleanlinessScore !== "number" ||
+    body.cleanlinessScore < 1 ||
+    body.cleanlinessScore > 5
+  )
     return { ok: false, error: "invalid cleanlinessScore" };
+
   const a = body.attributes;
-  for (const k of ["hasWashlet", "hasMultipurpose", "hasBabyTable", "hasPowderRoom", "isOpen24h"] as const) {
-    if (a !== undefined && a[k] !== undefined && a[k] !== null && typeof a[k] !== "boolean")
+  for (const k of [
+    "hasWashlet",
+    "hasMultipurpose",
+    "hasBabyTable",
+    "hasPowderRoom",
+    "isOpen24h",
+  ] as const) {
+    if (
+      a !== undefined &&
+      a[k] !== undefined &&
+      a[k] !== null &&
+      typeof a[k] !== "boolean"
+    )
       return { ok: false, error: `invalid attributes.${k}` };
   }
+
   return {
     ok: true,
     value: {
       id: body.id,
       name: body.name.trim(),
       category: body.category,
-      address: typeof body.address === "string" && body.address.trim() ? body.address.trim() : "現在地周辺",
-      floorInfo: typeof body.floorInfo === "string" && body.floorInfo.trim() ? body.floorInfo.trim() : undefined,
+      address:
+        typeof body.address === "string" && body.address.trim()
+          ? body.address.trim()
+          : "現在地周辺",
+      floorInfo:
+        typeof body.floorInfo === "string" && body.floorInfo.trim()
+          ? body.floorInfo.trim()
+          : undefined,
       cleanlinessScore: body.cleanlinessScore,
       description:
         typeof body.description === "string" && body.description.trim()
@@ -122,7 +165,8 @@ export interface ReviewInput {
 }
 
 export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
-  if (!body || typeof body !== "object") return { ok: false, error: "invalid body" };
+  if (!body || typeof body !== "object")
+    return { ok: false, error: "invalid body" };
   const r = body.review ?? body;
   if (r.rating !== undefined && !isInt1to5(r.rating))
     return { ok: false, error: "invalid rating" };
@@ -130,19 +174,30 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
     return { ok: false, error: "invalid overallScore" };
   const overall = r.overallScore ?? r.rating;
   if (!isInt1to5(overall))
-    return { ok: false, error: r.rating === undefined ? "invalid overallScore" : "invalid rating" };
-  if (!isInt1to5(r.cleanlinessScore)) return { ok: false, error: "invalid cleanlinessScore" };
-  if (!isInt1to5(r.odorScore)) return { ok: false, error: "invalid odorScore" };
-  if (!isInt1to5(r.suppliesScore)) return { ok: false, error: "invalid suppliesScore" };
+    return {
+      ok: false,
+      error: r.rating === undefined ? "invalid overallScore" : "invalid rating",
+    };
+  if (!isInt1to5(r.cleanlinessScore))
+    return { ok: false, error: "invalid cleanlinessScore" };
+  if (!isInt1to5(r.odorScore))
+    return { ok: false, error: "invalid odorScore" };
+  if (!isInt1to5(r.suppliesScore))
+    return { ok: false, error: "invalid suppliesScore" };
   if (!isShortString(r.comment, MAX.comment) || !r.comment.trim())
     return { ok: false, error: "invalid comment" };
-  if (URL_RE.test(r.comment)) return { ok: false, error: "comment must not contain URLs" };
+  if (URL_RE.test(r.comment))
+    return { ok: false, error: "comment must not contain URLs" };
   if (r.userName !== undefined && !isShortString(r.userName, MAX.userName))
     return { ok: false, error: "invalid userName" };
+
   return {
     ok: true,
     value: {
-      userName: typeof r.userName === "string" && r.userName.trim() ? r.userName.trim() : "匿名の利用者",
+      userName:
+        typeof r.userName === "string" && r.userName.trim()
+          ? r.userName.trim()
+          : "匿名の利用者",
       overallScore: overall,
       cleanlinessScore: r.cleanlinessScore,
       odorScore: r.odorScore,
@@ -152,16 +207,32 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
   };
 }
 
-export function validateReportInput(body: any): ValidationResult<{ reason: string }> {
-  if (!body || typeof body !== "object") return { ok: false, error: "invalid body" };
+export function validateReportInput(
+  body: any
+): ValidationResult<{ reason: string }> {
+  if (!body || typeof body !== "object")
+    return { ok: false, error: "invalid body" };
   if (!isShortString(body.reason, MAX.reason) || !body.reason.trim())
     return { ok: false, error: "invalid reason" };
-  if (URL_RE.test(body.reason)) return { ok: false, error: "reason must not contain URLs" };
+  if (URL_RE.test(body.reason))
+    return { ok: false, error: "reason must not contain URLs" };
   return { ok: true, value: { reason: body.reason.trim() } };
 }
 
 export function hashIp(ip: string, salt: string): string {
   return crypto.createHash("sha256").update(`${salt}|${ip}`).digest("hex");
+}
+
+export type AsyncRouteHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => void | Promise<void>;
+
+export function asyncRoute(handler: AsyncRouteHandler): RequestHandler {
+  return (req, res, next) => {
+    Promise.resolve(handler(req, res, next)).catch(next);
+  };
 }
 
 export interface StoredReport {
@@ -205,9 +276,14 @@ const EMPTY_DB: CommunityDB = {
   externalReviews: {},
 };
 
+interface MutationResult<T> {
+  result: T;
+  changed: boolean;
+}
+
 export class CommunityStore {
   private data: CommunityDB | null = null;
-  private queue: Promise<void> = Promise.resolve();
+  private mutationQueue: Promise<void> = Promise.resolve();
 
   constructor(private filePath: string) {}
 
@@ -231,30 +307,59 @@ export class CommunityStore {
       return this.data;
     } catch (e: any) {
       if (e?.code === "ENOENT") {
-        this.data = { ...EMPTY_DB, toilets: [], helpfulVotes: {}, reports: [], reviewKeys: {}, externalReviews: {} };
+        this.data = {
+          ...EMPTY_DB,
+          toilets: [],
+          helpfulVotes: {},
+          reports: [],
+          reviewKeys: {},
+          externalReviews: {},
+        };
         return this.data;
       }
-      console.error("community store load failed; refusing to continue with an empty store:", e?.message ?? e);
+      console.error(
+        "community store load failed; refusing to continue with an empty store:",
+        e?.message ?? e
+      );
       throw e;
     }
   }
 
-  private save(): Promise<void> {
-    const operation = this.queue.catch(() => undefined).then(async () => {
-      if (!this.data) throw new Error("community store is not loaded");
-      const db = this.data;
-      await fs.mkdir(path.dirname(this.filePath), { recursive: true });
-      const tmp = `${this.filePath}.${process.pid}.${crypto.randomUUID()}.tmp`;
-      try {
-        await fs.writeFile(tmp, JSON.stringify(db), "utf-8");
-        await fs.rename(tmp, this.filePath);
-      } finally {
-        await fs.rm(tmp, { force: true }).catch(() => undefined);
-      }
-    });
-    // 呼び出し元には今回の失敗を返す一方、内部キューは常に復旧させる。
-    this.queue = operation.catch(() => undefined);
-    return operation;
+  private async persist(db: CommunityDB): Promise<void> {
+    await fs.mkdir(path.dirname(this.filePath), { recursive: true });
+    const tmp = `${this.filePath}.${process.pid}.${crypto.randomUUID()}.tmp`;
+    try {
+      await fs.writeFile(tmp, JSON.stringify(db), "utf-8");
+      await fs.rename(tmp, this.filePath);
+    } finally {
+      await fs.rm(tmp, { force: true }).catch(() => undefined);
+    }
+  }
+
+  private async mutate<T>(
+    mutator: (draft: CommunityDB) =>
+      | MutationResult<T>
+      | Promise<MutationResult<T>>
+  ): Promise<T> {
+    let result!: T;
+
+    const operation = this.mutationQueue
+      .catch(() => undefined)
+      .then(async () => {
+        const current = await this.load();
+        const draft = structuredClone(current);
+        const outcome = await mutator(draft);
+        result = outcome.result;
+
+        if (!outcome.changed) return;
+
+        await this.persist(draft);
+        this.data = draft;
+      });
+
+    this.mutationQueue = operation.catch(() => undefined);
+    await operation;
+    return result;
   }
 
   async getToilets(): Promise<ToiletFacility[]> {
@@ -262,11 +367,13 @@ export class CommunityStore {
   }
 
   async addToilet(t: ToiletFacility): Promise<{ added: boolean }> {
-    const db = await this.load();
-    if (db.toilets.some((x) => x.id === t.id)) return { added: false };
-    db.toilets.unshift(t);
-    await this.save();
-    return { added: true };
+    return this.mutate((db) => {
+      if (db.toilets.some((x) => x.id === t.id)) {
+        return { result: { added: false }, changed: false };
+      }
+      db.toilets.unshift(structuredClone(t));
+      return { result: { added: true }, changed: true };
+    });
   }
 
   private buildReview(input: ReviewInput): ToiletReview {
@@ -293,7 +400,12 @@ export class CommunityStore {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
     return reviews.some((r) => {
       const key = db.reviewKeys[r.id];
-      return key !== undefined && key.ipHash === ipHash && r.comment === comment && key.at >= dayAgo;
+      return (
+        key !== undefined &&
+        key.ipHash === ipHash &&
+        r.comment === comment &&
+        key.at >= dayAgo
+      );
     });
   }
 
@@ -311,42 +423,53 @@ export class CommunityStore {
     cleanlinessGrade?: CleanlinessGrade;
     overallScore?: number;
   }> {
-    const db = await this.load();
-    const t = db.toilets.find((x) => x.id === toiletId);
+    return this.mutate((db) => {
+      const t = db.toilets.find((x) => x.id === toiletId);
 
-    if (t) {
-      if (this.hasDuplicate(db, t.reviews, input.comment, ipHash)) return { error: "duplicate" };
+      if (t) {
+        if (this.hasDuplicate(db, t.reviews, input.comment, ipHash)) {
+          return { result: { error: "duplicate" as const }, changed: false };
+        }
+        const review = this.buildReview(input);
+        db.reviewKeys[review.id] = { ipHash, at: Date.now() };
+        const reviews = [review, ...t.reviews];
+        const summary = summarizeReviews(reviews)!;
+        t.reviews = reviews;
+        t.reviewCount = reviews.length;
+        t.cleanlinessScore = summary.cleanlinessScore;
+        t.cleanlinessGrade = summary.cleanlinessGrade;
+        t.overallScore = summary.overallScore;
+        t.lastCleaned = "たった今（利用者が確認）";
+        return { result: { toilet: t }, changed: true };
+      }
+
+      if (!isExternalFacilityId(toiletId)) {
+        return { result: { error: "not_found" as const }, changed: false };
+      }
+
+      const existing = db.externalReviews[toiletId] ?? [];
+      if (this.hasDuplicate(db, existing, input.comment, ipHash)) {
+        return { result: { error: "duplicate" as const }, changed: false };
+      }
+
       const review = this.buildReview(input);
       db.reviewKeys[review.id] = { ipHash, at: Date.now() };
-      const reviews = [review, ...t.reviews];
-      const summary = summarizeReviews(reviews)!;
-      t.reviews = reviews;
-      t.reviewCount = reviews.length;
-      t.cleanlinessScore = summary.cleanlinessScore;
-      t.cleanlinessGrade = summary.cleanlinessGrade;
-      t.overallScore = summary.overallScore;
-      t.lastCleaned = "たった今（利用者が確認）";
-      await this.save();
-      return { toilet: t };
-    }
+      const reviews = [review, ...existing];
+      db.externalReviews[toiletId] = reviews;
+      const summary = summarizeReviews(reviews);
 
-    if (!EXTERNAL_FACILITY_ID_RE.test(toiletId)) return { error: "not_found" };
-    const existing = db.externalReviews[toiletId] ?? [];
-    if (this.hasDuplicate(db, existing, input.comment, ipHash)) return { error: "duplicate" };
-    const review = this.buildReview(input);
-    db.reviewKeys[review.id] = { ipHash, at: Date.now() };
-    const reviews = [review, ...existing];
-    db.externalReviews[toiletId] = reviews;
-    const summary = summarizeReviews(reviews);
-    await this.save();
-    return {
-      facilityId: toiletId,
-      reviews,
-      reviewCount: reviews.length,
-      cleanlinessScore: summary?.cleanlinessScore,
-      cleanlinessGrade: summary?.cleanlinessGrade,
-      overallScore: summary?.overallScore,
-    };
+      return {
+        result: {
+          facilityId: toiletId,
+          reviews,
+          reviewCount: reviews.length,
+          cleanlinessScore: summary?.cleanlinessScore,
+          cleanlinessGrade: summary?.cleanlinessGrade,
+          overallScore: summary?.overallScore,
+        },
+        changed: true,
+      };
+    });
   }
 
   private findReview(
@@ -367,7 +490,10 @@ export class CommunityStore {
   async getExternalReviews(): Promise<Record<string, ToiletReview[]>> {
     const db = await this.load();
     return Object.fromEntries(
-      Object.entries(db.externalReviews).map(([k, v]) => [k, [...v]])
+      Object.entries(db.externalReviews).map(([k, v]) => [
+        k,
+        structuredClone(v),
+      ])
     );
   }
 
@@ -375,17 +501,39 @@ export class CommunityStore {
     reviewId: string,
     ipHash: string
   ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }> {
-    const db = await this.load();
-    const hit = this.findReview(db, reviewId);
-    if (!hit) return { helpfulCount: 0, voted: false, found: false };
-    const { review } = hit;
-    const voters = db.helpfulVotes[reviewId] ?? [];
-    if (voters.includes(ipHash)) return { helpfulCount: review.helpfulCount, voted: false, found: true };
-    voters.push(ipHash);
-    db.helpfulVotes[reviewId] = voters;
-    review.helpfulCount += 1;
-    await this.save();
-    return { helpfulCount: review.helpfulCount, voted: true, found: true };
+    return this.mutate((db) => {
+      const hit = this.findReview(db, reviewId);
+      if (!hit) {
+        return {
+          result: { helpfulCount: 0, voted: false, found: false },
+          changed: false,
+        };
+      }
+
+      const { review } = hit;
+      const voters = db.helpfulVotes[reviewId] ?? [];
+      if (voters.includes(ipHash)) {
+        return {
+          result: {
+            helpfulCount: review.helpfulCount,
+            voted: false,
+            found: true,
+          },
+          changed: false,
+        };
+      }
+
+      db.helpfulVotes[reviewId] = [...voters, ipHash];
+      review.helpfulCount += 1;
+      return {
+        result: {
+          helpfulCount: review.helpfulCount,
+          voted: true,
+          found: true,
+        },
+        changed: true,
+      };
+    });
   }
 
   async addReport(
@@ -393,27 +541,39 @@ export class CommunityStore {
     reviewId: string,
     reason: string
   ): Promise<{ ok: boolean; found: boolean }> {
-    const db = await this.load();
-    const t = db.toilets.find((x) => x.id === toiletId);
-    const reviews = t ? t.reviews : db.externalReviews[toiletId];
-    if (!reviews || !reviews.some((r) => r.id === reviewId)) return { ok: false, found: false };
-    db.reports.push({
-      id: `report-${crypto.randomUUID()}`,
-      toiletId,
-      reviewId,
-      reason,
-      createdAt: new Date().toISOString(),
+    return this.mutate((db) => {
+      const t = db.toilets.find((x) => x.id === toiletId);
+      const reviews = t ? t.reviews : db.externalReviews[toiletId];
+      if (!reviews || !reviews.some((r) => r.id === reviewId)) {
+        return { result: { ok: false, found: false }, changed: false };
+      }
+
+      db.reports.push({
+        id: `report-${crypto.randomUUID()}`,
+        toiletId,
+        reviewId,
+        reason,
+        createdAt: new Date().toISOString(),
+      });
+      return { result: { ok: true, found: true }, changed: true };
     });
-    await this.save();
-    return { ok: true, found: true };
   }
 }
 
 export function defaultStorePath(): string {
-  return process.env.COMMUNITY_STORE_PATH || path.join(process.cwd(), "data", "community.json");
+  return (
+    process.env.COMMUNITY_STORE_PATH ||
+    path.join(process.cwd(), "data", "community.json")
+  );
 }
 
-export function createCommunityRouter(store: CommunityStore, salt: string): Router {
+export type ExternalFacilityValidator = (facilityId: string) => boolean;
+
+export function createCommunityRouter(
+  store: CommunityStore,
+  salt: string,
+  isKnownExternalFacility: ExternalFacilityValidator = () => true
+): Router {
   const router = Router();
 
   const postLimiter = rateLimit({
@@ -433,131 +593,168 @@ export function createCommunityRouter(store: CommunityStore, salt: string): Rout
 
   const ipHashOf = (req: Request) => hashIp(req.ip || "?", salt);
 
-  router.get("/toilets", async (_req: Request, res: Response) => {
-    res.json({
-      toilets: publicToilets(await store.getToilets()),
-      externalReviews: await store.getExternalReviews(),
-    });
-  });
+  router.get(
+    "/toilets",
+    asyncRoute(async (_req: Request, res: Response) => {
+      res.json({
+        toilets: publicToilets(await store.getToilets()),
+        externalReviews: await store.getExternalReviews(),
+      });
+    })
+  );
 
-  router.post("/toilets", postLimiter, async (req: Request, res: Response) => {
-    const v = validateToiletInput(req.body);
-    if (!v.ok || !v.value) {
-      res.status(400).json({ error: v.error });
-      return;
-    }
-    const t: ToiletFacility = {
-      id: v.value.id,
-      name: v.value.name,
-      facilityType:
-        v.value.category === "department"
-          ? "商業施設・デパート"
-          : v.value.category === "station"
-          ? "駅・交通施設"
-          : v.value.category === "convenience"
-          ? "コンビニ"
-          : v.value.category === "park"
-          ? "公衆トイレ"
-          : "その他施設",
-      category: v.value.category,
-      dataSource: "community",
-      lat: v.value.lat,
-      lng: v.value.lng,
-      address: v.value.address,
-      floorInfo: v.value.floorInfo,
-      cleanlinessGrade: gradeForScore(v.value.cleanlinessScore),
-      cleanlinessScore: v.value.cleanlinessScore,
-      equipmentGrade: gradeForScore(v.value.cleanlinessScore),
-      equipmentScore: v.value.cleanlinessScore,
-      subScores: {
-        cleanliness: v.value.cleanlinessScore,
-        odor: Math.min(5, v.value.cleanlinessScore + 0.1),
-        supplies: v.value.cleanlinessScore,
-        comfort: v.value.cleanlinessScore,
-      },
-      attributes: {
-        hasWashlet: v.value.attributes.hasWashlet,
-        hasMultipurpose: v.value.attributes.hasMultipurpose,
-        hasBabyTable: v.value.attributes.hasBabyTable,
-        hasNursingRoom: null,
-        hasPowderRoom: v.value.attributes.hasPowderRoom,
-        hasOstomate: null,
-        isFree: null,
-        isOpen24h: v.value.attributes.isOpen24h,
-        hasSoap: null,
-        hasAlcohol: null,
-        hasPaperTowelOrDryer: null,
-        toiletStyle: null,
-      },
-      openingHours: v.value.attributes.isOpen24h ? "24時間営業" : "施設営業時間に準ずる",
-      description: v.value.description,
-      reviewCount: 0,
-      reviews: [],
-      facilityNote: "ユーザー報告に基づく新規登録トイレ情報。",
-    };
-    const { added } = await store.addToilet(t);
-    if (!added) {
-      res.status(409).json({ error: "duplicate id" });
-      return;
-    }
-    res.status(201).json({ toilet: t });
-  });
+  router.post(
+    "/toilets",
+    postLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      const v = validateToiletInput(req.body);
+      if (!v.ok || !v.value) {
+        res.status(400).json({ error: v.error });
+        return;
+      }
 
-  router.post("/toilets/:id/reviews", postLimiter, async (req: Request, res: Response) => {
-    const v = validateReviewInput(req.body);
-    if (!v.ok || !v.value) {
-      res.status(400).json({ error: v.error });
-      return;
-    }
-    const r = await store.addReview(req.params.id, v.value, ipHashOf(req));
-    if (r.error === "not_found") {
-      res.status(404).json({ error: "toilet not found" });
-      return;
-    }
-    if (r.error === "duplicate") {
-      res.status(409).json({ error: "duplicate review" });
-      return;
-    }
-    if (r.toilet) {
-      res.status(201).json({ toilet: publicToilets([r.toilet])[0] });
-      return;
-    }
-    res.status(201).json({
-      facilityId: r.facilityId,
-      reviewCount: r.reviewCount,
-      cleanlinessScore: r.cleanlinessScore,
-      cleanlinessGrade: r.cleanlinessGrade,
-      reviews: r.reviews,
-    });
-  });
+      const t: ToiletFacility = {
+        id: v.value.id,
+        name: v.value.name,
+        facilityType:
+          v.value.category === "department"
+            ? "商業施設・デパート"
+            : v.value.category === "station"
+            ? "駅・交通施設"
+            : v.value.category === "convenience"
+            ? "コンビニ"
+            : v.value.category === "park"
+            ? "公衆トイレ"
+            : "その他施設",
+        category: v.value.category,
+        dataSource: "community",
+        lat: v.value.lat,
+        lng: v.value.lng,
+        address: v.value.address,
+        floorInfo: v.value.floorInfo,
+        cleanlinessGrade: gradeForScore(v.value.cleanlinessScore),
+        cleanlinessScore: v.value.cleanlinessScore,
+        equipmentGrade: gradeForScore(v.value.cleanlinessScore),
+        equipmentScore: v.value.cleanlinessScore,
+        subScores: {
+          cleanliness: v.value.cleanlinessScore,
+          odor: Math.min(5, v.value.cleanlinessScore + 0.1),
+          supplies: v.value.cleanlinessScore,
+          comfort: v.value.cleanlinessScore,
+        },
+        attributes: {
+          hasWashlet: v.value.attributes.hasWashlet,
+          hasMultipurpose: v.value.attributes.hasMultipurpose,
+          hasBabyTable: v.value.attributes.hasBabyTable,
+          hasNursingRoom: null,
+          hasPowderRoom: v.value.attributes.hasPowderRoom,
+          hasOstomate: null,
+          isFree: null,
+          isOpen24h: v.value.attributes.isOpen24h,
+          hasSoap: null,
+          hasAlcohol: null,
+          hasPaperTowelOrDryer: null,
+          toiletStyle: null,
+        },
+        openingHours: v.value.attributes.isOpen24h
+          ? "24時間営業"
+          : "施設営業時間に準ずる",
+        description: v.value.description,
+        reviewCount: 0,
+        reviews: [],
+        facilityNote: "ユーザー報告に基づく新規登録トイレ情報。",
+      };
 
-  router.post("/reviews/:reviewId/helpful", voteLimiter, async (req: Request, res: Response) => {
-    const r = await store.voteHelpful(req.params.reviewId, ipHashOf(req));
-    if (!r.found) {
-      res.status(404).json({ error: "review not found" });
-      return;
-    }
-    res.json({ helpfulCount: r.helpfulCount, voted: r.voted });
-  });
+      const { added } = await store.addToilet(t);
+      if (!added) {
+        res.status(409).json({ error: "duplicate id" });
+        return;
+      }
+      res.status(201).json({ toilet: t });
+    })
+  );
 
-  router.post("/reviews/:reviewId/report", postLimiter, async (req: Request, res: Response) => {
-    const v = validateReportInput(req.body);
-    if (!v.ok || !v.value) {
-      res.status(400).json({ error: v.error });
-      return;
-    }
-    const { toiletId } = req.body ?? {};
-    if (typeof toiletId !== "string") {
-      res.status(400).json({ error: "toiletId required" });
-      return;
-    }
-    const r = await store.addReport(toiletId, req.params.reviewId, v.value.reason);
-    if (!r.found) {
-      res.status(404).json({ error: "review not found" });
-      return;
-    }
-    res.status(201).json({ ok: true });
-  });
+  router.post(
+    "/toilets/:id/reviews",
+    postLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      const v = validateReviewInput(req.body);
+      if (!v.ok || !v.value) {
+        res.status(400).json({ error: v.error });
+        return;
+      }
+
+      const facilityId = req.params.id;
+      if (
+        isExternalFacilityId(facilityId) &&
+        !isKnownExternalFacility(facilityId)
+      ) {
+        res.status(404).json({ error: "toilet not found" });
+        return;
+      }
+
+      const r = await store.addReview(facilityId, v.value, ipHashOf(req));
+      if (r.error === "not_found") {
+        res.status(404).json({ error: "toilet not found" });
+        return;
+      }
+      if (r.error === "duplicate") {
+        res.status(409).json({ error: "duplicate review" });
+        return;
+      }
+      if (r.toilet) {
+        res.status(201).json({ toilet: publicToilets([r.toilet])[0] });
+        return;
+      }
+      res.status(201).json({
+        facilityId: r.facilityId,
+        reviewCount: r.reviewCount,
+        cleanlinessScore: r.cleanlinessScore,
+        cleanlinessGrade: r.cleanlinessGrade,
+        reviews: r.reviews,
+      });
+    })
+  );
+
+  router.post(
+    "/reviews/:reviewId/helpful",
+    voteLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      const r = await store.voteHelpful(req.params.reviewId, ipHashOf(req));
+      if (!r.found) {
+        res.status(404).json({ error: "review not found" });
+        return;
+      }
+      res.json({ helpfulCount: r.helpfulCount, voted: r.voted });
+    })
+  );
+
+  router.post(
+    "/reviews/:reviewId/report",
+    postLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      const v = validateReportInput(req.body);
+      if (!v.ok || !v.value) {
+        res.status(400).json({ error: v.error });
+        return;
+      }
+      const { toiletId } = req.body ?? {};
+      if (typeof toiletId !== "string") {
+        res.status(400).json({ error: "toiletId required" });
+        return;
+      }
+      const r = await store.addReport(
+        toiletId,
+        req.params.reviewId,
+        v.value.reason
+      );
+      if (!r.found) {
+        res.status(404).json({ error: "review not found" });
+        return;
+      }
+      res.status(201).json({ ok: true });
+    })
+  );
 
   return router;
 }
