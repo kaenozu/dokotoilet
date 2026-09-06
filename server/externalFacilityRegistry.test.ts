@@ -28,4 +28,12 @@ describe("ExternalFacilityRegistry", () => {
     registry.register("osm-way-42");
     expect(registry.has("osm-way-42")).toBe(true);
   });
+
+  it("registers the canonical typed id for legacy static OSM seed ids", () => {
+    const registry = new ExternalFacilityRegistry(["osm-2198890502"]);
+
+    expect(registry.has("osm-2198890502")).toBe(true);
+    expect(registry.has("osm-node-2198890502")).toBe(true);
+    expect(registry.has("osm-way-2198890502")).toBe(false);
+  });
 });
