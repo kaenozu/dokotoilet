@@ -17,10 +17,11 @@
 //   - 対象レビューを指す全 report（兄弟通報含む）を削除。helpfulVotes / reviewKeys も掃除。
 // 書き込みはサーバーと同じ compact JSON（JSON.stringify のまま）で、将来のサーバー書き込みと
 // 差分ノイズが出ないようにする。プライバシー: ipHash 等のハッシュ値は一切出力しない。
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { gradeForScore } from "../../src/lib/scoring";
+import { atomicWriteFile, withFileLock } from "../../server/shared/persistence";
 
 // ── 生JSON型（未知フィールドは保持しつつ、操作に必要なものだけ型を持つ） ──
 
@@ -98,6 +99,10 @@ export function parseRawDb(text: string, label: string): RawDb {
 }
 
 export async function loadRawDb(filePath: string): Promise<RawDb> {
+  return withFileLock(filePath, () => loadRawDbUnlocked(filePath));
+}
+
+async function loadRawDbUnlocked(filePath: string): Promise<RawDb> {
   let text: string;
   try {
     text = await readFile(filePath, "utf-8");
@@ -109,7 +114,7 @@ export async function loadRawDb(filePath: string): Promise<RawDb> {
 
 /** サーバー（server/community.ts save()）と同じ compact 形式で書き込む */
 export async function saveRawDb(filePath: string, db: RawDb): Promise<void> {
-  await writeFile(filePath, JSON.stringify(db), "utf-8");
+  await withFileLock(filePath, () => atomicWriteFile(filePath, JSON.stringify(db)));
 }
 
 export function cloneDb(db: RawDb): RawDb {
@@ -407,6 +412,19 @@ async function main(): Promise<void> {
       return;
     }
     const apply = args.includes("--apply");
+    if (apply) {
+      await withFileLock(file, async () => {
+        const lockedDb = await loadRawDbUnlocked(file);
+        const lockedReport = (lockedDb.reports ?? []).find((r) => r.id === reportId);
+        if (!lockedReport?.reviewId) throw new Error(`通報が見つかりません: ${reportId}`);
+        const lockedPlan = removeReview(lockedDb, lockedReport.reviewId);
+        if (!lockedPlan) throw new Error(`対象レビュー ${lockedReport.reviewId} がファイル内に見つかりません`);
+        process.stdout.write(formatPlan(lockedPlan, true) + "\n");
+        await atomicWriteFile(file, JSON.stringify(lockedDb));
+        process.stdout.write(`保存先: ${file}\n`);
+      });
+      return;
+    }
     const target = apply ? db : cloneDb(db);
     const plan = removeReview(target, reviewId);
     if (!plan) {
@@ -417,10 +435,7 @@ async function main(): Promise<void> {
       return;
     }
     process.stdout.write(formatPlan(plan, apply) + "\n");
-    if (apply) {
-      await saveRawDb(file, target);
-      process.stdout.write(`保存先: ${file}\n`);
-    }
+    
     return;
   }
   process.stderr.write(`エラー: 不明なコマンド: ${cmd ?? "(なし)"}\n`);

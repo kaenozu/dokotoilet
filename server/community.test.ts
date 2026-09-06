@@ -1,12 +1,16 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import express from "express";
+import { createServer } from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { promises as fs } from "node:fs";
+import { GOOGLE_SEED } from "../src/data/googleSeed";
 import {
   validateToiletInput,
   validateReviewInput,
   validateReportInput,
   CommunityStore,
+  createCommunityRouter,
   hashIp,
   publicToilets,
 } from "./community";
@@ -65,6 +69,11 @@ describe("validateToiletInput", () => {
       expect(r.value.attributes.hasPowderRoom).toBeNull();
       expect(r.value.attributes.isOpen24h).toBeNull();
     }
+  });
+
+  it("rejects a non-object attributes value without throwing", () => {
+    expect(() => validateToiletInput({ ...goodToilet(), attributes: null })).not.toThrow();
+    expect(validateToiletInput({ ...goodToilet(), attributes: null }).ok).toBe(false);
   });
 });
 
@@ -264,6 +273,24 @@ describe("CommunityStore", () => {
     expect(ext["osm-2198890502"]).toHaveLength(1);
   });
 
+  it("accepts every real Google seed id, including Japanese names", async () => {
+    for (const [i, facility] of GOOGLE_SEED.entries()) {
+      const r = await store.addReview(facility.id, { ...goodReview(), comment: `施設 ${i}` } as any, `ip-${i}`);
+      expect(r.error, facility.id).toBeUndefined();
+    }
+    expect(Object.keys(await store.getExternalReviews())).toHaveLength(GOOGLE_SEED.length);
+  });
+
+  it("retains both toilets when cold stores add concurrently", async () => {
+    const storeA = new CommunityStore(path.join(dir, "community.json"));
+    const storeB = new CommunityStore(path.join(dir, "community.json"));
+    const t1 = { ...seedToilet(), id: "toilet-user-a" };
+    const t2 = { ...seedToilet(), id: "toilet-user-b" };
+    const results = await Promise.all([storeA.addToilet(t1), storeB.addToilet(t2)]);
+    expect(results.every((r) => r.added)).toBe(true);
+    expect((await new CommunityStore(path.join(dir, "community.json")).getToilets()).map((t) => t.id).sort()).toEqual(["toilet-user-a", "toilet-user-b"]);
+  });
+
   it("votes and reports external-facility reviews", async () => {
     await store.addReview("google-ChIJvote", goodReview() as any, "ipA");
     const { "google-ChIJvote": list } = await store.getExternalReviews();
@@ -275,5 +302,21 @@ describe("CommunityStore", () => {
     expect(rep).toEqual({ ok: true, found: true });
     expect((await store.addReport("google-ChIJvote", "rev-nope", "x")).found).toBe(false);
     expect((await store.voteHelpful("rev-nope", "ipX")).found).toBe(false);
+  });
+});
+
+describe("community router async errors", () => {
+  it("returns 500 and remains usable when persistence fails", async () => {
+    const failing = { getToilets: async () => { throw new Error("disk failure"); }, getExternalReviews: async () => ({}) } as any;
+    const app = express();
+    app.use("/api/community", createCommunityRouter(failing, "test"));
+    const server = createServer(app);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const port = (server.address() as any).port;
+    const first = await fetch(`http://127.0.0.1:${port}/api/community/toilets`);
+    expect(first.status).toBe(500);
+    const second = await fetch(`http://127.0.0.1:${port}/api/community/toilets`);
+    expect(second.status).toBe(500);
+    await new Promise<void>((resolve, reject) => server.close((e) => e ? reject(e) : resolve()));
   });
 });
