@@ -19,7 +19,7 @@ export interface AddReviewResult {
 export interface ExternalFacilityObservation {
   id: string;
   source: "osm" | "google" | "od";
-  origin: "static-seed" | "live-osm" | "migration";
+  origin: "static-seed" | "live-osm" | "migration" | "restore";
   legacyId?: string;
 }
 
@@ -48,4 +48,10 @@ export interface CommunityRepository {
   ): Promise<{ ok: boolean; found: boolean }>;
   registerExternalFacilities?(facilities: ExternalFacilityObservation[]): Promise<void>;
   isKnownExternalFacility?(facilityId: string): Promise<boolean>;
+  /**
+   * Known external facility IDs (OSM/Google/OD). Implemented by both backends.
+   * Used by ops tooling to restore reviewability of facilities whose review list
+   * is empty (e.g. after curation removed a reported review).
+   */
+  listKnownExternalFacilityIds(): Promise<string[]>;
 }

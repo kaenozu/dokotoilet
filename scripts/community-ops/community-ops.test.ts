@@ -3,6 +3,7 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { CommunityStore } from "../../server/community";
 import type { DbFile, FacilityEntry, ReportEntry, ReviewEntry } from "./store";
 import {
   buildCommitBody,
@@ -141,6 +142,127 @@ describe("export CLI", () => {
     await writeFile(destination, original, "utf8");
     expect(() => execFileSync("bun", [path.resolve("scripts/community-ops/export.ts"), "--out", destination], { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8", stdio: "pipe" })).toThrow();
     expect(await readFile(destination, "utf8")).toBe(original);
+  });
+});
+
+describe("restore", () => {
+  it("collects external facility ids from externalReviews, reports, and toilets", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-"));
+    const source = path.join(dir, "community.json");
+    await writeFile(
+      source,
+      JSON.stringify({
+        version: 2,
+        toilets: [{ id: "toilet-user-1", name: "通常", reviews: [] }],
+        helpfulVotes: {},
+        reports: [{ id: "rep-1", reviewId: "gone", toiletId: "od-通報のみ" }],
+        reviewKeys: {},
+        externalReviews: {
+          "osm-キーだけ": [],
+          "google-ChIJxxx": [{ id: "r1", rating: 3 }],
+          "invalid-id": [],
+        },
+      }),
+      "utf8"
+    );
+    const { collectExternalFacilityIds } = await import("./restore");
+    expect(await collectExternalFacilityIds(source)).toEqual(["google-ChIJxxx", "od-通報のみ", "osm-キーだけ"]);
+  });
+
+  it("treats a missing data file as nothing to restore", async () => {
+    const { collectExternalFacilityIds } = await import("./restore");
+    expect(await collectExternalFacilityIds(path.join(os.tmpdir(), "dokotoilet-restore-missing", "community.json"))).toEqual([]);
+  });
+
+  it("plans and applies restoration through the repository contract", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-cli-"));
+    const source = path.join(dir, "community.json");
+    await writeFile(
+      source,
+      JSON.stringify({
+        version: 2,
+        toilets: [],
+        helpfulVotes: {},
+        reports: [],
+        reviewKeys: {},
+        externalReviews: { "osm-消えた": [] },
+      }),
+      "utf8"
+    );
+    const { createConfiguredCommunityStore } = await import("../../server/communityStoreFactory");
+    const { applyRestore, planRestore } = await import("./restore");
+
+    const store = createConfiguredCommunityStore({ nodeEnv: "test", jsonPath: path.join(dir, "server-store.json") });
+    const before = await planRestore(store, source);
+    expect(before.restored).toEqual(["osm-消えた"]);
+    const after = await applyRestore(store, source);
+    // applyRestore は登録前の計画を返す。restored = 今回登録したID。
+    expect(after.restored).toEqual(["osm-消えた"]);
+    // repository 経由で書き込まれたことを JSON store で検証
+    const verify = new CommunityStore(path.join(dir, "server-store.json"));
+    expect(await verify.listKnownExternalFacilityIds()).toContain("osm-消えた");
+    // 再実行すればもう復元対象はない
+    const rerun = await planRestore(store, source);
+    expect(rerun.restored).toEqual([]);
+    expect(rerun.alreadyKnown).toEqual(["osm-消えた"]);
+  });
+
+  it("restores via the CLI with dry-run by default and --apply writing", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-cli2-"));
+    // 実運用どおり store ファイルとデータファイルを同一パスにする
+    const source = path.join(dir, "community.json");
+    await writeFile(
+      source,
+      JSON.stringify({
+        version: 2,
+        toilets: [],
+        helpfulVotes: {},
+        reports: [],
+        reviewKeys: {},
+        externalReviews: { "google-復元": [] },
+      }),
+      "utf8"
+    );
+    const env = { ...process.env, COMMUNITY_STORE_PATH: source };
+    const run = (args: string[]) =>
+      execFileSync("bun", [path.resolve("scripts/community-ops/restore.ts"), ...args], {
+        cwd: process.cwd(),
+        env,
+        encoding: "utf8",
+      });
+
+    const dry = run([]);
+    expect(dry).toContain("dry-run");
+    expect(dry).toContain("google-復元");
+    expect(dry).toContain("すでに既知: 1件");
+    // dry-run では書き込まない（データファイルは無傷）
+    expect(JSON.parse(await readFile(source, "utf8"))).toMatchObject({
+      externalReviews: { "google-復元": [] },
+    });
+
+    // curation で痕跡ごと消えた施設は、バックアップ（--from）から復元する
+    const backup = path.join(dir, "backup.json");
+    await writeFile(
+      backup,
+      JSON.stringify({
+        version: 2,
+        toilets: [],
+        helpfulVotes: {},
+        reports: [],
+        reviewKeys: {},
+        externalReviews: { "osm-curation-消滅": [{ id: "r-old", rating: 4 }] },
+      }),
+      "utf8"
+    );
+    const fromBackup = run(["--from", backup]);
+    expect(fromBackup).toContain("osm-curation-消滅");
+    expect(fromBackup).toContain("復元対象: 1件");
+
+    run(["--apply", "--from", backup]);
+    const verify = new CommunityStore(source);
+    const ids = await verify.listKnownExternalFacilityIds();
+    expect(ids).toContain("google-復元");
+    expect(ids).toContain("osm-curation-消滅");
   });
 });
 

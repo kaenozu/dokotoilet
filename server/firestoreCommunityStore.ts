@@ -345,4 +345,9 @@ export class FirestoreCommunityStore implements CommunityRepository {
   async isKnownExternalFacility(facilityId: string): Promise<boolean> {
     return (await this.col("external_facilities").doc(facilityId).get()).exists;
   }
+
+  async listKnownExternalFacilityIds(): Promise<string[]> {
+    const snap = await this.col("external_facilities").get();
+    return snap.docs.map((doc) => doc.id).sort();
+  }
 }

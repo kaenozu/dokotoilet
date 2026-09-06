@@ -292,16 +292,41 @@ describe("CommunityStore", () => {
     expect((await new CommunityStore(path.join(dir, "community.json")).getToilets()).map((t) => t.id).sort()).toEqual(["toilet-user-a", "toilet-user-b"]);
   });
 
-  it("does not resurrect a curator deletion through a live store cache", async () => {
+  it("keeps the facility key after a curator removes its last review, and restores acceptance via registerExternalFacilities", async () => {
     const reviewResult = await store.addReview("osm-live-curator", goodReview() as any, "ip-live");
     const reviewId = reviewResult.reviews![0].id;
     await store.addReport("osm-live-curator", reviewId, "削除テスト");
     const dbPath = path.join(dir, "community.json");
     await applyReportResolution(dbPath, (await store.load()).reports[0].id);
-    expect((await store.getExternalReviews())["osm-live-curator"]).toBeUndefined();
+    // キーは空配列で残る（起動時リストア経路の維持）。
+    expect((await store.getExternalReviews())["osm-live-curator"]).toEqual([]);
+    expect(await store.listKnownExternalFacilityIds()).toContain("osm-live-curator");
+    // 施設はレビュー0件でも引き続き投稿可能（レビュー可否はキーで復元される）。
     const next = await store.addReview("osm-live-curator", { ...goodReview(), comment: "次の投稿" } as any, "ip-next");
     expect(next.reviews).toHaveLength(1);
-    expect((await store.getExternalReviews())["osm-live-curator"]).toHaveLength(1);
+  });  it("registers an external facility key through registerExternalFacilities", async () => {
+    await store.registerExternalFacilities([
+      { id: "od-失われた施設", source: "od", origin: "restore" },
+    ]);
+    expect(await store.listKnownExternalFacilityIds()).toContain("od-失われた施設");
+    // 投稿も受け付けられる（ルーターの施設検証は起動時リストアで通過する）
+    const after = await store.addReview("od-失われた施設", goodReview() as any, "ip-restore");
+    expect(after.error).toBeUndefined();
+    expect(after.reviews).toHaveLength(1);
+  });
+
+  it("ignores invalid ids and is idempotent in registerExternalFacilities", async () => {
+    await store.registerExternalFacilities([
+      { id: "google-kept", source: "google", origin: "restore" },
+      { id: "not-external", source: "od", origin: "restore" },
+      { id: "google-kept", source: "google", origin: "restore" },
+    ]);
+    const ids = await store.listKnownExternalFacilityIds();
+    expect(ids).toContain("google-kept");
+    expect(ids).not.toContain("not-external");
+    expect(ids.filter((id) => id === "google-kept")).toHaveLength(1);
+    // 既存のレビューは壊さない
+    expect((await store.getExternalReviews())["google-kept"]).toEqual([]);
   });
 
   it("preserves concurrent cold store review updates", async () => {

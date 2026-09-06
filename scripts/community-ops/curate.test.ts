@@ -144,7 +144,7 @@ describe("removeReview", () => {
     expect(d.reports).toEqual([]);
   });
 
-  it("removes an external facility review without touching facility scores", () => {
+  it("removes an external facility review but keeps the facility key for restart restore", () => {
     const d = db({
       toilets: [],
       externalReviews: { "osm-1": [review("e1", 4), review("e2", 2)] },
@@ -158,6 +158,21 @@ describe("removeReview", () => {
     expect(d.externalReviews["osm-1"].map((r) => r.id)).toEqual(["e2"]);
     expect(d.reports).toEqual([]);
     expect("e1" in (d.helpfulVotes ?? {})).toBe(false);
+  });
+
+  it("keeps the external facility key as an empty array when the last review is removed", () => {
+    const d = db({
+      toilets: [],
+      externalReviews: { "osm-1": [review("e1", 4)] },
+      helpfulVotes: { e1: ["h1"] },
+      reports: [report("rep-1", "e1", { toiletId: "osm-1" })],
+    });
+    const plan = removeReview(d, "e1");
+    expect(plan!.kind).toBe("external");
+    expect(plan!.reviewsAfter).toBe(0);
+    // キーを消すとサーバー起動時の外部施設登録（リストア経路）が失われ、
+    // 再起動後にその施設への投稿が 404 になるため、空配列で保持する。
+    expect(d.externalReviews["osm-1"]).toEqual([]);
   });
 
   it("recomputes cleanliness from the cleanliness dimension, not the rating", () => {

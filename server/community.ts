@@ -19,7 +19,9 @@ import { atomicWriteFile, withFileLock } from "./shared/persistence";
 import type {
   AddReviewResult,
   CommunityRepository,
+  ExternalFacilityObservation,
 } from "./communityRepository";
+import { isExternalFacilityIdFormat } from "./externalFacilityRegistry";
 
 const MAX = {
   name: 100,
@@ -41,9 +43,6 @@ const CATEGORIES = [
 ] as const;
 
 const TOILET_ID_RE = /^toilet-user-[A-Za-z0-9-]{1,64}$/;
-// コミュニティ登録外の外部施設（OSM・Google手動調査・自治体OD）の施設ID形式（M5）。
-// Google Place ID 相当の英数字のほか、自治体OD由来の日本語施設名 id も許容する。
-const EXTERNAL_FACILITY_ID_RE = /^(osm|google|od)-[\p{L}\p{N}_-]{1,80}$/u;
 const URL_RE = /https?:\/\/|www\.[a-z0-9-]+\.[a-z]{2,}/i;
 
 export interface ValidationResult<T> {
@@ -60,8 +59,9 @@ function isShortString(v: unknown, max: number): v is string {
   return typeof v === "string" && v.length <= max;
 }
 
+/** 外部施設ID形式の判定は shared モジュールに一本化（二重管理の廃止）。 */
 export function isExternalFacilityId(id: string): boolean {
-  return EXTERNAL_FACILITY_ID_RE.test(id);
+  return isExternalFacilityIdFormat(id);
 }
 
 export interface ToiletInput {
@@ -495,6 +495,31 @@ export class CommunityStore {
       await atomicWriteFile(this.filePath, JSON.stringify(db));
       return { ok: true, found: true };
     });
+  }
+
+  // 外部施設（OSM/Google/OD）の既知IDを登録する。レビュー0件でもキーを残すことで、
+  // 再起動後も server.ts の起動時 registration（externalReviews のキー一覧）で
+  // 施設のレビュー可否が復元される（#53 で失われた OSM リストア経路の代替）。
+  async registerExternalFacilities(facilities: ExternalFacilityObservation[]): Promise<void> {
+    await withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
+      let changed = false;
+      for (const facility of facilities) {
+        if (!isExternalFacilityId(facility.id)) continue;
+        if (db.externalReviews[facility.id]) continue;
+        db.externalReviews[facility.id] = [];
+        changed = true;
+      }
+      if (changed) {
+        await atomicWriteFile(this.filePath, JSON.stringify(db));
+      }
+    });
+  }
+
+  // 既知の外部施設ID一覧（レビュー有無に関係なく、externalReviews にキーがあるもの）。
+  // 運用CLI（restore.ts）が curation 後の再登録に使う。
+  async listKnownExternalFacilityIds(): Promise<string[]> {
+    return Object.keys((await this.load()).externalReviews).sort();
   }
 }
 
