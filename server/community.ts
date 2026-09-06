@@ -16,6 +16,7 @@ import type {
   TriState,
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
+import { atomicWriteFile, withFileLock } from "./shared/persistence";
 
 const MAX = {
   name: 100,
@@ -37,7 +38,9 @@ const CATEGORIES = [
 ] as const;
 
 const TOILET_ID_RE = /^toilet-user-[A-Za-z0-9-]{1,64}$/;
-const EXTERNAL_FACILITY_ID_RE = /^(osm|google|od)-[A-Za-z0-9_-]{1,80}$/;
+// コミュニティ登録外の外部施設（OSM・Google手動調査・自治体OD）の施設ID形式（M5）。
+// Google Place ID 相当の英数字のほか、自治体OD由来の日本語施設名 id も許容する。
+const EXTERNAL_FACILITY_ID_RE = /^(osm|google|od)-[\p{L}\p{N}_-]{1,80}$/u;
 const URL_RE = /https?:\/\/|www\.[a-z0-9-]+\.[a-z]{2,}/i;
 
 export interface ValidationResult<T> {
@@ -107,6 +110,8 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     return { ok: false, error: "invalid cleanlinessScore" };
 
   const a = body.attributes;
+  if (a !== undefined && (a === null || typeof a !== "object" || Array.isArray(a)))
+    return { ok: false, error: "invalid attributes" };
   for (const k of [
     "hasWashlet",
     "hasMultipurpose",
@@ -281,85 +286,44 @@ interface MutationResult<T> {
   changed: boolean;
 }
 
+// コミュニティ登録トイレ＋外部施設レビューの JSON ファイルストア。
+// マルチプロセス（CI・キュレーション CLI との同時実行）でも欠落が出ないよう、
+// クロスプロセスのファイルロック下で毎回ディスクから読み直して更新する。
+// Cloud Run 等の ephemeral FS では再起動で消える。本格運用は Firestore/Postgres
+// への差し替えを想定（README参照）。
 export class CommunityStore {
-  private data: CommunityDB | null = null;
-  private mutationQueue: Promise<void> = Promise.resolve();
-
   constructor(private filePath: string) {}
 
-  async load(): Promise<CommunityDB> {
-    if (this.data) return this.data;
+  private parse(raw: string): CommunityDB {
+    const parsed = JSON.parse(raw) as CommunityDB;
+    if (!Array.isArray(parsed.toilets)) throw new Error("corrupt db");
+    return {
+      version: 2,
+      toilets: parsed.toilets,
+      helpfulVotes: parsed.helpfulVotes ?? {},
+      reports: parsed.reports ?? [],
+      reviewKeys:
+        parsed.reviewKeys && typeof parsed.reviewKeys === "object"
+          ? parsed.reviewKeys
+          : {},
+      externalReviews:
+        parsed.externalReviews && typeof parsed.externalReviews === "object"
+          ? (parsed.externalReviews as Record<string, ToiletReview[]>)
+          : {},
+    };
+  }
+
+  private async readDisk(): Promise<CommunityDB> {
     try {
-      const raw = await fs.readFile(this.filePath, "utf-8");
-      const parsed = JSON.parse(raw) as CommunityDB;
-      if (!Array.isArray(parsed.toilets)) throw new Error("corrupt db");
-      this.data = {
-        version: 2,
-        toilets: parsed.toilets,
-        helpfulVotes: parsed.helpfulVotes ?? {},
-        reports: parsed.reports ?? [],
-        reviewKeys: parsed.reviewKeys ?? {},
-        externalReviews:
-          parsed.externalReviews && typeof parsed.externalReviews === "object"
-            ? (parsed.externalReviews as Record<string, ToiletReview[]>)
-            : {},
-      };
-      return this.data;
+      return this.parse(await fs.readFile(this.filePath, "utf-8"));
     } catch (e: any) {
-      if (e?.code === "ENOENT") {
-        this.data = {
-          ...EMPTY_DB,
-          toilets: [],
-          helpfulVotes: {},
-          reports: [],
-          reviewKeys: {},
-          externalReviews: {},
-        };
-        return this.data;
-      }
-      console.error(
-        "community store load failed; refusing to continue with an empty store:",
-        e?.message ?? e
-      );
+      if (e?.code === "ENOENT") return structuredClone(EMPTY_DB);
       throw e;
     }
   }
 
-  private async persist(db: CommunityDB): Promise<void> {
-    await fs.mkdir(path.dirname(this.filePath), { recursive: true });
-    const tmp = `${this.filePath}.${process.pid}.${crypto.randomUUID()}.tmp`;
-    try {
-      await fs.writeFile(tmp, JSON.stringify(db), "utf-8");
-      await fs.rename(tmp, this.filePath);
-    } finally {
-      await fs.rm(tmp, { force: true }).catch(() => undefined);
-    }
-  }
-
-  private async mutate<T>(
-    mutator: (draft: CommunityDB) =>
-      | MutationResult<T>
-      | Promise<MutationResult<T>>
-  ): Promise<T> {
-    let result!: T;
-
-    const operation = this.mutationQueue
-      .catch(() => undefined)
-      .then(async () => {
-        const current = await this.load();
-        const draft = structuredClone(current);
-        const outcome = await mutator(draft);
-        result = outcome.result;
-
-        if (!outcome.changed) return;
-
-        await this.persist(draft);
-        this.data = draft;
-      });
-
-    this.mutationQueue = operation.catch(() => undefined);
-    await operation;
-    return result;
+  async load(): Promise<CommunityDB> {
+    return withFileLock(this.filePath, () => this.readDisk());
   }
 
   async getToilets(): Promise<ToiletFacility[]> {
@@ -367,12 +331,12 @@ export class CommunityStore {
   }
 
   async addToilet(t: ToiletFacility): Promise<{ added: boolean }> {
-    return this.mutate<{ added: boolean }>((db) => {
-      if (db.toilets.some((x) => x.id === t.id)) {
-        return { result: { added: false }, changed: false };
-      }
-      db.toilets.unshift(structuredClone(t));
-      return { result: { added: true }, changed: true };
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
+      if (db.toilets.some((x) => x.id === t.id)) return { added: false };
+      db.toilets.unshift(t);
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { added: true };
     });
   }
 
@@ -391,6 +355,7 @@ export class CommunityStore {
     };
   }
 
+  // 重複投稿ガード: 同一IP＋同一コメントが24h以内は拒否
   private hasDuplicate(
     db: CommunityDB,
     reviews: ToiletReview[],
@@ -409,6 +374,7 @@ export class CommunityStore {
     });
   }
 
+  // コミュニティ登録トイレに加え、外部施設（OSM/Google/自治体OD）のレビューも共有対象（M5）
   async addReview(
     toiletId: string,
     input: ReviewInput,
@@ -423,66 +389,52 @@ export class CommunityStore {
     cleanlinessGrade?: CleanlinessGrade;
     overallScore?: number;
   }> {
-    type AddReviewResult = {
-      error?: "not_found" | "duplicate";
-      toilet?: ToiletFacility;
-      facilityId?: string;
-      reviews?: ToiletReview[];
-      reviewCount?: number;
-      cleanlinessScore?: number;
-      cleanlinessGrade?: CleanlinessGrade;
-      overallScore?: number;
-    };
-
-    return this.mutate<AddReviewResult>((db) => {
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
       const t = db.toilets.find((x) => x.id === toiletId);
 
       if (t) {
         if (this.hasDuplicate(db, t.reviews, input.comment, ipHash)) {
-          return { result: { error: "duplicate" }, changed: false };
+          return { error: "duplicate" as const };
         }
         const review = this.buildReview(input);
         db.reviewKeys[review.id] = { ipHash, at: Date.now() };
         const reviews = [review, ...t.reviews];
-        const summary = summarizeReviews(reviews)!;
+        const summary = summarizeReviews(reviews)!; // reviews.length >= 1
         t.reviews = reviews;
         t.reviewCount = reviews.length;
         t.cleanlinessScore = summary.cleanlinessScore;
         t.cleanlinessGrade = summary.cleanlinessGrade;
         t.overallScore = summary.overallScore;
         t.lastCleaned = "たった今（利用者が確認）";
-        return { result: { toilet: t }, changed: true };
+        await atomicWriteFile(this.filePath, JSON.stringify(db));
+        return { toilet: t };
       }
 
-      if (!isExternalFacilityId(toiletId)) {
-        return { result: { error: "not_found" }, changed: false };
-      }
-
+      // コミュニティ登録外は施設ID形式（osm-* / google-* / od-*）でのみ受け付ける
+      if (!isExternalFacilityId(toiletId)) return { error: "not_found" as const };
       const existing = db.externalReviews[toiletId] ?? [];
       if (this.hasDuplicate(db, existing, input.comment, ipHash)) {
-        return { result: { error: "duplicate" }, changed: false };
+        return { error: "duplicate" as const };
       }
-
       const review = this.buildReview(input);
       db.reviewKeys[review.id] = { ipHash, at: Date.now() };
       const reviews = [review, ...existing];
       db.externalReviews[toiletId] = reviews;
       const summary = summarizeReviews(reviews);
-
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
       return {
-        result: {
-          facilityId: toiletId,
-          reviews,
-          reviewCount: reviews.length,
-          cleanlinessScore: summary?.cleanlinessScore,
-          cleanlinessGrade: summary?.cleanlinessGrade,
-          overallScore: summary?.overallScore,
-        },
-        changed: true,
+        facilityId: toiletId,
+        reviews,
+        reviewCount: reviews.length,
+        cleanlinessScore: summary?.cleanlinessScore,
+        cleanlinessGrade: summary?.cleanlinessGrade,
+        overallScore: summary?.overallScore,
       };
     });
   }
 
+  // コミュニティ登録トイレ＋外部施設の両方からレビューを探す
   private findReview(
     db: CommunityDB,
     reviewId: string
@@ -498,13 +450,11 @@ export class CommunityStore {
     return null;
   }
 
+  // 外部施設（OSM/Google/OD）への共有レビュー一覧（クライアントがシード施設に重ねる用）
   async getExternalReviews(): Promise<Record<string, ToiletReview[]>> {
     const db = await this.load();
     return Object.fromEntries(
-      Object.entries(db.externalReviews).map(([k, v]) => [
-        k,
-        structuredClone(v),
-      ])
+      Object.entries(db.externalReviews).map(([k, v]) => [k, structuredClone(v)])
     );
   }
 
@@ -512,42 +462,20 @@ export class CommunityStore {
     reviewId: string,
     ipHash: string
   ): Promise<{ helpfulCount: number; voted: boolean; found: boolean }> {
-    return this.mutate<{
-      helpfulCount: number;
-      voted: boolean;
-      found: boolean;
-    }>((db) => {
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
       const hit = this.findReview(db, reviewId);
-      if (!hit) {
-        return {
-          result: { helpfulCount: 0, voted: false, found: false },
-          changed: false,
-        };
-      }
-
+      if (!hit) return { helpfulCount: 0, voted: false, found: false };
       const { review } = hit;
       const voters = db.helpfulVotes[reviewId] ?? [];
       if (voters.includes(ipHash)) {
-        return {
-          result: {
-            helpfulCount: review.helpfulCount,
-            voted: false,
-            found: true,
-          },
-          changed: false,
-        };
+        return { helpfulCount: review.helpfulCount, voted: false, found: true };
       }
-
-      db.helpfulVotes[reviewId] = [...voters, ipHash];
+      voters.push(ipHash);
+      db.helpfulVotes[reviewId] = voters;
       review.helpfulCount += 1;
-      return {
-        result: {
-          helpfulCount: review.helpfulCount,
-          voted: true,
-          found: true,
-        },
-        changed: true,
-      };
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { helpfulCount: review.helpfulCount, voted: true, found: true };
     });
   }
 
@@ -556,13 +484,13 @@ export class CommunityStore {
     reviewId: string,
     reason: string
   ): Promise<{ ok: boolean; found: boolean }> {
-    return this.mutate<{ ok: boolean; found: boolean }>((db) => {
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
       const t = db.toilets.find((x) => x.id === toiletId);
       const reviews = t ? t.reviews : db.externalReviews[toiletId];
       if (!reviews || !reviews.some((r) => r.id === reviewId)) {
-        return { result: { ok: false, found: false }, changed: false };
+        return { ok: false, found: false };
       }
-
       db.reports.push({
         id: `report-${crypto.randomUUID()}`,
         toiletId,
@@ -570,7 +498,8 @@ export class CommunityStore {
         reason,
         createdAt: new Date().toISOString(),
       });
-      return { result: { ok: true, found: true }, changed: true };
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { ok: true, found: true };
     });
   }
 }
@@ -611,6 +540,8 @@ export function createCommunityRouter(
   router.get(
     "/toilets",
     asyncRoute(async (_req: Request, res: Response) => {
+      // toilets: コミュニティ登録トイレ。externalReviews: 外部施設（OSM/Google/OD）の
+      // 共有レビュー（M5）。クライアントがローカルのシード施設に重ねて表示する
       res.json({
         toilets: publicToilets(await store.getToilets()),
         externalReviews: await store.getExternalReviews(),
@@ -721,6 +652,7 @@ export function createCommunityRouter(
         res.status(201).json({ toilet: publicToilets([r.toilet])[0] });
         return;
       }
+      // 外部施設（OSM/Google/OD）: 施設ごとレビュー一覧を返し、クライアントが重ねる
       res.status(201).json({
         facilityId: r.facilityId,
         reviewCount: r.reviewCount,
@@ -770,6 +702,11 @@ export function createCommunityRouter(
       res.status(201).json({ ok: true });
     })
   );
+
+  router.use((err: unknown, _req: Request, res: Response, _next: (err?: unknown) => void) => {
+    console.error("[community] request failed:", err);
+    if (!res.headersSent) res.status(500).json({ error: "internal server error" });
+  });
 
   return router;
 }

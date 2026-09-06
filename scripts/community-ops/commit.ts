@@ -101,7 +101,7 @@ async function main(): Promise<void> {
   }
 
   execFileSync("git", ["add", "--", rel], { stdio: "inherit" });
-  execFileSync("git", ["commit", "-m", subject, "-m", body], {
+  execFileSync("git", ["commit", "--only", "-m", subject, "-m", body, "--", rel], {
     stdio: "inherit",
   });
   process.stdout.write("コミットしました（push は未実行）\n");

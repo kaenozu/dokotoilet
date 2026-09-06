@@ -177,6 +177,32 @@ export async function loadDbFile(filePath: string): Promise<DbFile> {
   return parseDb(text, filePath);
 }
 
+/** バックアップ用の原文。表示・差分用の parseDb と違い、未知フィールドを保持する。 */
+export async function loadRawDbFile(filePath: string): Promise<Record<string, unknown>> {
+  let text: string;
+  try {
+    text = await readFile(filePath, "utf-8");
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException)?.code;
+    if (code === "ENOENT") throw new Error(`ファイルが存在しません: ${filePath}`);
+    throw new Error(`読み込み失敗: ${filePath}: ${(e as Error).message}`);
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`JSONパース失敗: ${filePath}: ${(e as Error).message}`);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error(`不正なDBファイル: ${filePath}（オブジェクトではない）`);
+  }
+  const raw = parsed as Record<string, unknown>;
+  if (!Array.isArray(raw.toilets)) {
+    throw new Error(`不正なDBファイル: ${filePath}（toilets が配列ではない）`);
+  }
+  return raw;
+}
+
 // ── 統計 ──
 
 export interface DbStats {

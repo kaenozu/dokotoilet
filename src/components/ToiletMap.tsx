@@ -11,6 +11,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import L from 'leaflet';
+import { isViewportAlreadyAt } from '../lib/uiState';
 
 export type MapTileStyle = 'osm' | 'gsi' | 'gsi_pale' | 'osm_dark';
 
@@ -79,6 +80,7 @@ interface ToiletMapProps {
   center: { lat: number; lng: number };
   zoom: number;
   onFetchOsmNearCenter: (lat: number, lng: number) => void;
+  onViewportChange?: (center: { lat: number; lng: number }, zoom: number) => void;
   isLoadingOsm: boolean;
   /** 詳細パネル（drawer）が開いているか。開閉で地図コンテナ幅が変わるため
    *  Leaflet に invalidateSize を伝える（灰色タイル欠けの防止） */
@@ -149,6 +151,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   center,
   zoom,
   onFetchOsmNearCenter,
+  onViewportChange,
   isLoadingOsm,
   detailsOpen = false,
 }) => {
@@ -180,7 +183,9 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
       map.on('moveend', () => {
         const c = map.getCenter();
-        setCurrentMapCenter({ lat: c.lat, lng: c.lng });
+        const nextCenter = { lat: c.lat, lng: c.lng };
+        setCurrentMapCenter(nextCenter);
+        onViewportChange?.(nextCenter, map.getZoom());
       });
     }
 
@@ -224,7 +229,16 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   // Update center when prop changes
   useEffect(() => {
     if (leafletMapRef.current) {
-      leafletMapRef.current.flyTo([center.lat, center.lng], zoom, {
+      const map = leafletMapRef.current;
+      const current = map.getCenter();
+      const currentZoom = map.getZoom();
+      if (isViewportAlreadyAt(
+        { lat: current.lat, lng: current.lng, zoom: currentZoom },
+        { lat: center.lat, lng: center.lng, zoom }
+      )) {
+        return;
+      }
+      map.flyTo([center.lat, center.lng], zoom, {
         duration: 1.2,
       });
     }
