@@ -442,7 +442,7 @@ async function main(): Promise<void> {
       return;
     }
     process.stdout.write(formatPlan(plan, apply) + "\n");
-    
+
     return;
   }
   process.stderr.write(`エラー: 不明なコマンド: ${cmd ?? "(なし)"}\n`);
