@@ -290,11 +290,15 @@ interface MutationResult<T> {
 }
 
 // コミュニティ登録トイレ＋外部施設レビューの JSON ファイルストア。
-// マルチプロセス（CI・キュレーション CLI との同時実行）でも欠落が出ないよう、
-// クロスプロセスのファイルロック下で毎回ディスクから読み直して更新する。
+// 書き込みはクロスプロセスのファイルロック下で行い、欠落が出ないようにする。
+// 読み取り（GET）はロックを取らず、mtime+size でディスクとの一致を検証したキャッシュを
+// 返す。すべての書き込みは atomicWriteFile（rename）で行われるため、内容が変われば
+// mtime か size が必ず変わり、キャッシュは自動で無効化される。
 // Cloud Run 等の ephemeral FS では再起動で消える。本格運用は Firestore/Postgres
 // への差し替えを想定（README参照）。
 export class CommunityStore {
+  private cache: { data: CommunityDB; mtimeMs: number; size: number } | null = null;
+
   constructor(private filePath: string) {}
 
   private parse(raw: string): CommunityDB {
@@ -325,12 +329,54 @@ export class CommunityStore {
     }
   }
 
+  /**
+   * ロックなしの読み取り経路。まず stat でディスクの mtime+size を取得し、
+   * キャッシュと一致すればファイル読み込み・パースを省略する。不一致ならロックを
+   * 取らずに読み直す（読み取りは常に rename 済みの完全なファイルを見るため安全）。
+   */
+  private async snapshotForRead(): Promise<CommunityDB> {
+    let stat: { mtimeMs: number; size: number };
+    try {
+      const s = await fs.stat(this.filePath);
+      stat = { mtimeMs: s.mtimeMs, size: s.size };
+    } catch (e: any) {
+      if (e?.code === "ENOENT") {
+        this.cache = null;
+        return structuredClone(EMPTY_DB);
+      }
+      throw e;
+    }
+    const cached = this.cache;
+    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+      return cached.data;
+    }
+    try {
+      const db = await this.readDisk();
+      this.cache = { data: db, mtimeMs: stat.mtimeMs, size: stat.size };
+      return db;
+    } catch (e) {
+      // パース失敗等ではキャッシュを残さない（壊れた状態を永久に返さない）。
+      this.cache = null;
+      throw e;
+    }
+  }
+
+  /** 書き込み後にキャッシュを最新のディスク内容へ同期する（書き込みはロック内）。 */
+  private async refreshCacheAfterWrite(db: CommunityDB): Promise<void> {
+    try {
+      const stat = await fs.stat(this.filePath);
+      this.cache = { data: db, mtimeMs: stat.mtimeMs, size: stat.size };
+    } catch {
+      this.cache = null;
+    }
+  }
+
   async load(): Promise<CommunityDB> {
-    return withFileLock(this.filePath, () => this.readDisk());
+    return structuredClone(await this.snapshotForRead());
   }
 
   async getToilets(): Promise<ToiletFacility[]> {
-    return (await this.load()).toilets;
+    return structuredClone((await this.snapshotForRead()).toilets);
   }
 
   async addToilet(t: ToiletFacility): Promise<{ added: boolean }> {
@@ -339,6 +385,7 @@ export class CommunityStore {
       if (db.toilets.some((x) => x.id === t.id)) return { added: false };
       db.toilets.unshift(t);
       await atomicWriteFile(this.filePath, JSON.stringify(db));
+      await this.refreshCacheAfterWrite(db);
       return { added: true };
     });
   }
@@ -402,6 +449,7 @@ export class CommunityStore {
         t.overallScore = summary.overallScore;
         t.lastCleaned = "たった今（利用者が確認）";
         await atomicWriteFile(this.filePath, JSON.stringify(db));
+        await this.refreshCacheAfterWrite(db);
         return { toilet: t };
       }
 
@@ -417,6 +465,7 @@ export class CommunityStore {
       db.externalReviews[toiletId] = reviews;
       const summary = summarizeReviews(reviews);
       await atomicWriteFile(this.filePath, JSON.stringify(db));
+      await this.refreshCacheAfterWrite(db);
       return {
         facilityId: toiletId,
         reviews,
@@ -446,7 +495,7 @@ export class CommunityStore {
 
   // 外部施設（OSM/Google/OD）への共有レビュー一覧（クライアントがシード施設に重ねる用）
   async getExternalReviews(): Promise<Record<string, ToiletReview[]>> {
-    const db = await this.load();
+    const db = await this.snapshotForRead();
     return Object.fromEntries(
       Object.entries(db.externalReviews).map(([k, v]) => [k, structuredClone(v)])
     );
@@ -469,6 +518,7 @@ export class CommunityStore {
       db.helpfulVotes[reviewId] = voters;
       review.helpfulCount += 1;
       await atomicWriteFile(this.filePath, JSON.stringify(db));
+      await this.refreshCacheAfterWrite(db);
       return { helpfulCount: review.helpfulCount, voted: true, found: true };
     });
   }
@@ -493,6 +543,7 @@ export class CommunityStore {
         createdAt: new Date().toISOString(),
       });
       await atomicWriteFile(this.filePath, JSON.stringify(db));
+      await this.refreshCacheAfterWrite(db);
       return { ok: true, found: true };
     });
   }
@@ -512,6 +563,7 @@ export class CommunityStore {
       }
       if (changed) {
         await atomicWriteFile(this.filePath, JSON.stringify(db));
+        await this.refreshCacheAfterWrite(db);
       }
     });
   }
@@ -519,7 +571,7 @@ export class CommunityStore {
   // 既知の外部施設ID一覧（レビュー有無に関係なく、externalReviews にキーがあるもの）。
   // 運用CLI（restore.ts）が curation 後の再登録に使う。
   async listKnownExternalFacilityIds(): Promise<string[]> {
-    return Object.keys((await this.load()).externalReviews).sort();
+    return Object.keys((await this.snapshotForRead()).externalReviews).sort();
   }
 }
 
