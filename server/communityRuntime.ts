@@ -9,7 +9,11 @@ import type {
   CommunityRepository,
   ExternalFacilityObservation,
 } from "./communityRepository";
-import { ExternalFacilityRegistry, isExternalFacilityIdFormat } from "./externalFacilityRegistry";
+import {
+  canonicalizeExternalFacilityId,
+  ExternalFacilityRegistry,
+  isExternalFacilityIdFormat,
+} from "./externalFacilityRegistry";
 import { createConfiguredCommunityStore } from "./communityStoreFactory";
 import type { FirestoreLike } from "./firestoreCommunityStore";
 
@@ -43,13 +47,16 @@ function addStaticObservation(
   legacyId?: string
 ): void {
   if (!isExternalFacilityIdFormat(id)) return;
-  const source = sourceForId(id);
+  // 正準IDをキーにすることで、同一正準形の静的観測（legacy/canonical両方）が
+  // 重複キーを作らない。legacyId は生の値のまま保持する。
+  const canonicalId = canonicalizeExternalFacilityId(id as string);
+  const source = sourceForId(canonicalId);
   if (!source) return;
-  out.set(id, {
-    id,
+  out.set(canonicalId, {
+    id: canonicalId,
     source,
     origin: "static-seed",
-    ...(legacyId && legacyId !== id ? { legacyId } : {}),
+    ...(legacyId && legacyId !== canonicalId ? { legacyId } : {}),
   });
 }
 
@@ -123,13 +130,16 @@ export async function createCommunityRuntime(
       backend,
       store: firestoreStore,
       isKnownExternalFacility: async (facilityId) => {
-        if (registry.has(facilityId)) return true;
-        const known = await firestoreStore.isKnownExternalFacility(facilityId);
-        if (known) registry.register(facilityId);
+        const canonical = canonicalizeExternalFacilityId(facilityId);
+        if (registry.has(canonical)) return true;
+        const known = await firestoreStore.isKnownExternalFacility(canonical);
+        if (known) registry.register(canonical);
         return known;
       },
       observeExternalFacilities: async (facilities) => {
-        const unseen = facilities.filter((item) => !registry.has(item.id));
+        const unseen = facilities
+          .map((item) => ({ ...item, id: canonicalizeExternalFacilityId(item.id) }))
+          .filter((item) => !registry.has(item.id));
         if (unseen.length === 0) return;
         await firestoreStore.registerExternalFacilities(unseen);
         registry.registerMany(unseen.map((item) => item.id));
@@ -140,9 +150,14 @@ export async function createCommunityRuntime(
   return {
     backend,
     store: configured.store,
-    isKnownExternalFacility: (facilityId) => registry.has(facilityId),
+    isKnownExternalFacility: (facilityId) =>
+      registry.has(canonicalizeExternalFacilityId(facilityId)),
     observeExternalFacilities: async (facilities) => {
-      registry.registerMany(facilities.map((item) => item.id));
+      // JSONバックエンドでは store.registerExternalFacilities が externalReviews の
+      // キーを作るため、ここで正準IDへ写像してから登録する。
+      registry.registerMany(
+        facilities.map((item) => canonicalizeExternalFacilityId(item.id))
+      );
     },
   };
 }

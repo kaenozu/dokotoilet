@@ -304,7 +304,9 @@ describe("CommunityStore", () => {
     // 施設はレビュー0件でも引き続き投稿可能（レビュー可否はキーで復元される）。
     const next = await store.addReview("osm-live-curator", { ...goodReview(), comment: "次の投稿" } as any, "ip-next");
     expect(next.reviews).toHaveLength(1);
-  });  it("registers an external facility key through registerExternalFacilities", async () => {
+  });
+
+  it("registers an external facility key through registerExternalFacilities", async () => {
     await store.registerExternalFacilities([
       { id: "od-失われた施設", source: "od", origin: "restore" },
     ]);
@@ -313,6 +315,63 @@ describe("CommunityStore", () => {
     const after = await store.addReview("od-失われた施設", goodReview() as any, "ip-restore");
     expect(after.error).toBeUndefined();
     expect(after.reviews).toHaveLength(1);
+  });
+
+  it("keeps store-level review keys canonical: NFD registration lands on the NFC key", async () => {
+    // 分解型（ハングル Jamo）で登録しても、キーは正準形（合成済み）で作られる
+    await store.registerExternalFacilities([
+      { id: "google-\u1100\u1161", source: "google", origin: "restore" },
+    ]);
+    const ids = await store.listKnownExternalFacilityIds();
+    expect(ids).toContain("google-가"); // 正準形のキー
+    expect(ids).not.toContain("google-\u1100\u1161"); // 分解形のキーは作らない
+    // 正準形の問い合わせでもレビュー投稿が通る（store は登録済みキーで not_found にしない）
+    const r = await store.addReview("google-가", goodReview() as any, "ip-nfc");
+    expect(r.error).toBeUndefined();
+    expect(r.facilityId).toBe("google-가");
+  });
+
+  it("router maps decomposed (NFD) facility ids to the composed registered id end-to-end", async () => {
+    await store.registerExternalFacilities([
+      { id: "od-ガA", source: "od", origin: "restore" },
+    ]);
+    const app = express();
+    app.use(express.json()); // server.ts と同様にアプリ側で JSON ボディを解釈する
+    // 本番（JSONバックエンド）と同じく、externalReviews のキー一覧を正として
+    // 施設の既知判定を行うバリデータを注入する。
+    const knownIds = async () => new Set(await store.listKnownExternalFacilityIds());
+    app.use(
+      "/api/community",
+      createCommunityRouter(store, "test", async (id) => (await knownIds()).has(id))
+    );
+    const server = createServer(app);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const port = (server.address() as any).port;
+    const post = (path: string) =>
+      fetch(`http://127.0.0.1:${port}/api/community${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ review: { ...goodReview(), comment: "NFD経由の投稿" } }),
+      });
+
+    // 分解型「ガ」（カ+濁点 U+3099）を含むOD施設IDでPOST → 正準形 od-ガA に合流して201
+    const nfd = "od-\u30AB\u3099A"; // カ+濁点(ガ)の分解型
+    expect(nfd.normalize("NFC")).toBe("od-ガA");
+    const res = await post(`/toilets/${encodeURIComponent(nfd)}/reviews`);
+    expect(res.status).toBe(201);
+    const body: any = await res.json();
+    expect(body.facilityId).toBe("od-ガA"); // 正準形で返る
+
+    // 合成済みIDでGETしても同じレビューが見える（キーは1つに合流）
+    const list = await store.getExternalReviews();
+    expect(Object.keys(list)).toEqual(["od-ガA"]);
+    expect(list["od-ガA"]).toHaveLength(1);
+
+    // 未知の正準形IDは従来どおり404
+    const missing = await post(`/toilets/${encodeURIComponent("od-未知の施設")}/reviews`);
+    expect(missing.status).toBe(404);
+
+    await new Promise<void>((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
   });
 
   it("ignores invalid ids and is idempotent in registerExternalFacilities", async () => {
