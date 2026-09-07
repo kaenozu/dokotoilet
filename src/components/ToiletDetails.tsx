@@ -4,7 +4,7 @@ import {
   CleanlinessGrade,
   DataSourceType,
 } from '../types';
-import { getGradeColor, isEvaluated } from '../lib/grade';
+import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
 import { summarizeReviews } from '../lib/scoring';
 import {
   Sparkles,
@@ -88,11 +88,13 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
 }) => {
   // 実測レビュー0件は設備推定値しかないため「未評価」表示にする
   const evaluated = isEvaluated(toilet);
+  // 口コミ0件でも調査/推定グレードを表示する（初期状態のマップに意味を持たせる）
+  const shown = displayGrade(toilet);
   // 外部に口コミがあるが未取込か（例：GoogleにN件）。undefined/0＝不明または無し
   const externalCount = toilet.externalReviewCount ?? 0;
   const hasUnfetched = !evaluated && externalCount > 0;
   const externalSource = toilet.externalReviewSource || 'Google Maps';
-  const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
+  const gradeColor = getGradeColor(shown.grade);
   // 口コミがある施設は「清潔さ・におい・備品」のバーを口コミ集計値から導出して
   // 上部スコアとの表示不整合を防ぐ（comfort は入力項目が無いため設備推定値を維持）
   const measured =
@@ -182,16 +184,23 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
-              className={`stamp-plate w-16 h-16 ${gradeColor.bg} text-white`}
+              className={`stamp-plate w-16 h-16 ${gradeColor.bg} text-white ${
+                evaluated ? '' : 'opacity-80 saturate-[.65]'
+              }`}
+              title={
+                evaluated
+                  ? gradeColor.label
+                  : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
+              }
             >
               <span className="text-2xl font-black leading-none">
-                {evaluated ? toilet.cleanlinessGrade : '–'}
+                {shown.grade}
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-ink">
-                  {toilet.cleanlinessScore.toFixed(1)}
+                  {shown.score.toFixed(1)}
                 </span>
                 <span className="text-xs text-faint">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -210,16 +219,16 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               <p className={`text-xs font-medium ${gradeColor.text}`}>
                 {evaluated
                   ? gradeColor.label
-                  : hasUnfetched
-                    ? '未評価（口コミ未取込）'
-                    : '未評価（設備からの推定値）'}
+                  : shown.kind === 'survey'
+                    ? `調査評価 ${shown.grade}相当（実測レビューなし）`
+                    : `推定 ${shown.grade}相当（実測レビューなし）`}
               </p>
               <p className="text-[11px] text-faint mt-0.5">
                 {evaluated
                   ? `口コミ・評価 ${toilet.reviewCount}件`
                   : hasUnfetched
-                    ? `${externalSource}に約${externalCount}件あり・取込後に反映／設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`
-                    : `口コミ募集中・設備推定 ${toilet.equipmentGrade}級 (${toilet.equipmentScore.toFixed(1)})`}
+                    ? `${externalSource}に約${externalCount}件あり・口コミ投稿で実測に更新`
+                    : `口コミ募集中・最初の投稿で実測に更新`}
               </p>
             </div>
           </div>

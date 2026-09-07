@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { facilityTypeForCategory, getGradeColor, isEvaluated } from './grade';
+import {
+  displayGrade,
+  evaluationKind,
+  evaluationKindLabel,
+  facilityTypeForCategory,
+  getGradeColor,
+  isEvaluated,
+} from './grade';
 
 describe('isEvaluated', () => {
   it('is true only when reviewCount is positive', () => {
@@ -7,6 +14,54 @@ describe('isEvaluated', () => {
     expect(isEvaluated({ reviewCount: 1 })).toBe(true);
     expect(isEvaluated(undefined)).toBe(false);
     expect(isEvaluated(null)).toBe(false);
+  });
+});
+
+describe('evaluationKind', () => {
+  it('distinguishes measured / survey / estimated', () => {
+    expect(evaluationKind({ reviewCount: 2 })).toBe('measured');
+    expect(
+      evaluationKind({ reviewCount: 0, dataSource: 'google', externalReviewCount: 114 })
+    ).toBe('survey');
+    expect(
+      evaluationKind({ reviewCount: 0, dataSource: 'google', externalReviewCount: 0 })
+    ).toBe('estimated');
+    expect(
+      evaluationKind({ reviewCount: 0, dataSource: 'opendata' })
+    ).toBe('estimated');
+    expect(evaluationKind(undefined)).toBe('estimated');
+  });
+
+  it('labels each kind distinctly from measured grades', () => {
+    expect(evaluationKindLabel('measured')).toBe('実測');
+    expect(evaluationKindLabel('survey')).toBe('調査');
+    expect(evaluationKindLabel('estimated')).toBe('推定');
+  });
+});
+
+describe('displayGrade', () => {
+  const base = {
+    reviewCount: 0,
+    dataSource: 'opendata',
+    cleanlinessGrade: 'A' as const,
+    cleanlinessScore: 4.5,
+    equipmentGrade: 'B' as const,
+    equipmentScore: 3.4,
+  };
+  it('uses measured values when reviews exist', () => {
+    expect(displayGrade({ ...base, reviewCount: 3 })).toEqual({
+      grade: 'A',
+      score: 4.5,
+      kind: 'measured',
+    });
+  });
+  it('uses the manual survey score for google seeds', () => {
+    expect(
+      displayGrade({ ...base, dataSource: 'google', externalReviewCount: 114 })
+    ).toEqual({ grade: 'A', score: 4.5, kind: 'survey' });
+  });
+  it('falls back to the equipment estimate otherwise', () => {
+    expect(displayGrade(base)).toEqual({ grade: 'B', score: 3.4, kind: 'estimated' });
   });
 });
 

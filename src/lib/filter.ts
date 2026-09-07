@@ -1,4 +1,5 @@
 import type { FilterState, ToiletFacility } from "../types";
+import { displayGrade } from "./grade";
 
 /**
  * 一覧・地図共通の「絞り込み → 清潔度順ソート」純関数（App の useMemo から切り出し）。
@@ -28,10 +29,10 @@ export function matchesFilter(t: ToiletFacility, f: FilterState): boolean {
     if (!haystack.some((s) => s.includes(q))) return false;
   }
 
-  // High cleanliness (Grade S & A, score >= 4.0): 実測口コミがある施設（reviewCount > 0）のみ対象。
-  // 未評価（reviewCount 0）の cleanlinessScore は設備推定値/手動判断値のため S・A級とは断定せず、
-  // UI の「未評価（グレード非表示）」表示とも一貫させる（実測と推定を混ぜない）。
-  if (f.onlyHighCleanliness && (t.reviewCount <= 0 || t.cleanlinessScore < 4.0)) return false;
+  // High cleanliness (Grade S & A, score >= 4.0): 表示グレード基準。
+  // 口コミ0件の施設も調査/推定グレードで判定する（初期状態でフィルタが全件除外に
+  // なるのを防ぐ。実測・調査・推定の区別はグレード表示の出所タグで行う）。
+  if (f.onlyHighCleanliness && displayGrade(t).score < 4.0) return false;
 
   // Equipment attributes: 「あり」を明示（true）した施設のみ一致。
   // 未確認（null）は「なし」同様に候補から外す（不明を「あり」と断定しない）

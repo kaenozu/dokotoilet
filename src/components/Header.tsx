@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Sparkles className="w-3 h-3" />
-              S・A級 (実測のみ)
+              S・A級
             </button>
 
             {/* Washlet */}

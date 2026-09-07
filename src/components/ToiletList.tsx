@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToiletFacility } from '../types';
-import { getGradeColor, isEvaluated } from '../lib/grade';
+import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
 import {
   Search,
   Building2,
@@ -70,7 +70,9 @@ export const ToiletList: React.FC<ToiletListProps> = ({
         ) : (
           toilets.map((toilet) => {
             const evaluated = isEvaluated(toilet);
-            const gradeColor = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
+            // 口コミ0件でも調査/推定グレードを表示する。実測以外は出所タグを添える
+            const shown = displayGrade(toilet);
+            const gradeColor = getGradeColor(shown.grade);
             const isSelected = selectedToilet?.id === toilet.id;
             const attrs = toilet.attributes || ({} as any);
 
@@ -105,14 +107,27 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     </p>
                   </div>
 
-                  {/* Cleanliness Grade Box（未評価は推定値を出さない） */}
-                  <div
-                    className={`stamp-plate w-9 h-9 ${gradeColor.bg} text-white shrink-0`}
-                    title={evaluated ? gradeColor.label : '未評価（口コミ募集中）'}
-                  >
-                    <span className="text-base font-black leading-none">
-                      {evaluated ? (toilet.cleanlinessGrade || '–') : '–'}
-                    </span>
+                  {/* Cleanliness Grade Box（実測が無ければ調査/推定グレード＋出所タグ） */}
+                  <div className="flex flex-col items-center gap-0.5 shrink-0">
+                    <div
+                      className={`stamp-plate w-9 h-9 ${gradeColor.bg} text-white ${
+                        evaluated ? '' : 'opacity-80 saturate-[.65]'
+                      }`}
+                      title={
+                        evaluated
+                          ? gradeColor.label
+                          : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当（口コミ募集中）`
+                      }
+                    >
+                      <span className="text-base font-black leading-none">
+                        {shown.grade}
+                      </span>
+                    </div>
+                    {!evaluated && (
+                      <span className="text-[9px] font-medium text-faint leading-none">
+                        {evaluationKindLabel(shown.kind)}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -123,7 +138,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     <span className="font-bold">
                       {evaluated
                         ? (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')
-                        : `推定 ${toilet.equipmentScore != null ? Number(toilet.equipmentScore).toFixed(1) : (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')}`}
+                        : `${evaluationKindLabel(shown.kind)} ${Number(shown.score).toFixed(1)}`}
                     </span>
                     <span className="text-faint">({toilet.reviewCount ?? 0})</span>
                   </div>

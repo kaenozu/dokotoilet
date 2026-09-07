@@ -75,7 +75,8 @@ export interface ToiletFacility {
   address: string;
   floorInfo?: string;
   // 実測レビューの「清潔さ次元」平均のランク・スコア。reviewCount === 0 の場合は
-  // 設備推定値を表示用に入れるが、UI上は「未評価」として扱うこと（isEvaluated参照）
+  // 設備推定値/Google手動調査値を表示用に入れ、UI上は「調査」「推定」タグ付きの
+  // グレードとして扱うこと（displayGrade/evaluationKind参照）
   cleanlinessGrade: CleanlinessGrade;
   cleanlinessScore: number; // 1.0 - 5.0（便器・床の清潔さの実測平均）
   /** 総合満足度の実測平均（口コミ1件以上で設定。0件は未定義＝未評価） */

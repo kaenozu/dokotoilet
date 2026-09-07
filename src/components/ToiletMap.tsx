@@ -90,7 +90,7 @@ interface ToiletMapProps {
 }
 
 // 実測評価判定とグレード配色は src/lib/grade.ts へ移動（ToiletList / ToiletDetails と共有）
-import { getGradeColor, isEvaluated } from '../lib/grade';
+import { displayGrade, evaluationKindLabel, getGradeColor } from '../lib/grade';
 
 export const ToiletMap: React.FC<ToiletMapProps> = ({
   toilets,
@@ -202,14 +202,17 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
     toilets.forEach((toilet) => {
       const isSelected = selectedToilet?.id === toilet.id;
-      const evaluated = isEvaluated(toilet);
-      const colorInfo = getGradeColor(evaluated ? toilet.cleanlinessGrade : undefined);
-      const gradeLetter = evaluated ? toilet.cleanlinessGrade : '–';
+      // 口コミ0件でも調査/推定グレードを表示する（初期状態のマップに意味を持たせる）。
+      // 実測以外は少し薄くして出所の違いが分かるようにする
+      const shown = displayGrade(toilet);
+      const colorInfo = getGradeColor(shown.grade);
+      const gradeLetter = shown.grade;
+      const dimmed = shown.kind !== 'measured' ? 'opacity-80 saturate-[.65]' : '';
 
       const customIcon = L.divIcon({
         className: 'custom-toilet-marker',
         html: `
-          <div class="relative group cursor-pointer transition-transform duration-200 ${
+          <div class="relative group cursor-pointer transition-transform duration-200 ${dimmed} ${
             isSelected ? 'scale-125 z-50' : 'hover:scale-110 z-10'
           }">
             <div class="flex items-center justify-center w-8 h-8 rounded-full shadow-lg text-white font-bold text-xs ${
@@ -217,7 +220,9 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
             } ring-2 ${
           isSelected
             ? 'ring-accent ring-offset-2 ring-offset-white shadow-[0_2px_12px_rgba(27,40,33,0.35)]'
-            : 'ring-white'
+            : shown.kind !== 'measured'
+              ? 'ring-slate-200'
+              : 'ring-white'
         }">
               ${gradeLetter}
             </div>
@@ -230,7 +235,10 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
         iconAnchor: [16, 36],
       });
 
-      const marker = L.marker([toilet.lat, toilet.lng], { icon: customIcon });
+      const marker = L.marker([toilet.lat, toilet.lng], {
+        icon: customIcon,
+        title: `${toilet.name}（${evaluationKindLabel(shown.kind)} ${gradeLetter}級）`,
+      });
       marker.on('click', () => {
         // 最新のハンドラを使う（ref経由。effectの再実行を防ぐため deps に入れない）
         onSelectToiletRef.current(toilet);
