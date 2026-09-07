@@ -16,7 +16,7 @@
 //      required-visible, address/floorInfo/description fall back to defaults),
 //      plus a load-time sanitization migration in CommunityStore.parse() that
 //      self-heals legacy rows (persisted on next write)
-//   P3 URL-likeness detection via containsUrlLike (shared/urlGuard.ts): NFKC +
+//   P3 URL-likeness detection via containsUrlLike (shared/textPolicy.ts): NFKC +
 //      \p{Cf}/\p{Cc} + Default_Ignorable_Code_Point stripping before URL_RE —
 //      G1 closed; URL_RE's over-blocking quirks (bare "http" in prose, TLD-like
 //      mentions) are inherited & pinned. DI stripping (found by the property
@@ -25,8 +25,8 @@
 //   P4 sanitizeText strips lone surrogates before the JSON persistence layer
 //
 // Gaps history (originally pinned by PR #62; G1–G3 closed in follow-ups):
-//   G1 URL_RE evasion — CLOSED by urlGuard normalization (PR #65)
-//   G2 invisible-only content — CLOSED by shared/textSanitizer.ts: inputs that
+//   G1 URL_RE evasion — CLOSED by textPolicy normalization (PR #65)
+//   G2 invisible-only content — CLOSED by shared/textPolicy.ts: inputs that
 //      leave no visible content after sanitizing (ZWSP/LRM runs) are rejected,
 //      and an invisible-only userName falls back to 匿名の利用者
 //   G3 control/bidi/tag characters stored verbatim — CLOSED: sanitizeText()
@@ -44,8 +44,8 @@ import {
   validateReviewInput,
   validateReportInput,
 } from "./community";
-import { normalizeForUrlScan, containsUrlLike } from "./shared/urlGuard";
-import { sanitizeText, hasVisibleContent } from "./shared/textSanitizer";
+import { normalizeForUrlScan, containsUrlLike } from "./shared/textPolicy";
+import { sanitizeText, hasVisibleContent } from "./shared/textPolicy";
 
 const goodReview = () => ({
   userName: "たろう",
@@ -83,13 +83,13 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
     ["bare word http in prose", "これはhttpです"],
     ["TLD-like mention without scheme", "見て spam.example.com"],
     // 以下も元監査（PR #62）で「G1: 見逃す」と固定されていた行。判定前の正規化
-    // （NFKC + \p{Cf}/\p{Cc} 除去、shared/urlGuard.ts）により検出に変わった。
+    // （NFKC + \p{Cf}/\p{Cc} 除去、shared/textPolicy.ts）により検出に変わった。
     ["LRM inside the scheme (h\\u200Ettps://)", "h\u200Ettps://spam.example"],
     ["fullwidth scheme letters", "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example"],
     ["fullwidth www host", "\uFF57\uFF57\uFF57.\uFF53\uFF50\uFF41\uFF4D.example"],
     // Default_Ignorable_Code_Point な不可視文字（\p{Mn}/\p{Lo} のため sanitizer は
     // 保持するが、表示上まったく見えない）。プロパティファズが Alphabet の網羅性
-    // を突いて発見したシームで、urlGuard の DI 除去により検出に変わった。
+    // を突いて発見したシームで、textPolicy の DI 除去により検出に変わった。
     ["variation selector 15 inside scheme", "h\uFE0Ettp://spam.example"],
     ["variation selector 16 inside scheme", "h\uFE0Fttp://spam.example"],
     ["Hangul filler inside scheme", "h\u115Fttp://spam.example"],
@@ -105,13 +105,23 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
     expect(r.error).toBe("reason must not contain URLs");
   });
 
+  it("treats a NEL-split www host in reason as visible prose, aligned with the comment policy", () => {
+    // textPolicy 統一までは reason の URL 検出は生入力（urlGuard が NEL を剥がして
+    // 検出）だったが、統一により「保存値に対して検出」に揃った。NEL は可視空白へ
+    // 置換されるため検出されない（コメント欄と同一ポリシー。不可視難匿ではなく
+    // 目に見える区切りの本文として受理する）。
+    const r = validateReportInput({ reason: "ww\u0085w.spam.example" });
+    expect(r.ok).toBe(true);
+    expect(r.value!.reason).toBe("ww w.spam.example");
+  });
+
   it("rejects obfuscated URLs in toilet registration fields too", () => {
     expect(validateToiletInput({ ...goodToilet(), name: "h\u200Ettps://spam.example" }).ok).toBe(false);
     expect(validateToiletInput({ ...goodToilet(), description: "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example" }).ok).toBe(false);
   });
 });
 
-describe("shared/urlGuard normalization semantics", () => {
+describe("shared/textPolicy normalization semantics", () => {
   it("folds fullwidth forms and strips format characters before matching", () => {
     expect(normalizeForUrlScan("\uFF48\uFF54\uFF54\uFF50")).toBe("http");
     expect(normalizeForUrlScan("h\u200Ettp")).toBe("http");
@@ -204,7 +214,7 @@ describe("adversarial Unicode: control / bidi / unpaired characters are sanitize
   });
 });
 
-describe("shared/textSanitizer semantics", () => {
+describe("shared/textPolicy sanitizeText semantics", () => {
   it("strips category-C characters and keeps visible text intact", () => {
     expect(sanitizeText("a\u0000b\u200Ex")).toBe("abx");
     expect(sanitizeText("cafe\u0301 desu")).toBe("cafe\u0301 desu"); // 結合記号保持

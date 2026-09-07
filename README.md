@@ -52,7 +52,7 @@ bun start        # 本番起動（dist/server.cjs）
   書式/制御文字（LRM・ZWSPなどの不可視文字）+ Default_Ignorable_Code_Point
   （バリエーションセレクタ・ハングルフィラーなど、\p{C} ではないが表示上
   完全に不可視の文字）の除去を行った上でURLパターンに一致させる
-  （`server/shared/urlGuard.ts`）。全角英字（ｈｔｔｐｓ://）や不可視文字を
+  （`server/shared/textPolicy.ts`）。全角英字（ｈｔｔｐｓ://）や不可視文字を
   挟んだURLも検出する。本文中の "http" という語やTLD風表記も拒否される
   （意図的な過剰拒否。unicode監査スイート `server/community.unicode.test.ts` が
   挙動を固定し、プロパティベースファズ `server/community.fuzz.test.ts`
@@ -94,8 +94,9 @@ bun start        # 本番起動（dist/server.cjs）
     に痕跡のある外部施設IDを CommunityRepository 経由でバックエンドに再登録する。
     curation でレビューごと消えた OSM 施設の投稿可否復元や、JSON→Firestore 引き継ぎに使用）:
     `bun scripts/community-ops/restore.ts [--apply] [--from <backup.json>] [--backend firestore]`
-- ユーザー入力テキスト（ユーザー名・コメント・通報理由）は保存前に
-  `server/shared/textSanitizer.ts` で正規化する: 制御文字（NUL等）・双方向制御・
+- ユーザー入力テキスト（ユーザー名・コメント・通報理由・施設登録欄）は保存前に
+  `server/shared/textPolicy.ts` で宣言的に処理する（欄ごとのポリシーテーブル +
+  共通パイプライン）: 制御文字（NUL等）・双方向制御・
   タグ文字・単独サロゲートは除去、改行・タブは半角スペースへ置換。不可視文字のみの
   入力（ZWSP連打等）は拒否され、ユーザー名が空になる場合は「匿名の利用者」を使う。
   結合記号・全角文字・絵文字は保持する（NFC正規化はしない）。
