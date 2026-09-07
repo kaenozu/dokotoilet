@@ -7,7 +7,10 @@
 //   2. 全角英字（ｈｔｔｐｓ://）や全角コロン（https：//）は ASCII 前提の
 //      パターンに一致しない（見た目はURLのまま）
 // 対策として、判定前に Unicode 正規化 NFKC（互換分解で全角→ASCIIに畳む）と
-// 書式/制御文字（\p{Cf} \p{Cc}）の除去を行い、その上で URL_RE を適用する。
+// 不可視文字（\p{Cf} \p{Cc}、加えて Default_Ignorable_Code_Point — バリエーション
+// セレクタ U+FE0E/F・ハングルフィラー U+115F/1160 など、\p{Mn}/\p{Lo} に属し
+// sanitizer では保持されるが表示上まったく見えない文字）の除去を行い、
+// その上で URL_RE を適用する。
 // 検出対象を広げない（むしろ既存パターンが見えるようにするだけ）ので、
 // URL_RE 自体の過剰拒否性質（本文中の "http" という語や TLD 風表記への反応）は
 // そのまま引き継ぐ。これは PR #63 のポリシー判断であり、ここでは変更しない。
@@ -22,11 +25,16 @@ export function urlPattern(): RegExp {
 
 /**
  * 判定用の正規化: NFKC で互換文字（全角英数字など）を畳み込み、
- * 書式文字（不可視の双方向制御・ZWSP等）と制御文字を取り除く。
+ * 書式文字（不可視の双方向制御・ZWSP等）と制御文字、さらに
+ * Default_Ignorable_Code_Point（ variation selector・ハングルフィラー等の
+ * 「無視される」不可視文字）を取り除く。これらは \p{C} ではないため
+ * textSanitizer では保持されるが、URL 判定の前には不可視難匿に使えるため除く。
  * 単独サロゲートを含む文字列でも例外にはならない（NFKCは寛容）。
  */
 export function normalizeForUrlScan(value: string): string {
-  return value.normalize("NFKC").replace(/[\p{Cf}\p{Cc}]/gu, "");
+  return value
+    .normalize("NFKC")
+    .replace(/[\p{Cf}\p{Cc}\p{Default_Ignorable_Code_Point}]/gu, "");
 }
 
 /**

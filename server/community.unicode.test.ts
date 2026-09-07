@@ -13,8 +13,11 @@
 //      the raw input before sanitizing (sanitize never grows the string)
 //   P2 non-empty check requires visible content after sanitizing (G2 closed)
 //   P3 URL-likeness detection via containsUrlLike (shared/urlGuard.ts): NFKC +
-//      \p{Cf}/\p{Cc} stripping before URL_RE — G1 closed; URL_RE's over-blocking
-//      quirks (bare "http" in prose, TLD-like mentions) are inherited & pinned
+//      \p{Cf}/\p{Cc} + Default_Ignorable_Code_Point stripping before URL_RE —
+//      G1 closed; URL_RE's over-blocking quirks (bare "http" in prose, TLD-like
+//      mentions) are inherited & pinned. DI stripping (found by the property
+//      fuzz suite) closes the invisible-character seam for variation selectors
+//      and Hangul fillers, which are \p{Mn}/\p{Lo} and survive the sanitizer
 //   P4 sanitizeText strips lone surrogates before the JSON persistence layer
 //
 // Gaps history (originally pinned by PR #62; G1–G3 closed in follow-ups):
@@ -80,6 +83,12 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
     ["LRM inside the scheme (h\\u200Ettps://)", "h\u200Ettps://spam.example"],
     ["fullwidth scheme letters", "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example"],
     ["fullwidth www host", "\uFF57\uFF57\uFF57.\uFF53\uFF50\uFF41\uFF4D.example"],
+    // Default_Ignorable_Code_Point な不可視文字（\p{Mn}/\p{Lo} のため sanitizer は
+    // 保持するが、表示上まったく見えない）。プロパティファズが Alphabet の網羅性
+    // を突いて発見したシームで、urlGuard の DI 除去により検出に変わった。
+    ["variation selector 15 inside scheme", "h\uFE0Ettp://spam.example"],
+    ["variation selector 16 inside scheme", "h\uFE0Fttp://spam.example"],
+    ["Hangul filler inside scheme", "h\u115Fttp://spam.example"],
   ])("rejects %s", (_label, comment) => {
     const r = validateReviewInput({ ...goodReview(), comment });
     expect(r.ok).toBe(false);
@@ -104,6 +113,25 @@ describe("shared/urlGuard normalization semantics", () => {
     expect(normalizeForUrlScan("h\u200Ettp")).toBe("http");
     // NFKC は本文の互換文字も畳む（検出専用であり、保存値には影響しない）
     expect(normalizeForUrlScan("１２３")).toBe("123");
+  });
+
+  it("strips Default_Ignorable_Code_Point invisibles (variation selectors, Hangul fillers)", () => {
+    // \p{C} ではないため sanitizer は保持するが、URL 判定の前には除去される
+    expect(normalizeForUrlScan("h\uFE0Ettp")).toBe("http");
+    expect(normalizeForUrlScan("h\uFE0Fttp")).toBe("http");
+    expect(normalizeForUrlScan("h\u115Fttp")).toBe("http");
+    expect(normalizeForUrlScan("h\u1160ttp")).toBe("http");
+  });
+
+  it("preserves legitimate emoji uses of variation selectors in the stored text", () => {
+    // DI 除去は「判定前の一時文字列」だけに適用され、保存値は変更しない。
+    // 例: ❤️ (U+2764 + VS16) はサニタイズ後もそのまま保存される。
+    const r = validateReviewInput({ ...goodReview(), comment: "きれいなトイレ ❤\uFE0F" });
+    expect(r.ok).toBe(true);
+    expect(r.value!.comment).toContain("\uFE0F");
+    // 一方で同じ文字をURL判定に通すと VS16 は見える位置にないので、検出は
+    // URL_RE 本来の挙動に従う（ここでは URL を含まないコメントの例）。
+    expect(containsUrlLike("きれいなトイレ ❤\uFE0F")).toBe(false);
   });
 
   it("is safe on lone surrogates and non-strings", () => {
