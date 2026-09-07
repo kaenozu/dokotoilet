@@ -15,10 +15,12 @@
 //   P4 lone surrogates survive the JSON round-trip used by persistence
 //
 // Known gaps (pinned below, intentionally unchanged):
-//   G1 URL_RE evasion — ZWSP-split (https:\u200B//) and fullwidth-colon forms were
-//      originally accepted; the broadened URL_RE (h\s*t\s*t\s*p + TLD patterns)
-//      now rejects them. Still open: LRM inside the scheme (h\u200Ettps://) and
-//      fullwidth scheme letters — the literal-ASCII pattern cannot see them
+//   G1 URL_RE evasion — CLOSED in follow-up. containsUrlLike() (shared/urlGuard.ts)
+//      now NFKC-folds (fullwidth → ASCII) and strips \p{Cf}/\p{Cc} (LRM, ZWSP,
+//      bidi controls…) before URL_RE, so h\u200Ettps://, https:\u200B//,
+//      fullwidth scheme letters and fullwidth colons all detect. URL_RE's own
+//      over-blocking quirks (bare "http" in prose, TLD-like mentions) are
+//      inherited unchanged — pinned below to keep that behavior visible.
 //   G2 invisible-only content (ZWSP/LRM) passes the non-empty checks;
 //      a ZWSP-only userName is stored verbatim instead of 匿名の利用者
 //   G3 control (NUL/BEL/DEL), bidi, tag characters and lone surrogates are
@@ -29,7 +31,12 @@
 // ────────────────────────────────────────────────────────────────
 
 import { describe, expect, it } from "vitest";
-import { validateReviewInput, validateReportInput } from "./community";
+import {
+  validateToiletInput,
+  validateReviewInput,
+  validateReportInput,
+} from "./community";
+import { normalizeForUrlScan, containsUrlLike } from "./shared/urlGuard";
 
 const goodReview = () => ({
   userName: "たろう",
@@ -38,6 +45,15 @@ const goodReview = () => ({
   odorScore: 4,
   suppliesScore: 4,
   comment: "普通のトイレでした",
+});
+
+const goodToilet = () => ({
+  id: "toilet-user-abc123",
+  name: "テストトイレ",
+  category: "park",
+  lat: 35.66,
+  lng: 139.7,
+  cleanlinessScore: 4.5,
 });
 
 describe("adversarial Unicode: URL filter (URL_RE)", () => {
@@ -57,27 +73,41 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
     // 副作用として、URLでない本文中の "http" やTLD風表記も拒否される（過剰拒否）
     ["bare word http in prose", "これはhttpです"],
     ["TLD-like mention without scheme", "見て spam.example.com"],
+    // 以下も元監査（PR #62）で「G1: 見逃す」と固定されていた行。判定前の正規化
+    // （NFKC + \p{Cf}/\p{Cc} 除去、shared/urlGuard.ts）により検出に変わった。
+    ["LRM inside the scheme (h\\u200Ettps://)", "h\u200Ettps://spam.example"],
+    ["fullwidth scheme letters", "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example"],
+    ["fullwidth www host", "\uFF57\uFF57\uFF57.\uFF53\uFF50\uFF41\uFF4D.example"],
   ])("rejects %s", (_label, comment) => {
     const r = validateReviewInput({ ...goodReview(), comment });
     expect(r.ok).toBe(false);
     expect(r.error).toBe("comment must not contain URLs");
   });
 
-  it.each([
-    // 残る G1: 非ASCII文字を挟む/置き換える形は、ASCIIを前提とする URL_RE が
-    // 本来のURLとして認識できないため見逃される（レンダリング上はURLに見える）。
-    ["LRM inside the scheme (h\\u200Ettps://)", "h\u200Ettps://spam.example"],
-    ["fullwidth scheme letters", "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example"],
-  ])("does NOT catch %s (G1, remaining)", (_label, comment) => {
-    const r = validateReviewInput({ ...goodReview(), comment });
-    expect(r.ok).toBe(true);
+  it("rejects the LRM-obfuscated URL in report reason too (G1 closed)", () => {
+    const r = validateReportInput({ reason: "h\u200Ettps://spam.example" });
+    expect(r.ok).toBe(false);
+    expect(r.error).toBe("reason must not contain URLs");
   });
 
-  it("does not catch the LRM-obfuscated URL in report reason either (G1)", () => {
-    const r = validateReportInput({ reason: "h\u200Ettps://spam.example" });
-    expect(r.ok).toBe(true);
-    // The invisible character is stored verbatim.
-    expect(r.value?.reason).toBe("h\u200Ettps://spam.example");
+  it("rejects obfuscated URLs in toilet registration fields too", () => {
+    expect(validateToiletInput({ ...goodToilet(), name: "h\u200Ettps://spam.example" }).ok).toBe(false);
+    expect(validateToiletInput({ ...goodToilet(), description: "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example" }).ok).toBe(false);
+  });
+});
+
+describe("shared/urlGuard normalization semantics", () => {
+  it("folds fullwidth forms and strips format characters before matching", () => {
+    expect(normalizeForUrlScan("\uFF48\uFF54\uFF54\uFF50")).toBe("http");
+    expect(normalizeForUrlScan("h\u200Ettp")).toBe("http");
+    // NFKC は本文の互換文字も畳む（検出専用であり、保存値には影響しない）
+    expect(normalizeForUrlScan("１２３")).toBe("123");
+  });
+
+  it("is safe on lone surrogates and non-strings", () => {
+    expect(() => normalizeForUrlScan("a\uD800b")).not.toThrow();
+    expect(containsUrlLike(42)).toBe(false);
+    expect(containsUrlLike(null)).toBe(false);
   });
 });
 

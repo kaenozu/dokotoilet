@@ -16,6 +16,7 @@ import type {
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
+import { containsUrlLike } from "./shared/urlGuard";
 import type {
   AddReviewResult,
   CommunityRepository,
@@ -46,8 +47,6 @@ const CATEGORIES = [
 ] as const;
 
 const TOILET_ID_RE = /^toilet-user-[A-Za-z0-9-]{1,64}$/;
-const URL_RE =
-  /(https?:\/\/|www\.|[a-z0-9-]+\.(com|net|org|io|jp|co|me|info|biz|dev|app|xyz|top|site|online|shop|click|link|tokyo|osaka)|h\s*t\s*t\s*p)/i;
 
 export interface ValidationResult<T> {
   ok: boolean;
@@ -115,13 +114,13 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     body.cleanlinessScore > 5
   )
     return { ok: false, error: "invalid cleanlinessScore" };
-  if (typeof body.name === "string" && URL_RE.test(body.name))
+  if (containsUrlLike(body.name))
     return { ok: false, error: "name must not contain URLs" };
-  if (typeof body.address === "string" && URL_RE.test(body.address))
+  if (containsUrlLike(body.address))
     return { ok: false, error: "address must not contain URLs" };
-  if (typeof body.floorInfo === "string" && URL_RE.test(body.floorInfo))
+  if (containsUrlLike(body.floorInfo))
     return { ok: false, error: "floorInfo must not contain URLs" };
-  if (typeof body.description === "string" && URL_RE.test(body.description))
+  if (containsUrlLike(body.description))
     return { ok: false, error: "description must not contain URLs" };
 
   const a = body.attributes;
@@ -206,7 +205,7 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
     return { ok: false, error: "invalid suppliesScore" };
   if (!isShortString(r.comment, MAX.comment) || !r.comment.trim())
     return { ok: false, error: "invalid comment" };
-  if (URL_RE.test(r.comment))
+  if (containsUrlLike(r.comment))
     return { ok: false, error: "comment must not contain URLs" };
   if (r.userName !== undefined && !isShortString(r.userName, MAX.userName))
     return { ok: false, error: "invalid userName" };
@@ -234,7 +233,7 @@ export function validateReportInput(
     return { ok: false, error: "invalid body" };
   if (!isShortString(body.reason, MAX.reason) || !body.reason.trim())
     return { ok: false, error: "invalid reason" };
-  if (URL_RE.test(body.reason))
+  if (containsUrlLike(body.reason))
     return { ok: false, error: "reason must not contain URLs" };
   return { ok: true, value: { reason: body.reason.trim() } };
 }
