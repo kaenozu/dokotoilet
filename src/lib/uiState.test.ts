@@ -16,6 +16,31 @@ const toilet = (id: string, name: string): ToiletFacility => ({
   reviewCount: 0, reviews: [],
 });
 
+describe('classifyReviewResponse with canonical facilityId', () => {
+  it('accepts a server response whose canonical facilityId matches a decomposed request id', async () => {
+    // 分解型（ハングル Jamo）で投稿したが、サーバーは正準形（合成済み）を返す（PR #64）
+    const rawId = 'google-\u1100\u1161';
+    const canonicalId = 'google-\uAC00';
+    const body = { facilityId: canonicalId, reviews: [{ id: 'r1' }] };
+    const res = new Response(JSON.stringify(body), {
+      status: 201,
+      headers: { 'content-type': 'application/json' },
+    });
+    const result = await classifyReviewResponse(res, rawId);
+    expect(result.kind).toBe('server-external');
+  });
+
+  it('still rejects a facilityId that does not match canonically', async () => {
+    const body = { facilityId: 'od-別の施設', reviews: [{ id: 'r1' }] };
+    const res = new Response(JSON.stringify(body), {
+      status: 201,
+      headers: { 'content-type': 'application/json' },
+    });
+    const result = await classifyReviewResponse(res, 'od-未知の施設');
+    expect(result.kind).toBe('invalid');
+  });
+});
+
 describe('UI state behavior', () => {
   it('resolves the selected facility from its current ID after list replacement', () => {
     const current = toilet('a', '更新後');

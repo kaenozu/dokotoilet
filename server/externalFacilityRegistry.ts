@@ -12,16 +12,9 @@ const STATIC_FACILITY_ID_ALIASES = new Map<string, string>(
   }).filter(([before, after]) => before !== after)
 );
 
-/**
- * 施設IDの正準形（NFC）。IDは externalReviews のキー / external_facilities の
- * ドキュメントIDとしてそのまま使われるため、見た目が同じでも符号化が違う文字列
- * （ハングル Jamo、分解済み Latin/Kana など）が別施設として登録されるのを防ぐ。
- * osm|google|od 接頭辞を持たないid（community の toilet-user-* 等）は無変更で返す。
- */
-export function canonicalizeExternalFacilityId(id: string): string {
-  if (!/^(osm|google|od)-/u.test(id)) return id;
-  return id.normalize("NFC");
-}
+// 正準化の実装は src/lib/facilityIds.ts（クライアントと1実装を共有。二重実装の再分裂防止）。
+import { canonicalizeExternalFacilityId } from "../src/lib/facilityIds";
+export { canonicalizeExternalFacilityId };
 
 export function isExternalFacilityIdFormat(id: unknown): id is string {
   if (typeof id !== "string") return false;

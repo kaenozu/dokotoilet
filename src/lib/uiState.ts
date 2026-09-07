@@ -1,4 +1,5 @@
 import { ToiletFacility, ToiletReview } from '../types';
+import { canonicalizeExternalFacilityId } from './facilityIds';
 
 export const findSelectedToilet = (
   toilets: ToiletFacility[],
@@ -90,7 +91,10 @@ export const classifyReviewResponse = async (
       return { kind: 'server-toilet', toilet: data.toilet };
     }
     if (
-      'facilityId' in data && data.facilityId === toiletId &&
+      'facilityId' in data &&
+      // サーバーは正準形（NFC）の facilityId を返す（PR #64）。分解型のIDで
+      // 投稿した場合も正準形が一致していれば受理とみなす。
+      data.facilityId === canonicalizeExternalFacilityId(toiletId) &&
       'reviews' in data && Array.isArray(data.reviews)
     ) {
       const reviews = sanitizeReviewsLike((data as { reviews: unknown }).reviews);
