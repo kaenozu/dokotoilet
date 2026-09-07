@@ -115,13 +115,31 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     body.cleanlinessScore > 5
   )
     return { ok: false, error: "invalid cleanlinessScore" };
-  if (containsUrlLike(body.name))
+  // G2/G3対策（登録欄拡張）: 制御・書式文字を除去/空白化してから検査・保存する
+  // （textSanitizer参照）。型と長さは生入力に対して先に見る（sanitizeは長さを増やさない）。
+  // レビュー・通報と同じポリシー: name は必須可視（拒否）、address/floorInfo/
+  // description は不可視のみなら既定値へフォールバック。
+  const name = sanitizeText(body.name).trim();
+  if (!name) return { ok: false, error: "invalid name" };
+  const address =
+    typeof body.address === "string" && hasVisibleContent(body.address)
+      ? sanitizeText(body.address).trim()
+      : "現在地周辺";
+  const floorInfo =
+    typeof body.floorInfo === "string" && hasVisibleContent(body.floorInfo)
+      ? sanitizeText(body.floorInfo).trim()
+      : undefined;
+  const description =
+    typeof body.description === "string" && hasVisibleContent(body.description)
+      ? sanitizeText(body.description).trim()
+      : "ユーザーによって登録されたトイレ情報です。";
+  if (containsUrlLike(name))
     return { ok: false, error: "name must not contain URLs" };
-  if (containsUrlLike(body.address))
+  if (containsUrlLike(address))
     return { ok: false, error: "address must not contain URLs" };
-  if (containsUrlLike(body.floorInfo))
+  if (containsUrlLike(floorInfo))
     return { ok: false, error: "floorInfo must not contain URLs" };
-  if (containsUrlLike(body.description))
+  if (containsUrlLike(description))
     return { ok: false, error: "description must not contain URLs" };
 
   const a = body.attributes;
@@ -147,21 +165,12 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     ok: true,
     value: {
       id: body.id,
-      name: body.name.trim(),
+      name,
       category: body.category,
-      address:
-        typeof body.address === "string" && body.address.trim()
-          ? body.address.trim()
-          : "現在地周辺",
-      floorInfo:
-        typeof body.floorInfo === "string" && body.floorInfo.trim()
-          ? body.floorInfo.trim()
-          : undefined,
+      address,
+      floorInfo,
       cleanlinessScore: body.cleanlinessScore,
-      description:
-        typeof body.description === "string" && body.description.trim()
-          ? body.description.trim()
-          : "ユーザーによって登録されたトイレ情報です。",
+      description,
       lat: body.lat,
       lng: body.lng,
       attributes: {
@@ -411,6 +420,50 @@ export class CommunityStore {
       !isPlainObject(parsed.externalReviews);
     if (dropped > 0 || fallbackUsed) {
       console.error(`[community] dropped ${dropped} corrupt entries on load`);
+    }
+
+    // 読み込み時サニタイズ（自己修復マイグレーション）: #67以前に書かれた行には
+    // 制御・書式文字が残っている可能性がある。すべての読み出し経路（GETはキャッシュ
+    // 経由でこの parse() を通る）と次回の書き込み（readDisk → atomicWriteFile）が
+    // この正規形を通るため、レガシー行は初回読み込みで浄化され、最初の書き込みで
+    // ファイル全体が正規形に置き換わる。sanitizeText は冪等で清浄データを変更しない
+    // （fuzzテストで保証）ため、2回目以降の読み込みでデータが動くことはない。
+    // parse() は id/lat/lng しか検証しないため、文字列以外の値・欠損配列にも耐える。
+    let sanitizedCount = 0;
+    const sanitizeField = (obj: Record<string, unknown>, key: string): void => {
+      const v = obj[key];
+      if (typeof v !== "string") return;
+      const cleaned = sanitizeText(v);
+      if (cleaned !== v) {
+        obj[key] = cleaned;
+        sanitizedCount++;
+      }
+    };
+    for (const t of toilets as unknown as Record<string, unknown>[]) {
+      sanitizeField(t, "name");
+      sanitizeField(t, "address");
+      sanitizeField(t, "floorInfo");
+      sanitizeField(t, "description");
+      for (const r of (Array.isArray(t.reviews) ? t.reviews : []) as unknown as Record<string, unknown>[]) {
+        if (!r || typeof r !== "object") continue;
+        sanitizeField(r, "userName");
+        sanitizeField(r, "comment");
+      }
+    }
+    for (const list of Object.values(externalReviews)) {
+      for (const r of list as unknown as Record<string, unknown>[]) {
+        if (!r || typeof r !== "object") continue;
+        sanitizeField(r, "userName");
+        sanitizeField(r, "comment");
+      }
+    }
+    for (const report of reports as unknown as Record<string, unknown>[]) {
+      sanitizeField(report, "reason");
+    }
+    if (sanitizedCount > 0) {
+      console.error(
+        `[community] sanitized ${sanitizedCount} legacy text fields on load`
+      );
     }
     return {
       version: 2,

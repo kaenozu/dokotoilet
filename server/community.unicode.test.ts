@@ -11,7 +11,11 @@
 // Protections (current):
 //   P1 UTF-16 length caps per field (MAX.userName/comment/reason), checked on
 //      the raw input before sanitizing (sanitize never grows the string)
-//   P2 non-empty check requires visible content after sanitizing (G2 closed)
+//   P2 non-empty check requires visible content after sanitizing (G2 closed);
+//      applies to review/report text AND to toilet-registration fields (name
+//      required-visible, address/floorInfo/description fall back to defaults),
+//      plus a load-time sanitization migration in CommunityStore.parse() that
+//      self-heals legacy rows (persisted on next write)
 //   P3 URL-likeness detection via containsUrlLike (shared/urlGuard.ts): NFKC +
 //      \p{Cf}/\p{Cc} + Default_Ignorable_Code_Point stripping before URL_RE —
 //      G1 closed; URL_RE's over-blocking quirks (bare "http" in prose, TLD-like
@@ -221,6 +225,36 @@ describe("shared/textSanitizer semantics", () => {
   it("hasVisibleContent distinguishes invisible-only from real text", () => {
     expect(hasVisibleContent("\u200B\u200E\u0000")).toBe(false);
     expect(hasVisibleContent("\u200Babc\u200B")).toBe(true);
+  });
+});
+
+describe("adversarial Unicode: toilet-registration fields", () => {
+  it.each([
+    ["ZWSP-only name", "\u200B".repeat(10), "invalid name"],
+    ["NUL in name (stripped, not stored)", "A\u0000B toilet", undefined],
+    ["RLO in name (stripped)", "トイレ\u202Erev", undefined],
+    ["LRM-obfuscated URL in name", "h\u200Ettps://spam.example", "name must not contain URLs"],
+  ])("%s", (_label, name, error) => {
+    const r = validateToiletInput({ ...goodToilet(), name });
+    if (error) {
+      expect(r.ok).toBe(false);
+      expect(r.error).toBe(error);
+    } else {
+      expect(r.ok).toBe(true);
+      expect(r.value!.name).not.toMatch(/\p{C}/u);
+    }
+  });
+
+  it("falls back to default address when the input is invisible-only", () => {
+    const r = validateToiletInput({ ...goodToilet(), address: "\u200B".repeat(10) });
+    expect(r.ok).toBe(true);
+    expect(r.value!.address).toBe("現在地周辺");
+  });
+
+  it("keeps visible emoji and variation selectors in the name", () => {
+    const r = validateToiletInput({ ...goodToilet(), name: "きれいなトイレ ❤\uFE0F" });
+    expect(r.ok).toBe(true);
+    expect(r.value!.name).toContain("\uFE0F");
   });
 });
 

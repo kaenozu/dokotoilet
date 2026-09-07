@@ -170,6 +170,29 @@ describe("property: accepted input never bypasses the guarantees", () => {
     );
   });
 
+  it("accepted toilet registration fields are category-C-free and never grown", () => {
+    fc.assert(
+      fc.property(anyUnicode, anyUnicode, (name, address) => {
+        const r = validateToiletInput(validToilet({ name, address }));
+        if (!r.ok) return;
+        const storedName = r.value!.name;
+        // 不可視のみの name は拒否されるため、受理された name は必ず非空で清浄
+        expect(storedName.length).toBeGreaterThan(0);
+        expect(storedName).not.toMatch(C_RE);
+        expect(storedName.length).toBeLessThanOrEqual(name.length);
+        // address は不可視のみの場合「現在地周辺」へフォールバックする（増え得るのは
+        // その場合のみ）。それ以外は生入力以下で清浄。
+        const storedAddress = r.value!.address;
+        expect(storedAddress).not.toMatch(C_RE);
+        expect(storedAddress.length).toBeGreaterThan(0);
+        expect(storedAddress.length).toBeLessThanOrEqual(
+          Math.max(address.length, "現在地周辺".length)
+        );
+      }),
+      { numRuns: 1000 }
+    );
+  });
+
   it("URL-bearing comments are always rejected, whatever printable ASCII surrounds them", () => {
     fc.assert(
       fc.property(printableAsciiString, printableAsciiString, (pre, post) => {
