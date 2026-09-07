@@ -141,8 +141,10 @@ bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取�
 ## データ方針
 
 - `cleanlinessScore` / `cleanlinessGrade` は実測レビュー平均。
-  `reviewCount === 0` の施設は設備推定値（`equipmentScore` / `equipmentGrade`）を
-  表示用に入れるが、UI上は「未評価」としてランク表示しない。
+  `reviewCount === 0` の施設もグレード表示するが出所を明示する
+  （`src/lib/grade.ts` の `evaluationKind`：実測 / 調査 / 推定の3段階）。
+  Google由来は手動判断値を「調査評価」、その他は設備値を「推定」として表示し、
+  実測レビューと混同させない。口コミ投稿で実測に更新される。
 - スコア→グレード判定は `src/lib/scoring.ts` の `gradeForScore` に一本化すること。
 - 設備フラグは `true`（あり） / `false`（なし） / `null`（未確認）の3値。
   OSM タグ欠落時は楽観的に true にせず `null`（未確認）にする
@@ -152,7 +154,7 @@ bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取�
   アプリ・リポジトリに転載しない（規約・プライバシー上の理由）。
   `src/data/googleSeed.ts` は口コミ本文を含まない（過去の引用は 2026-09 に除去済み）。
   Google 由来施設のスコアは件数と要約に基づく手動判断値で、`reviewCount === 0` のため
-  UI上は「未評価（口コミ未取込）」として扱う。
+  UI上は「調査評価」として扱う（実測レビューとは区別表示）。
 
 ## ライセンスとデータ帰属
 

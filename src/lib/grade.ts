@@ -4,6 +4,64 @@ import type { CleanlinessGrade, FacilityCategory } from '../types';
 export const isEvaluated = (toilet?: { reviewCount?: number } | null) =>
   (toilet?.reviewCount ?? 0) > 0;
 
+/**
+ * 評価の出所（3段階）。口コミ0件の初期状態でもマップに意味を持たせるため、
+ * 実測が無い施設は根拠の種類に応じてグレードを「調査」「推定」として表示する。
+ * - measured: 実測口コミあり（reviewCount > 0）
+ * - survey: Google手動調査ベース（外部口コミ件数ありの手動判断値）
+ * - estimated: 設備・ヒューリスティクスからの推定値
+ */
+export type EvaluationKind = 'measured' | 'survey' | 'estimated';
+
+interface EvaluationSource {
+  reviewCount?: number;
+  dataSource?: string;
+  externalReviewCount?: number;
+}
+
+export const evaluationKind = (toilet?: EvaluationSource | null): EvaluationKind => {
+  if ((toilet?.reviewCount ?? 0) > 0) return 'measured';
+  if (toilet?.dataSource === 'google' && (toilet?.externalReviewCount ?? 0) > 0)
+    return 'survey';
+  return 'estimated';
+};
+
+export interface GradeDisplay {
+  grade: CleanlinessGrade;
+  score: number;
+  kind: EvaluationKind;
+}
+
+/** 一覧・地図・詳細で共通の「表示用グレード」。実測が無ければ調査/推定値を出す */
+export const displayGrade = (toilet: {
+  reviewCount: number;
+  dataSource: string;
+  externalReviewCount?: number;
+  cleanlinessGrade: CleanlinessGrade;
+  cleanlinessScore: number;
+  equipmentGrade: CleanlinessGrade;
+  equipmentScore: number;
+}): GradeDisplay => {
+  const kind = evaluationKind(toilet);
+  if (kind === 'measured')
+    return { grade: toilet.cleanlinessGrade, score: toilet.cleanlinessScore, kind };
+  if (kind === 'survey')
+    return { grade: toilet.cleanlinessGrade, score: toilet.cleanlinessScore, kind };
+  return { grade: toilet.equipmentGrade, score: toilet.equipmentScore, kind };
+};
+
+/** グレード表示の出所ラベル（実測と推定系を混同させないための接頭辞） */
+export const evaluationKindLabel = (kind: EvaluationKind): string => {
+  switch (kind) {
+    case 'measured':
+      return '実測';
+    case 'survey':
+      return '調査';
+    case 'estimated':
+      return '推定';
+  }
+};
+
 export const getGradeColor = (grade: CleanlinessGrade | null | undefined) => {
   switch (grade) {
     case 'S':

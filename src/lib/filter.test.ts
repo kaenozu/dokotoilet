@@ -107,9 +107,9 @@ describe("matchesFilter", () => {
     expect(matchesFilter(evaluated("a", 3.9), baseFilter({ onlyHighCleanliness: true }))).toBe(false);
   });
 
-  it("onlyHighCleanliness excludes un-reviewed facilities even with a high estimate", () => {
-    // 未評価（reviewCount 0）の cleanlinessScore は設備推定値/手動判断値。
-    // 実測がない限り S・A級フィルタを通さない（UI の「未評価・グレード非表示」と一貫）
+  it("onlyHighCleanliness keeps un-reviewed facilities with a high survey/estimate grade", () => {
+    // 口コミ0件でも表示グレード（調査/推定）で判定する。初期状態でフィルタが
+    // 全件除外になるのを防ぐため、実測・調査・推定を区別せずスコアで通す
     const unratedHighEstimate = mk("unrated-high", {
       reviewCount: 0,
       cleanlinessScore: 4.5,
@@ -117,8 +117,9 @@ describe("matchesFilter", () => {
       equipmentScore: 4.5,
       equipmentGrade: "A",
     });
-    expect(matchesFilter(unratedHighEstimate, baseFilter({ onlyHighCleanliness: true }))).toBe(false);
+    expect(matchesFilter(unratedHighEstimate, baseFilter({ onlyHighCleanliness: true }))).toBe(true);
     expect(matchesFilter(evaluated("rated-high", 4.5), baseFilter({ onlyHighCleanliness: true }))).toBe(true);
+    expect(matchesFilter(mk("low-estimate", { equipmentScore: 3.0, equipmentGrade: "B" }), baseFilter({ onlyHighCleanliness: true }))).toBe(false);
   });
 });
 
@@ -156,10 +157,10 @@ describe("sortToiletsForDisplay / filterAndSortToilets", () => {
       evaluated("keep-low", 3.0, { attributes: washletAttrs }), // 清潔度3.0: S・A級で除外
       evaluated("keep-high", 4.8, { attributes: washletAttrs }),
       mk("drop-unrated", {
-        attributes: washletAttrs,
-        cleanlinessScore: 4.2, // 推定値が高くても実測（reviewCount > 0）が無いため S・A級フィルタで除外
+        attributes: { ...washletAttrs, hasWashlet: false },
+        cleanlinessScore: 4.2,
         equipmentScore: 4.2,
-      }), // 未評価
+      }), // 未評価だが推定4.2でS・A級は通る。ウォシュレット無しで除外
     ];
     const out = filterAndSortToilets(
       toilets,
