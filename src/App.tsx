@@ -13,6 +13,10 @@ import { gradeForScore } from './lib/scoring';
 import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
+import {
+  canonicalizeExternalFacilityId,
+  canonicalizeExternalReviewKeys,
+} from './lib/facilityIds';
 import { mergeOsmBatch } from './lib/osmMerge';
 import { mergeSeedLists } from './lib/seed';
 import {
@@ -295,7 +299,8 @@ export default function App() {
           data.externalReviews && typeof data.externalReviews === 'object'
             ? (data.externalReviews as Record<string, ToiletReview[]>)
             : {};
-        externalReviewsRef.current = externalReviews;
+        // キーを正準形へ寄せる（旧データに分解形キーが混在していても1バケツに統合）
+        externalReviewsRef.current = canonicalizeExternalReviewKeys(externalReviews);
         for (const s of serverItems) {
           noteServerFacility(s.id, (s.reviews ?? []).map((r) => r.id));
         }
@@ -468,7 +473,9 @@ export default function App() {
   // Submit new review (server first, local fallback for offline/static hosting)
   // HTTP応答を受信した場合はサーバー判定を正とし、ローカル保存へフォールバックしない。
   // ローカル保存は fetch 自体が失敗したオフライン/到達不能時だけ許可する。
-  const handleSubmitReview = async (toiletId: string, newReview: ToiletReview): Promise<boolean> => {
+  const handleSubmitReview = async (rawToiletId: string, newReview: ToiletReview): Promise<boolean> => {
+    // 外部施設IDは正準形（NFC）で送る（サーバーのキー空間と揃える。PR #64）
+    const toiletId = canonicalizeExternalFacilityId(rawToiletId);
     let res: Response;
     try {
       res = await fetch(`/api/community/toilets/${encodeURIComponent(toiletId)}/reviews`, {
@@ -625,7 +632,7 @@ export default function App() {
       const res = await fetch(`/api/community/reviews/${encodeURIComponent(reviewId)}/report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ toiletId, reason: reason.trim() }),
+        body: JSON.stringify({ toiletId: canonicalizeExternalFacilityId(toiletId), reason: reason.trim() }),
       });
       showToast(res.ok ? '通報を受け付けました。確認します。' : '通報できませんでした。');
     } catch {
