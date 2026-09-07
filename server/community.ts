@@ -21,7 +21,10 @@ import type {
   CommunityRepository,
   ExternalFacilityObservation,
 } from "./communityRepository";
-import { isExternalFacilityIdFormat } from "./externalFacilityRegistry";
+import {
+  canonicalizeExternalFacilityId,
+  isExternalFacilityIdFormat,
+} from "./externalFacilityRegistry";
 
 const MAX = {
   name: 100,
@@ -556,9 +559,12 @@ export class CommunityStore {
       const db = await this.readDisk();
       let changed = false;
       for (const facility of facilities) {
-        if (!isExternalFacilityId(facility.id)) continue;
-        if (db.externalReviews[facility.id]) continue;
-        db.externalReviews[facility.id] = [];
+        // 正準IDをキーにする（防御層）。runtime の観測経路で正準化済みだが、
+        // CLI 等の直接呼び出しでもキー空間が正準に保たれるようにする。
+        const id = canonicalizeExternalFacilityId(facility.id);
+        if (!isExternalFacilityId(id)) continue;
+        if (db.externalReviews[id]) continue;
+        db.externalReviews[id] = [];
         changed = true;
       }
       if (changed) {
@@ -703,7 +709,8 @@ export function createCommunityRouter(
         return;
       }
 
-      const facilityId = req.params.id;
+      // NFC正準化: 分解済み入力（Jamo等）を登録済みの正準IDへ写像してから照合する。
+      const facilityId = canonicalizeExternalFacilityId(req.params.id);
       if (
         isExternalFacilityId(facilityId) &&
         !(await isKnownExternalFacility(facilityId))
@@ -764,7 +771,7 @@ export function createCommunityRouter(
         return;
       }
       const r = await store.addReport(
-        toiletId,
+        canonicalizeExternalFacilityId(toiletId),
         req.params.reviewId,
         v.value.reason
       );

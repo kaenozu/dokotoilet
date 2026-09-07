@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  canonicalizeExternalFacilityId,
   ExternalFacilityRegistry,
   isExternalFacilityIdFormat,
 } from "./externalFacilityRegistry";
+import { INITIAL_TOILETS } from "../src/data/toilets";
+import { GOOGLE_SEED } from "../src/data/googleSeed";
+import { KUMAGAYA_SEED } from "../src/data/kumagayaSeed";
+import { canonicalizeSeedOsmFacility } from "../src/lib/osmIds";
 // ルーターは community.ts 側の再輸出（isExternalFacilityId）を使うため、
 // ここで両経路の一致も全行で固定する（二重実装への再分裂を防止）。
 import { isExternalFacilityId } from "./community";
@@ -48,8 +53,10 @@ describe("ExternalFacilityRegistry", () => {
 // 実在IDを受け止めるため）。拒否対象は「可視文字に化ける不可視の制御」
 // （双方向制御・結合文字・変種セレクタ・ZWSP/ZWJ など。スプーフィングに使われる）
 // と空白・制御文字・長さ超過。
-// 注意: NFC正規化はここでは行わない（結合文字のみ・NFD分解は現行どおり拒否）。
-// 受け入れるなら検証境界で意図的に行う変更として行う。
+// NFC正準化ポリシー: 検証前に正準形（NFC）へ写像する。IDは externalReviews のキー/
+// Firestore ドキュメントIDとしてそのまま使うため、見た目が同じでも符号化が違う
+// 文字列（Jamo vs 合成済みハングル等）が別施設として登録されるのを防ぐ。文字セットに
+// 結合文字（\p{M}）が含まれないため、正準化で長さが増える分解型入力は存在しない。
 
 const ACCEPTED: Array<[string, string]> = [
   ["alphanumeric osm id", "osm-node-123"],
@@ -59,6 +66,10 @@ const ACCEPTED: Array<[string, string]> = [
   ["mixed rtl+cjk scripts", "google-العربيةאבג中文"],
   ["pure rtl script letters", "google-אבג"],
   ["precomposed accent", "google-café"],
+  // 分解型は拒否ではなく正準形へ写像した上で受理される（同じIDに合流）
+  ["decomposed accent (NFD, canonicalized to google-café)", "google-cafe\u0301"],
+  ["decomposed katakana dakuten (canonicalized to ガ)", "od-\u30AB\u3099\u30D5\u30A7"],
+  ["hangul jamo L+V (canonicalized to composed 가)", "google-\u1100\u1161"],
   ["typographic ligature", "google-ﬁn"],
   ["fullwidth latin letter", "google-Ａ"],
   ["superscript number (No)", "od-²"],
@@ -85,7 +96,8 @@ const REJECTED: Array<[string, string]> = [
   ["bidi LRI/PDI (U+2066/U+2069)", "google-\u2066a\u2069"],
   ["bidi ALM (U+061C)", "google-\u061Ca"],
   ["combining mark only", "google-\u0301"],
-  ["decomposed accent (NFD)", "google-cafe\u0301"],
+  ["non-composable accent (q + combining)", "google-q\u0301"],
+  ["decomposed katakana with doubled dakuten", "od-\u30CF\u309A\u309A"],
   ["variation selector", "google-あ\uFE0F"],
   ["zero width space", "google-a\u200Bb"],
   ["zero width joiner", "google-a\u200Db"],
@@ -129,7 +141,7 @@ describe("ExternalFacilityRegistry adversarial ids", () => {
     expect(registry.has("google-אבג")).toBe(true);
 
     expect(registry.register("google-a\u202Eb")).toBe(false);
-    expect(registry.register("google-cafe\u0301")).toBe(false);
+    expect(registry.register("google-q\u0301")).toBe(false);
     expect(registry.register("google-\u200Eoffice")).toBe(false);
     expect(registry.has("google-a\u202Eb")).toBe(false);
     expect(registry.size).toBe(1);
@@ -139,6 +151,26 @@ describe("ExternalFacilityRegistry adversarial ids", () => {
     expect(registry.has("od-熊谷駅")).toBe(true);
     expect(registry.has("google-b")).toBe(true);
     expect(registry.size).toBe(3);
+  });
+
+  it("stores the canonical (NFC) form: decomposed input aliases to the composed id", () => {
+    const registry = new ExternalFacilityRegistry();
+    expect(registry.register("google-cafe\u0301")).toBe(true);
+    // 正準形で登録され、正準形の問い合わせにヒットする
+    expect(registry.has("google-café")).toBe(true);
+    expect(registry.register("google-\u1100\u1161")).toBe(true);
+    expect(registry.has("google-가")).toBe(true);
+    // 同一正準形の再登録は冪等（Set なので増えない）
+    expect(registry.register("google-café")).toBe(true);
+    expect(registry.size).toBe(2);
+  });
+
+  it("non-composable decomposed forms stay rejected after canonicalization", () => {
+    const registry = new ExternalFacilityRegistry();
+    expect(registry.register("google-q\u0301")).toBe(false);
+    expect(registry.register("od-\u30CF\u309A\u309A")).toBe(false);
+    expect(registry.register("google-\u0301")).toBe(false);
+    expect(registry.size).toBe(0);
   });
 
   it("treats bidi/whitespace lookalikes as different ids, never as aliases", () => {
@@ -155,5 +187,53 @@ describe("community.isExternalFacilityId parity with registry predicate", () => 
   // 常に同じ判定を返すことを、受理・拒否の全行で固定する。
   it.each([...ACCEPTED, ...REJECTED])("%s", (_label, id) => {
     expect(isExternalFacilityId(id)).toBe(isExternalFacilityIdFormat(id));
+  });
+});
+
+describe("canonicalizeExternalFacilityId", () => {
+  it("maps decomposed forms to their composed canonical id", () => {
+    expect(canonicalizeExternalFacilityId("google-cafe\u0301")).toBe("google-café");
+    expect(canonicalizeExternalFacilityId("google-\u1100\u1161")).toBe("google-가");
+    expect(canonicalizeExternalFacilityId("od-\u30AB\u3099")).toBe("od-ガ");
+  });
+
+  it("is idempotent and leaves canonical ids untouched", () => {
+    const once = canonicalizeExternalFacilityId("google-café");
+    expect(once).toBe("google-café");
+    expect(canonicalizeExternalFacilityId(once)).toBe(once);
+    // Jamo も1回で合成済みに収束する
+    const jamo = canonicalizeExternalFacilityId("google-\u1100\u1161");
+    expect(canonicalizeExternalFacilityId(jamo)).toBe(jamo);
+  });
+
+  it("passes non-external ids through unchanged (community toilet ids)", () => {
+    // toilet-user-* は外部施設IDではないので正準化しない（既存キーを保護）
+    expect(canonicalizeExternalFacilityId("toilet-user-cafe\u0301")).toBe(
+      "toilet-user-cafe\u0301"
+    );
+    expect(canonicalizeExternalFacilityId("toilet-user-abc123")).toBe("toilet-user-abc123");
+  });
+
+  it("length boundary counts canonical (composed) code points, not raw units", () => {
+    // 80CPの分解型「か+濁点」は正準化で40CPになり受理される
+    const decomposed80 = "od-" + "\u304B\u3099".repeat(40);
+    expect(isExternalFacilityIdFormat(decomposed80)).toBe(true);
+    // 逆に、正準形が81CPを超える分解型入力は受理されない
+    const growsOver = "od-" + "\u304B\u3099".repeat(40) + "\u304B\u3099\u3099";
+    expect(isExternalFacilityIdFormat(growsOver)).toBe(false);
+  });
+
+  it("never canonicalizes away a real id: every seed id is NFC-stable and accepted", () => {
+    const seedIds = [
+      ...INITIAL_TOILETS.map((t) => t.id),
+      ...INITIAL_TOILETS.map((t) => canonicalizeSeedOsmFacility(t).id),
+      ...GOOGLE_SEED.map((t) => t.id),
+      ...KUMAGAYA_SEED.map((t) => t.id),
+    ].filter((id) => /^(osm|google|od)-/u.test(id));
+    expect(seedIds.length).toBeGreaterThan(0);
+    for (const id of new Set(seedIds)) {
+      expect(canonicalizeExternalFacilityId(id)).toBe(id); // すでに正準形
+      expect(isExternalFacilityIdFormat(id)).toBe(true);
+    }
   });
 });

@@ -30,7 +30,10 @@ import {
   createConfiguredCommunityStore,
   type ConfiguredCommunityStore,
 } from "../../server/communityStoreFactory";
-import { isExternalFacilityIdFormat } from "../../server/externalFacilityRegistry";
+import {
+  canonicalizeExternalFacilityId,
+  isExternalFacilityIdFormat,
+} from "../../server/externalFacilityRegistry";
 import { loadRawDb } from "./curate";
 import { storePath } from "./export";
 
@@ -87,16 +90,17 @@ export async function collectExternalFacilityIds(storeFile: string): Promise<str
     throw e;
   }
   const ids = new Set<string>();
+  // バックアップのIDも正準形へ写像してから集める（正準キーと一致させる）。
   for (const id of Object.keys(db.externalReviews ?? {})) {
-    if (isExternalFacilityIdFormat(id)) ids.add(id);
+    if (isExternalFacilityIdFormat(id)) ids.add(canonicalizeExternalFacilityId(id));
   }
   for (const report of db.reports ?? []) {
     if (report.toiletId && isExternalFacilityIdFormat(report.toiletId)) {
-      ids.add(report.toiletId);
+      ids.add(canonicalizeExternalFacilityId(report.toiletId));
     }
   }
   for (const toilet of db.toilets ?? []) {
-    if (isExternalFacilityIdFormat(toilet.id)) ids.add(toilet.id);
+    if (isExternalFacilityIdFormat(toilet.id)) ids.add(canonicalizeExternalFacilityId(toilet.id));
   }
   return [...ids].sort();
 }
