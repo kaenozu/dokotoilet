@@ -8,23 +8,24 @@
 // change that updates these tables deliberately.
 //
 // ─── Audit summary ──────────────────────────────────────────────
-// Protections in place today:
-//   P1 UTF-16 length caps per field (MAX.userName/comment/reason)
-//   P2 trim() emptiness check (Unicode White_Space only)
-//   P3 URL_RE blocks plain/case-variant/RLO-prefixed URLs
-//   P4 lone surrogates survive the JSON round-trip used by persistence
+// Protections (current):
+//   P1 UTF-16 length caps per field (MAX.userName/comment/reason), checked on
+//      the raw input before sanitizing (sanitize never grows the string)
+//   P2 non-empty check requires visible content after sanitizing (G2 closed)
+//   P3 URL-likeness detection via containsUrlLike (shared/urlGuard.ts): NFKC +
+//      \p{Cf}/\p{Cc} stripping before URL_RE — G1 closed; URL_RE's over-blocking
+//      quirks (bare "http" in prose, TLD-like mentions) are inherited & pinned
+//   P4 sanitizeText strips lone surrogates before the JSON persistence layer
 //
-// Known gaps (pinned below, intentionally unchanged):
-//   G1 URL_RE evasion — CLOSED in follow-up. containsUrlLike() (shared/urlGuard.ts)
-//      now NFKC-folds (fullwidth → ASCII) and strips \p{Cf}/\p{Cc} (LRM, ZWSP,
-//      bidi controls…) before URL_RE, so h\u200Ettps://, https:\u200B//,
-//      fullwidth scheme letters and fullwidth colons all detect. URL_RE's own
-//      over-blocking quirks (bare "http" in prose, TLD-like mentions) are
-//      inherited unchanged — pinned below to keep that behavior visible.
-//   G2 invisible-only content (ZWSP/LRM) passes the non-empty checks;
-//      a ZWSP-only userName is stored verbatim instead of 匿名の利用者
-//   G3 control (NUL/BEL/DEL), bidi, tag characters and lone surrogates are
-//      stored verbatim (spoofing / log-injection surface)
+// Gaps history (originally pinned by PR #62; G1–G3 closed in follow-ups):
+//   G1 URL_RE evasion — CLOSED by urlGuard normalization (PR #65)
+//   G2 invisible-only content — CLOSED by shared/textSanitizer.ts: inputs that
+//      leave no visible content after sanitizing (ZWSP/LRM runs) are rejected,
+//      and an invisible-only userName falls back to 匿名の利用者
+//   G3 control/bidi/tag characters stored verbatim — CLOSED: sanitizeText()
+//      strips category-C characters (NUL/BEL/DEL/bidi/tag/surrogates) and
+//      rewrites newline controls to spaces before storage. Combining marks,
+//      fullwidth forms and emoji are preserved (no normalization)
 //   G4 length limits count UTF-16 code units — astral glyphs cost 2 units,
 //      so emoji-heavy names get half the perceived budget
 //   G5 no NFC normalization: NFD input passes through un-normalized
@@ -37,6 +38,7 @@ import {
   validateReportInput,
 } from "./community";
 import { normalizeForUrlScan, containsUrlLike } from "./shared/urlGuard";
+import { sanitizeText, hasVisibleContent } from "./shared/textSanitizer";
 
 const goodReview = () => ({
   userName: "たろう",
@@ -111,58 +113,86 @@ describe("shared/urlGuard normalization semantics", () => {
   });
 });
 
-describe("adversarial Unicode: invisible-only content defeats non-empty checks (G2)", () => {
+describe("adversarial Unicode: invisible-only content is rejected (G2 closed)", () => {
   it.each([
     ["comment of 10 ZWSP", () =>
       validateReviewInput({ ...goodReview(), comment: "\u200B".repeat(10) })],
     ["reason of a single LRM", () => validateReportInput({ reason: "\u200E" })],
     ["reason of two ZWSP", () => validateReportInput({ reason: "\u200B\u200B" })],
-  ])("%s is accepted — trim() only strips Unicode White_Space", (_label, run) => {
-    expect(run().ok).toBe(true);
+  ])("%s is rejected — sanitize leaves no visible content", (_label, run) => {
+    const r = run();
+    expect(r.ok).toBe(false);
+    expect(r.error).toMatch(/invalid (comment|reason)/);
   });
 
-  it("a ZWSP-only userName passes and is stored verbatim, not replaced with the anonymous default", () => {
+  it("a ZWSP-only userName falls back to the anonymous default", () => {
     const r = validateReviewInput({ ...goodReview(), userName: "\u200B\u200B" });
     expect(r.ok).toBe(true);
-    expect(r.value?.userName).toBe("\u200B\u200B");
+    expect(r.value?.userName).toBe("匿名の利用者");
   });
 
-  it("ZWSP padding around a userName is preserved (not trimmed)", () => {
+  it("ZWSP padding around a userName is stripped by the sanitizer", () => {
     const r = validateReviewInput({ ...goodReview(), userName: "\u200Babc\u200B" });
-    expect(r.value?.userName).toBe("\u200Babc\u200B");
+    expect(r.value?.userName).toBe("abc");
   });
 });
 
-describe("adversarial Unicode: control / bidi / unpaired characters stored verbatim (G3)", () => {
+describe("adversarial Unicode: control / bidi / unpaired characters are sanitized (G3 closed)", () => {
   it.each([
-    ["NUL", "a\u0000b"],
-    ["BEL and DEL", "a\u0007b\u007F"],
-    ["bidi isolate (PDI)", "a\u{A9C0}b"],
-    ["Unicode tag character", "a\u{E0041}b"],
-    ["lone high surrogate", "a\uD800b"],
-    ["embedded RLO", "abc\u202Exyz"],
-  ])("comment with %s is accepted and stored verbatim", (_label, comment) => {
+    ["NUL", "a\u0000b", "ab"],
+    ["BEL and DEL", "a\u0007b\u007F", "ab"],
+    ["bidi isolate (PDI)", "a\u2069b", "ab"],
+    ["Unicode tag character", "a\u{E0041}b", "ab"],
+    ["lone high surrogate", "a\uD800b", "ab"],
+    ["embedded RLO", "abc\u202Exyz", "abcxyz"],
+    ["CRLF and tab become spaces", "line1\r\nline2\tend", "line1 line2 end"],
+  ])("comment with %s is sanitized on storage", (_label, comment, expected) => {
     const r = validateReviewInput({ ...goodReview(), comment });
     expect(r.ok).toBe(true);
-    expect(r.value?.comment).toBe(comment);
+    expect(r.value?.comment).toBe(expected);
   });
 
   it.each([
-    ["NUL", "a\u0000b"],
-    ["embedded RLO", "abc\u202Exyz"],
-    ["leading combining mark", "\u0301abc"],
-  ])("userName with %s is accepted and stored verbatim", (_label, userName) => {
+    ["NUL", "a\u0000b", "ab"],
+    ["embedded RLO", "abc\u202Exyz", "abcxyz"],
+    ["leading combining mark", "\u0301abc", "\u0301abc"], // 結合記号は保持
+  ])("userName with %s is sanitized on storage", (_label, userName, expected) => {
     const r = validateReviewInput({ ...goodReview(), userName });
     expect(r.ok).toBe(true);
-    expect(r.value?.userName).toBe(userName);
+    expect(r.value?.userName).toBe(expected);
   });
 
-  it("a lone surrogate survives the JSON round-trip used by the persistence layer (P4)", () => {
-    const parsed = JSON.parse(JSON.stringify({ comment: "a\uD800b" })) as {
+  it("a lone surrogate is stripped before it could reach the JSON persistence layer (P4)", () => {
+    const r = validateReviewInput({ ...goodReview(), comment: "a\uD800b" });
+    expect(r.value?.comment).toBe("ab");
+    const parsed = JSON.parse(JSON.stringify({ comment: r.value?.comment })) as {
       comment: string;
     };
-    expect(parsed.comment).toBe("a\uD800b");
-    expect(parsed.comment.length).toBe(3);
+    expect(parsed.comment).toBe("ab");
+  });
+});
+
+describe("shared/textSanitizer semantics", () => {
+  it("strips category-C characters and keeps visible text intact", () => {
+    expect(sanitizeText("a\u0000b\u200Ex")).toBe("abx");
+    expect(sanitizeText("cafe\u0301 desu")).toBe("cafe\u0301 desu"); // 結合記号保持
+    expect(sanitizeText("清潔\u{1F600}！")).toBe("清潔\u{1F600}！"); // 絵文字保持
+    expect(sanitizeText("\u200B\u200B")).toBe("");
+  });
+
+  it("normalizes newline controls to single spaces", () => {
+    expect(sanitizeText("line1\r\nline2\tend")).toBe("line1 line2 end");
+    expect(sanitizeText("a\u2028b")).toBe("a b");
+  });
+
+  it("never grows the string", () => {
+    const input = "a\u0000\u200Ebc\u202Dd\r\ne";
+    expect(sanitizeText(input).length).toBeLessThanOrEqual(input.length);
+  });
+
+  it("hasVisibleContent distinguishes invisible-only from real text", () => {
+    expect(hasVisibleContent("\u200B\u200E\u0000")).toBe(false);
+    expect(hasVisibleContent("\u200Babc\u200B")).toBe(true);
   });
 });
 

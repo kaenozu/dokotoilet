@@ -17,6 +17,7 @@ import type {
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
 import { containsUrlLike } from "./shared/urlGuard";
+import { sanitizeText, hasVisibleContent } from "./shared/textSanitizer";
 import type {
   AddReviewResult,
   CommunityRepository,
@@ -203,25 +204,33 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
     return { ok: false, error: "invalid odorScore" };
   if (!isInt1to5(r.suppliesScore))
     return { ok: false, error: "invalid suppliesScore" };
-  if (!isShortString(r.comment, MAX.comment) || !r.comment.trim())
+  // G3対策: 制御・書式文字を除去/空白化してから検証・保存する（textSanitizer参照）。
+  // 型と長さは生入力に対して先に見る（sanitizeは長さを増やさない）。
+  if (!isShortString(r.comment, MAX.comment))
     return { ok: false, error: "invalid comment" };
-  if (containsUrlLike(r.comment))
+  const comment = sanitizeText(r.comment);
+  // G2対策: サニタイズ後に見える本文が残らない入力（ZWSP連打等）は拒否。
+  if (!hasVisibleContent(comment))
+    return { ok: false, error: "invalid comment" };
+  if (containsUrlLike(comment))
     return { ok: false, error: "comment must not contain URLs" };
   if (r.userName !== undefined && !isShortString(r.userName, MAX.userName))
     return { ok: false, error: "invalid userName" };
+  // 生入力に対して長さ上限を見てからサニタイズ（sanitizeは長さを増やさない）
+  const userName =
+    typeof r.userName === "string" && r.userName.trim() && hasVisibleContent(r.userName)
+      ? sanitizeText(r.userName).trim()
+      : "匿名の利用者";
 
   return {
     ok: true,
     value: {
-      userName:
-        typeof r.userName === "string" && r.userName.trim()
-          ? r.userName.trim()
-          : "匿名の利用者",
+      userName,
       overallScore: overall,
       cleanlinessScore: r.cleanlinessScore,
       odorScore: r.odorScore,
       suppliesScore: r.suppliesScore,
-      comment: r.comment.trim(),
+      comment: comment.trim(),
     },
   };
 }
@@ -231,11 +240,11 @@ export function validateReportInput(
 ): ValidationResult<{ reason: string }> {
   if (!body || typeof body !== "object")
     return { ok: false, error: "invalid body" };
-  if (!isShortString(body.reason, MAX.reason) || !body.reason.trim())
+  if (!isShortString(body.reason, MAX.reason) || !hasVisibleContent(body.reason))
     return { ok: false, error: "invalid reason" };
   if (containsUrlLike(body.reason))
     return { ok: false, error: "reason must not contain URLs" };
-  return { ok: true, value: { reason: body.reason.trim() } };
+  return { ok: true, value: { reason: sanitizeText(body.reason).trim() } };
 }
 
 export function hashIp(ip: string, salt: string): string {

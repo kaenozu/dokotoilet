@@ -84,6 +84,11 @@ bun start        # 本番起動（dist/server.cjs）
     に痕跡のある外部施設IDを CommunityRepository 経由でバックエンドに再登録する。
     curation でレビューごと消えた OSM 施設の投稿可否復元や、JSON→Firestore 引き継ぎに使用）:
     `bun scripts/community-ops/restore.ts [--apply] [--from <backup.json>] [--backend firestore]`
+- ユーザー入力テキスト（ユーザー名・コメント・通報理由）は保存前に
+  `server/shared/textSanitizer.ts` で正規化する: 制御文字（NUL等）・双方向制御・
+  タグ文字・単独サロゲートは除去、改行・タブは半角スペースへ置換。不可視文字のみの
+  入力（ZWSP連打等）は拒否され、ユーザー名が空になる場合は「匿名の利用者」を使う。
+  結合記号・全角文字・絵文字は保持する（NFC正規化はしない）。
 - `COMMUNITY_SALT` は**必ず固定値**を設定すること（未設定だと起動毎にランダムになり、
   「IP毎1回」の投票・重複ガードが再起動のたびにリセットされる）。
   IPはソルト付きSHA-256ハッシュのみ保存し、ハッシュはAPI応答に含めない。
