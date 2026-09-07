@@ -1,4 +1,4 @@
-// 登録欄（validateToiletInput）への textSanitizer 適用と、ストア読み込み時の
+// 登録欄（validateToiletInput）への textPolicy（サニタイザー）適用と、ストア読み込み時の
 // 自己修復マイグレーション（レガシー行の浄化）のテスト。
 //
 // 背景は server/community.unicode.test.ts の監査ヘッダ参照:

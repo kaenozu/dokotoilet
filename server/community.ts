@@ -16,8 +16,13 @@ import type {
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
-import { containsUrlLike } from "./shared/urlGuard";
-import { sanitizeText, hasVisibleContent } from "./shared/textSanitizer";
+import { sanitizeText } from "./shared/textPolicy";
+import {
+  TEXT_FIELDS,
+  validateFallbackText,
+  validateOptionalText,
+  validateRequiredText,
+} from "./shared/textPolicy";
 import type {
   AddReviewResult,
   CommunityRepository,
@@ -27,16 +32,6 @@ import {
   canonicalizeExternalFacilityId,
   isExternalFacilityIdFormat,
 } from "./externalFacilityRegistry";
-
-const MAX = {
-  name: 100,
-  address: 200,
-  floor: 50,
-  description: 2000,
-  comment: 1000,
-  userName: 30,
-  reason: 500,
-} as const;
 
 const CATEGORIES = [
   "department",
@@ -92,55 +87,31 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     return { ok: false, error: "invalid body" };
   if (typeof body.id !== "string" || !TOILET_ID_RE.test(body.id))
     return { ok: false, error: "invalid id" };
-  if (!isShortString(body.name, MAX.name) || !body.name.trim())
-    return { ok: false, error: "invalid name" };
   if (!CATEGORIES.includes(body.category))
     return { ok: false, error: "invalid category" };
   if (typeof body.lat !== "number" || body.lat < -90 || body.lat > 90)
     return { ok: false, error: "invalid lat" };
   if (typeof body.lng !== "number" || body.lng < -180 || body.lng > 180)
     return { ok: false, error: "invalid lng" };
-  if (body.address !== undefined && !isShortString(body.address, MAX.address))
-    return { ok: false, error: "invalid address" };
-  if (body.floorInfo !== undefined && !isShortString(body.floorInfo, MAX.floor))
-    return { ok: false, error: "invalid floorInfo" };
-  if (
-    body.description !== undefined &&
-    !isShortString(body.description, MAX.description)
-  )
-    return { ok: false, error: "invalid description" };
   if (
     typeof body.cleanlinessScore !== "number" ||
     body.cleanlinessScore < 1 ||
     body.cleanlinessScore > 5
   )
     return { ok: false, error: "invalid cleanlinessScore" };
-  // G2/G3対策（登録欄拡張）: 制御・書式文字を除去/空白化してから検査・保存する
-  // （textSanitizer参照）。型と長さは生入力に対して先に見る（sanitizeは長さを増やさない）。
-  // レビュー・通報と同じポリシー: name は必須可視（拒否）、address/floorInfo/
-  // description は不可視のみなら既定値へフォールバック。
-  const name = sanitizeText(body.name).trim();
-  if (!name) return { ok: false, error: "invalid name" };
-  const address =
-    typeof body.address === "string" && hasVisibleContent(body.address)
-      ? sanitizeText(body.address).trim()
-      : "現在地周辺";
-  const floorInfo =
-    typeof body.floorInfo === "string" && hasVisibleContent(body.floorInfo)
-      ? sanitizeText(body.floorInfo).trim()
-      : undefined;
-  const description =
-    typeof body.description === "string" && hasVisibleContent(body.description)
-      ? sanitizeText(body.description).trim()
-      : "ユーザーによって登録されたトイレ情報です。";
-  if (containsUrlLike(name))
-    return { ok: false, error: "name must not contain URLs" };
-  if (containsUrlLike(address))
-    return { ok: false, error: "address must not contain URLs" };
-  if (containsUrlLike(floorInfo))
-    return { ok: false, error: "floorInfo must not contain URLs" };
-  if (containsUrlLike(description))
-    return { ok: false, error: "description must not contain URLs" };
+
+  // テキスト欄は textPolicy の宣言的ポリシーで一括処理する。
+  // パイプライン（生入力の型/長さゲート → サニタイズ → 可視性 → URL検出）と
+  // 不可視のみの扱い（name は拒否、address/floorInfo/description は既定値へ
+  // フォールバック）は TEXT_FIELDS が宣言する。
+  const nameField = validateRequiredText(body.name, TEXT_FIELDS.toiletName);
+  if (nameField.ok === false) return nameField;
+  const addressField = validateFallbackText(body.address, TEXT_FIELDS.toiletAddress);
+  if (addressField.ok === false) return addressField;
+  const floorInfoField = validateOptionalText(body.floorInfo, TEXT_FIELDS.toiletFloorInfo);
+  if (floorInfoField.ok === false) return floorInfoField;
+  const descriptionField = validateFallbackText(body.description, TEXT_FIELDS.toiletDescription);
+  if (descriptionField.ok === false) return descriptionField;
 
   const a = body.attributes;
   if (a !== undefined && (a === null || typeof a !== "object" || Array.isArray(a)))
@@ -165,12 +136,12 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     ok: true,
     value: {
       id: body.id,
-      name,
+      name: nameField.value,
       category: body.category,
-      address,
-      floorInfo,
+      address: addressField.value,
+      floorInfo: floorInfoField.value,
       cleanlinessScore: body.cleanlinessScore,
-      description,
+      description: descriptionField.value,
       lat: body.lat,
       lng: body.lng,
       attributes: {
@@ -213,33 +184,21 @@ export function validateReviewInput(body: any): ValidationResult<ReviewInput> {
     return { ok: false, error: "invalid odorScore" };
   if (!isInt1to5(r.suppliesScore))
     return { ok: false, error: "invalid suppliesScore" };
-  // G3対策: 制御・書式文字を除去/空白化してから検証・保存する（textSanitizer参照）。
-  // 型と長さは生入力に対して先に見る（sanitizeは長さを増やさない）。
-  if (!isShortString(r.comment, MAX.comment))
-    return { ok: false, error: "invalid comment" };
-  const comment = sanitizeText(r.comment);
-  // G2対策: サニタイズ後に見える本文が残らない入力（ZWSP連打等）は拒否。
-  if (!hasVisibleContent(comment))
-    return { ok: false, error: "invalid comment" };
-  if (containsUrlLike(comment))
-    return { ok: false, error: "comment must not contain URLs" };
-  if (r.userName !== undefined && !isShortString(r.userName, MAX.userName))
-    return { ok: false, error: "invalid userName" };
-  // 生入力に対して長さ上限を見てからサニタイズ（sanitizeは長さを増やさない）
-  const userName =
-    typeof r.userName === "string" && r.userName.trim() && hasVisibleContent(r.userName)
-      ? sanitizeText(r.userName).trim()
-      : "匿名の利用者";
+  // テキスト欄は textPolicy の宣言的ポリシーで一括処理する。
+  const commentField = validateRequiredText(r.comment, TEXT_FIELDS.comment);
+  if (commentField.ok === false) return commentField;
+  const userNameField = validateFallbackText(r.userName, TEXT_FIELDS.userName);
+  if (userNameField.ok === false) return userNameField;
 
   return {
     ok: true,
     value: {
-      userName,
+      userName: userNameField.value,
       overallScore: overall,
       cleanlinessScore: r.cleanlinessScore,
       odorScore: r.odorScore,
       suppliesScore: r.suppliesScore,
-      comment: comment.trim(),
+      comment: commentField.value,
     },
   };
 }
@@ -249,11 +208,9 @@ export function validateReportInput(
 ): ValidationResult<{ reason: string }> {
   if (!body || typeof body !== "object")
     return { ok: false, error: "invalid body" };
-  if (!isShortString(body.reason, MAX.reason) || !hasVisibleContent(body.reason))
-    return { ok: false, error: "invalid reason" };
-  if (containsUrlLike(body.reason))
-    return { ok: false, error: "reason must not contain URLs" };
-  return { ok: true, value: { reason: sanitizeText(body.reason).trim() } };
+  const reasonField = validateRequiredText(body.reason, TEXT_FIELDS.reason);
+  if (reasonField.ok === false) return reasonField;
+  return { ok: true, value: { reason: reasonField.value } };
 }
 
 export function hashIp(ip: string, salt: string): string {

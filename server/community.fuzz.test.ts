@@ -15,7 +15,7 @@ import {
   validateReviewInput,
   validateReportInput,
 } from "./community";
-import { sanitizeText } from "./shared/textSanitizer";
+import { sanitizeText } from "./shared/textPolicy";
 import {
   canonicalizeExternalFacilityId,
   ExternalFacilityRegistry,
