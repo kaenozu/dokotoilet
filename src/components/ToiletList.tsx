@@ -1,6 +1,7 @@
 import React from 'react';
 import { ToiletFacility } from '../types';
 import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
+import { BdiText } from './BdiText';
 import {
   Search,
   Building2,
@@ -100,10 +101,10 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                       )}
                     </div>
                     <h3 className="font-bold text-ink text-xs leading-snug line-clamp-1">
-                      {toilet.name}
+                      <BdiText text={toilet.name} />
                     </h3>
                     <p className="text-[11px] text-faint line-clamp-1 mt-0.5">
-                      {toilet.address}
+                      <BdiText text={toilet.address} />
                     </p>
                   </div>
 

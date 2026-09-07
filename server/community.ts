@@ -16,13 +16,13 @@ import type {
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
-import { sanitizeText } from "./shared/textPolicy";
+import { sanitizeText } from "../src/lib/textPolicy";
 import {
   TEXT_FIELDS,
   validateFallbackText,
   validateOptionalText,
   validateRequiredText,
-} from "./shared/textPolicy";
+} from "../src/lib/textPolicy";
 import type {
   AddReviewResult,
   CommunityRepository,

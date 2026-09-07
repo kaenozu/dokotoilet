@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { ToiletFacility, ToiletReview } from '../types';
-import { canSubmitReview } from '../lib/reviewForm';
+import {
+  canSubmitReview,
+  commentFeedback,
+  userNameFeedback,
+} from '../lib/reviewForm';
+import { sanitizeText } from '../lib/textPolicy';
 import { newReviewId } from '../lib/ids';
+import { BdiText } from './BdiText';
 import {
   Sparkles,
   Star,
@@ -36,6 +42,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
   const canSubmit = canSubmitReview(rating, comment);
 
+  // 事前バリデーション（サーバー textPolicy と同一判定）。送信前に日本語 copy で
+  // 理由を提示する（サーバーの 400 を待たない）。
+  const commentError = commentFeedback(comment);
+  const userNameError = userNameFeedback(userName);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // この早期リターンで rating が number に絞り込まれる
@@ -46,13 +57,14 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
     const newReview: ToiletReview = {
       id: `rev-${newReviewId()}`,
-      userName: userName.trim() || '匿名の利用者',
+      // サーバーと同じ sanitizeText を適用（制御・書式文字は送信前に除去）
+      userName: sanitizeText(userName).trim() || '匿名の利用者',
       rating,
       overallScore: rating, // 総合満足度（rating は旧名の別名として両方保存）
       cleanlinessScore: cleanlinessScore ?? rating,
       odorScore: odorScore ?? rating,
       suppliesScore: suppliesScore ?? rating,
-      comment: comment.trim(),
+      comment: sanitizeText(comment).trim(),
       createdAt: new Date().toISOString().split('T')[0],
       helpfulCount: 0,
     };
@@ -89,7 +101,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               <h2 className="text-sm sm:text-base font-bold text-ink">
                 トイレのきれい度を評価・投稿
               </h2>
-              <p className="text-xs text-faint line-clamp-1">{toilet.name}</p>
+              <p className="text-xs text-faint line-clamp-1"><BdiText text={toilet.name} /></p>
             </div>
           </div>
           <button
@@ -114,6 +126,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               placeholder="例: たろう / 匿名"
               className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
+            {userNameError && (
+              <p role="alert" className="text-danger text-xs mt-1">{userNameError}</p>
+            )}
           </div>
 
           {/* Overall Stars（未選択のまま送信不可。rating は明示選択のみ） */}
@@ -217,6 +232,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               placeholder="便座や床の清潔さ、におい、混雑具合、穴場フロアなど..."
               className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
+            {commentError && (
+              <p role="alert" className="text-danger text-xs mt-1">{commentError}</p>
+            )}
           </div>
 
           <button

@@ -6,6 +6,7 @@ import {
 } from '../types';
 import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
 import { summarizeReviews } from '../lib/scoring';
+import { BdiText } from './BdiText';
 import {
   Sparkles,
   MapPin,
@@ -166,16 +167,16 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
         </div>
 
         <h2 className="text-lg sm:text-xl font-bold text-ink leading-snug">
-          {toilet.name}
+          <BdiText text={toilet.name} />
         </h2>
         {toilet.floorInfo && (
           <p className="text-xs font-medium text-accent mt-0.5">
-            📍 {toilet.floorInfo}
+            📍 <BdiText text={toilet.floorInfo} />
           </p>
         )}
         <p className="text-xs text-faint mt-1 flex items-center gap-1">
           <MapPin className="w-3.5 h-3.5 shrink-0 text-faint" />
-          <span>{toilet.address}</span>
+          <span><BdiText text={toilet.address} /></span>
         </p>
       </div>
 
@@ -478,7 +479,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           施設概要・管理状況
         </h3>
         <p className="text-xs text-muted leading-relaxed">
-          {toilet.description}
+          <BdiText text={toilet.description} />
         </p>
       </div>
 
@@ -508,7 +509,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-ink">
-                      {rev.userName}
+                      <BdiText text={rev.userName} />
                       {rev.source && (
                         <span className="ml-1.5 font-normal text-faint">
                           （{rev.source}より引用）
@@ -530,7 +531,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                   </div>
                   <span className="text-[11px] text-faint">{rev.createdAt}</span>
                 </div>
-                <p className="text-ink-soft leading-relaxed">{rev.comment}</p>
+                <p className="text-ink-soft leading-relaxed"><BdiText text={rev.comment} /></p>
                 <div className="flex items-center gap-2 mt-2 pt-2 border-t border-line">
                   <button
                     type="button"
