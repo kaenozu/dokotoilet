@@ -3,7 +3,25 @@ import type {
   ToiletFacility,
   ToiletReview,
 } from "../src/types";
-import type { ReviewInput } from "./community";
+import type { ReviewInput, StoredReport } from "./community";
+
+export interface ListReportsOptions {
+  status?: "open" | "resolved" | "all";
+  limit?: number;
+  offset?: number;
+}
+
+export interface ResolveReportResult {
+  found: boolean;
+  report?: StoredReport;
+}
+
+export interface DeleteReviewResult {
+  found: boolean;
+  facilityId?: string;
+  kind?: "community" | "external";
+  reviewCount?: number;
+}
 
 export interface AddReviewResult {
   error?: "not_found" | "duplicate";
@@ -45,7 +63,10 @@ export interface CommunityRepository {
     facilityId: string,
     reviewId: string,
     reason: string
-  ): Promise<{ ok: boolean; found: boolean }>;
+  ): Promise<{ ok: boolean; found: boolean; duplicate?: boolean }>;
+  listReports?(opts?: ListReportsOptions): Promise<StoredReport[]>;
+  resolveReport?(reportId: string, note?: string): Promise<ResolveReportResult>;
+  deleteReview?(reviewId: string, reason?: string): Promise<DeleteReviewResult>;
   registerExternalFacilities?(facilities: ExternalFacilityObservation[]): Promise<void>;
   isKnownExternalFacility?(facilityId: string): Promise<boolean>;
   /**

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ToiletFacility, ToiletReview } from '../types';
 import { canSubmitReview } from '../lib/reviewForm';
+import { newReviewId } from '../lib/ids';
 import {
   Sparkles,
   Star,
@@ -44,7 +45,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     setIsSubmitting(true);
 
     const newReview: ToiletReview = {
-      id: `rev-${crypto.randomUUID()}`,
+      id: `rev-${newReviewId()}`,
       userName: userName.trim() || '匿名の利用者',
       rating,
       overallScore: rating, // 総合満足度（rating は旧名の別名として両方保存）

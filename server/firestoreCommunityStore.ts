@@ -1,12 +1,53 @@
 import crypto from "node:crypto";
 import type { ToiletFacility, ToiletReview } from "../src/types";
 import { gradeForScore } from "../src/lib/scoring";
-import type { ReviewInput } from "./community";
+import type { ReviewInput, StoredReport } from "./community";
 import type {
   AddReviewResult,
   CommunityRepository,
+  DeleteReviewResult,
   ExternalFacilityObservation,
+  ListReportsOptions,
+  ResolveReportResult,
 } from "./communityRepository";
+
+function normalizeReportText(v: string): string {
+  return v.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function reportAtOf(data: Record<string, any>): number {
+  if (typeof data.at === "number" && Number.isFinite(data.at)) return data.at;
+  if (typeof data.createdAt === "string") {
+    const parsed = Date.parse(data.createdAt);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return 0;
+}
+
+function storedReportFromDoc(
+  id: string,
+  data: Record<string, any>
+): StoredReport {
+  const createdAt =
+    typeof data.createdAt === "string" ? data.createdAt : new Date().toISOString();
+  return {
+    id: typeof data.id === "string" ? data.id : id,
+    toiletId:
+      typeof data.toiletId === "string"
+        ? data.toiletId
+        : typeof data.facilityId === "string"
+          ? data.facilityId
+          : "",
+    reviewId: typeof data.reviewId === "string" ? data.reviewId : "",
+    reason: typeof data.reason === "string" ? data.reason : "",
+    createdAt,
+    at: reportAtOf({ ...data, createdAt }),
+    status: data.status === "resolved" ? "resolved" : "open",
+    ...(typeof data.resolvedAt === "string" ? { resolvedAt: data.resolvedAt } : {}),
+    ...(typeof data.resolution === "string" ? { resolution: data.resolution } : {}),
+    ...(typeof data.adminNote === "string" ? { adminNote: data.adminNote } : {}),
+  };
+}
 
 type Plain = Record<string, any>;
 
@@ -143,6 +184,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
   private async reviewsForFacility(facilityId: string): Promise<ToiletReview[]> {
     const snap = await this.col("reviews").where("facilityId", "==", facilityId).get();
     return snap.docs
+      .filter((d) => (d.data() as Record<string, any> | undefined)?.deleted !== true)
       .map(reviewFromDoc)
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   }
@@ -155,6 +197,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
     const reviewsByFacility = new Map<string, ToiletReview[]>();
     for (const doc of communityReviews.docs) {
       const data = doc.data() ?? {};
+      if ((data as Record<string, any>).deleted === true) continue;
       const facilityId = String(data.facilityId ?? "");
       if (!facilityId) continue;
       const list = reviewsByFacility.get(facilityId) ?? [];
@@ -174,6 +217,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
     const out: Record<string, ToiletReview[]> = {};
     for (const doc of snap.docs) {
       const data = doc.data() ?? {};
+      if ((data as Record<string, any>).deleted === true) continue;
       const facilityId = String(data.facilityId ?? "");
       if (!facilityId) continue;
       (out[facilityId] ??= []).push(reviewFromDoc(doc));
@@ -305,25 +349,175 @@ export class FirestoreCommunityStore implements CommunityRepository {
     facilityId: string,
     reviewId: string,
     reason: string
-  ): Promise<{ ok: boolean; found: boolean }> {
+  ): Promise<{ ok: boolean; found: boolean; duplicate?: boolean }> {
     const reviewRef = this.col("reviews").doc(reviewId);
+    const reviewSnap = await reviewRef.get();
+    if (
+      !reviewSnap.exists ||
+      reviewSnap.data()?.facilityId !== facilityId ||
+      (reviewSnap.data() as Record<string, any>)?.deleted === true
+    ) {
+      return { ok: false, found: false };
+    }
+    const now = Date.now();
+    const dayAgo = now - 24 * 60 * 60 * 1000;
+    const normReason = normalizeReportText(reason);
+    const existing = await this.col("reports").where("reviewId", "==", reviewId).get();
+    const dup = existing.docs.some((d) => {
+      const data = (d.data() ?? {}) as Record<string, any>;
+      if (data.status === "resolved") return false;
+      return (
+        normalizeReportText(String(data.reason ?? "")) === normReason &&
+        reportAtOf(data) >= dayAgo
+      );
+    });
+    if (dup) return { ok: false, found: true, duplicate: true };
     const reportId = `report-${crypto.randomUUID()}`;
     const reportRef = this.col("reports").doc(reportId);
-    return this.db.runTransaction(async (tx) => {
-      const review = await tx.get(reviewRef);
-      if (!review.exists || review.data()?.facilityId !== facilityId) {
-        return { ok: false, found: false };
-      }
+    await this.db.runTransaction(async (tx) => {
       tx.create(reportRef, {
         id: reportId,
         facilityId,
         toiletId: facilityId,
         reviewId,
         reason,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(now).toISOString(),
+        at: now,
+        status: "open",
       });
-      return { ok: true, found: true };
     });
+    return { ok: true, found: true };
+  }
+
+  async listReports(opts: ListReportsOptions = {}): Promise<StoredReport[]> {
+    const status = opts.status ?? "all";
+    const rawOffset = Number(opts.offset ?? 0);
+    const rawLimit = Number(opts.limit ?? 50);
+    const offset = Number.isFinite(rawOffset) ? Math.max(0, Math.floor(rawOffset)) : 0;
+    const limit = Number.isFinite(rawLimit)
+      ? Math.max(0, Math.min(100, Math.floor(rawLimit)))
+      : 50;
+    const snap = await this.col("reports").get();
+    let list = snap.docs.map((d) =>
+      storedReportFromDoc(d.id, (d.data() ?? {}) as Record<string, any>)
+    );
+    if (status === "open" || status === "resolved") {
+      list = list.filter((r) => r.status === status);
+    }
+    list.sort((a, b) => (b.at ?? 0) - (a.at ?? 0));
+    return list.slice(offset, offset + limit);
+  }
+
+  async resolveReport(reportId: string, note?: string): Promise<ResolveReportResult> {
+    const ref = this.col("reports").doc(reportId);
+    return this.db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      if (!snap.exists) return { found: false };
+      const nowIso = new Date().toISOString();
+      const patch: Record<string, any> = {
+        status: "resolved",
+        resolvedAt: nowIso,
+      };
+      if (typeof note === "string" && note.trim()) {
+        patch.resolution = note.trim().slice(0, 500);
+        patch.adminNote = patch.resolution;
+      }
+      tx.update(ref, patch);
+      const merged = { ...((snap.data() ?? {}) as Record<string, any>), ...patch };
+      return { found: true, report: storedReportFromDoc(reportId, merged) };
+    });
+  }
+
+  async deleteReview(reviewId: string, reason?: string): Promise<DeleteReviewResult> {
+    const reviewRef = this.col("reviews").doc(reviewId);
+    const snap = await reviewRef.get();
+    if (!snap.exists || (snap.data() as Record<string, any>)?.deleted === true) {
+      return { found: false };
+    }
+    const data = (snap.data() ?? {}) as Record<string, any>;
+    const facilityId = String(data.facilityId ?? "");
+    const kind = data.facilityKind === "community" ? "community" : "external";
+    const nowIso = new Date().toISOString();
+    const resolution =
+      typeof reason === "string" && reason.trim()
+        ? reason.trim().slice(0, 500)
+        : "admin delete";
+    await this.db.runTransaction(async (tx) => {
+      const current = await tx.get(reviewRef);
+      if (!current.exists) return;
+      tx.update(reviewRef, {
+        deleted: true,
+        deletedAt: nowIso,
+        deleteReason: resolution,
+      });
+    });
+    const related = await this.col("reports").where("reviewId", "==", reviewId).get();
+    for (const doc of related.docs) {
+      const rd = (doc.data() ?? {}) as Record<string, any>;
+      if (rd.status === "resolved") continue;
+      const ref = this.col("reports").doc(doc.id);
+      await this.db.runTransaction(async (tx) => {
+        const current = await tx.get(ref);
+        if (!current.exists) return;
+        tx.update(ref, {
+          status: "resolved",
+          resolvedAt: nowIso,
+          resolution,
+        });
+      });
+    }
+    const remaining = await this.reviewsForFacility(facilityId);
+    if (kind === "community" && facilityId) {
+      const count = remaining.length;
+      const overallSum = remaining.reduce(
+        (s, r) => s + (r.overallScore ?? r.rating ?? 0),
+        0
+      );
+      const cleanlinessSum = remaining.reduce((s, r) => s + (r.cleanlinessScore ?? 0), 0);
+      const odorSum = remaining.reduce((s, r) => s + (r.odorScore ?? 0), 0);
+      const suppliesSum = remaining.reduce((s, r) => s + (r.suppliesScore ?? 0), 0);
+      await this.db.runTransaction(async (tx) => {
+        const aggRef = this.col("facility_aggregates").doc(facilityId);
+        tx.set(aggRef, {
+          reviewCount: count,
+          overallSum,
+          cleanlinessSum,
+          odorSum,
+          suppliesSum,
+        });
+        const facRef = this.col("community_toilets").doc(facilityId);
+        const facSnap = await tx.get(facRef);
+        if (!facSnap.exists) return;
+        if (count === 0) {
+          const raw = (facSnap.data() ?? {}) as Record<string, any>;
+          const equipmentScore = Number(raw.equipmentScore) || 0;
+          const equipmentGrade =
+            typeof raw.equipmentGrade === "string"
+              ? raw.equipmentGrade
+              : gradeForScore(equipmentScore);
+          const { overallScore: _dropOverall, lastCleaned: _dropCleaned, ...rest } =
+            raw as Record<string, any>;
+          tx.set(facRef, {
+            ...rest,
+            reviewCount: 0,
+            cleanlinessScore: equipmentScore,
+            cleanlinessGrade: equipmentGrade,
+          });
+        } else {
+          const cleanlinessScore = average(cleanlinessSum, count);
+          const overallScore = average(overallSum, count);
+          tx.update(facRef, {
+            reviewCount: count,
+            cleanlinessScore,
+            cleanlinessGrade: gradeForScore(cleanlinessScore),
+            overallScore,
+            lastCleaned: "たった今（利用者が確認）",
+          });
+        }
+      });
+      return { found: true, facilityId, kind, reviewCount: count };
+    }
+    return { found: true, facilityId, kind, reviewCount: remaining.length };
   }
 
   async registerExternalFacilities(facilities: ExternalFacilityObservation[]): Promise<void> {

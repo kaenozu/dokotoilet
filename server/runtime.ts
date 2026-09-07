@@ -1,5 +1,9 @@
 import crypto from "node:crypto";
 
+/**
+ * COMMUNITY_SALT を解決する。production では未設定時に throw する。
+ * 未設定時は起動毎ランダムで投票ガードがリセットされる。
+ */
 export function resolveCommunitySalt(
   nodeEnv: string | undefined,
   configured: string | undefined

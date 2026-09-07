@@ -13,6 +13,7 @@ import { reviewScoreFields, summarizeReviews } from "./scoring";
 
 export const LOCAL_DELTA_KEY = "kirei-toilet-delta-v1";
 export const OSM_CACHE_KEY = "kirei-toilet-osm-cache-v1";
+export const VOTED_REVIEWS_KEY = "kirei-toilet-voted-reviews";
 // 旧バージョン（トイレ全体スナップショット）のキー。移行後は削除する
 export const LEGACY_TOILETS_V3_KEY = "toilet_cleanliness_map_real_v3";
 export const LEGACY_TOILETS_V2_KEY = "toilet_cleanliness_map_real_v2";
@@ -133,7 +134,9 @@ export function parseToiletArray(raw: string | null): ToiletFacility[] {
       typeof t === "object" &&
       typeof (t as ToiletFacility).id === "string" &&
       typeof (t as ToiletFacility).lat === "number" &&
-      typeof (t as ToiletFacility).lng === "number"
+      Number.isFinite((t as ToiletFacility).lat) &&
+      typeof (t as ToiletFacility).lng === "number" &&
+      Number.isFinite((t as ToiletFacility).lng)
   );
 }
 
@@ -172,7 +175,15 @@ export function parseLocalDelta(raw: string | null): LocalDeltaV1 | null {
   if (!Array.isArray(p.userToilets)) return null;
   if (!p.reviewDeltas || typeof p.reviewDeltas !== "object") return null;
   const userToilets = p.userToilets
-    .filter((t) => t && typeof t.id === "string")
+    .filter(
+      (t) =>
+        t &&
+        typeof t.id === "string" &&
+        typeof t.lat === "number" &&
+        Number.isFinite(t.lat) &&
+        typeof t.lng === "number" &&
+        Number.isFinite(t.lng)
+    )
     .map((t) => {
       const reviews = cleanReviews(t.reviews);
       return { ...t, reviews, reviewCount: reviews.length };

@@ -19,6 +19,53 @@ export interface MergeOsmBatchResult {
  * overlayShared は「その施設の共有レビュー（externalReviews）」を返すコールバックで、
  * 移行・追加時にレイヤー側（App）が自分の文脈でレビューを重ねるために使う。
  */
+const CELL = 0.0003;
+
+const cellKey = (lat: number, lng: number) =>
+  `${Math.floor(lat / CELL)}:${Math.floor(lng / CELL)}`;
+
+function buildSpatialGrid(list: ToiletFacility[]): Map<string, ToiletFacility[]> {
+  const grid = new Map<string, ToiletFacility[]>();
+  for (const t of list) {
+    if (!Number.isFinite(t.lat) || !Number.isFinite(t.lng)) continue;
+    const key = cellKey(t.lat, t.lng);
+    const bucket = grid.get(key);
+    if (bucket) bucket.push(t);
+    else grid.set(key, [t]);
+  }
+  return grid;
+}
+
+function hasNearbyDuplicate(
+  grid: Map<string, ToiletFacility[]>,
+  lat: number,
+  lng: number
+): boolean {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  const cx = Math.floor(lat / CELL);
+  const cy = Math.floor(lng / CELL);
+  for (let dx = -1; dx <= 1; dx += 1) {
+    for (let dy = -1; dy <= 1; dy += 1) {
+      const bucket = grid.get(`${cx + dx}:${cy + dy}`);
+      if (!bucket) continue;
+      for (const p of bucket) {
+        if (Math.abs(p.lat - lat) < CELL && Math.abs(p.lng - lng) < CELL) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+function addToGrid(grid: Map<string, ToiletFacility[]>, t: ToiletFacility): void {
+  if (!Number.isFinite(t.lat) || !Number.isFinite(t.lng)) return;
+  const key = cellKey(t.lat, t.lng);
+  const bucket = grid.get(key);
+  if (bucket) bucket.push(t);
+  else grid.set(key, [t]);
+}
+
 export function mergeOsmBatch(
   existing: ToiletFacility[],
   incoming: ToiletFacility[],
@@ -27,6 +74,7 @@ export function mergeOsmBatch(
   const next = [...existing];
   const existingIds = new Set(next.map((t) => t.id));
   const knownTypedIds = [...next.map((t) => t.id), ...incoming.map((t) => t.id)];
+  const grid = buildSpatialGrid(next);
   let addedCount = 0;
 
   for (const item of incoming) {
@@ -43,17 +91,17 @@ export function mergeOsmBatch(
       next[legacyIndex] = overlayShared ? overlayShared(item) : item;
       existingIds.delete(legacyId);
       existingIds.add(item.id);
+      addToGrid(grid, next[legacyIndex]);
       addedCount += 1;
       continue;
     }
 
-    // 近接座標の重複は追加しない（緯度経度差 < 0.0003 ≈ 30m 以内）
-    const isDuplicateCoord = next.some(
-      (p) => Math.abs(p.lat - item.lat) < 0.0003 && Math.abs(p.lng - item.lng) < 0.0003
-    );
-    if (!isDuplicateCoord) {
-      next.push(overlayShared ? overlayShared(item) : item);
+    // 近接座標の重複は追加しない（緯度経度差 < 0.0003 ≈ 30m 以内。近傍9セルのみ比較）
+    if (!hasNearbyDuplicate(grid, item.lat, item.lng)) {
+      const resolved = overlayShared ? overlayShared(item) : item;
+      next.push(resolved);
       existingIds.add(item.id);
+      addToGrid(grid, resolved);
       addedCount += 1;
     }
   }

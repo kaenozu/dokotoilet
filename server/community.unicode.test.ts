@@ -15,8 +15,10 @@
 //   P4 lone surrogates survive the JSON round-trip used by persistence
 //
 // Known gaps (pinned below, intentionally unchanged):
-//   G1 URL_RE is evaded by invisible characters inside a URL (LRM, ZWSP)
-//      and by fullwidth lookalike schemes — renders as a URL either way
+//   G1 URL_RE evasion — ZWSP-split (https:\u200B//) and fullwidth-colon forms were
+//      originally accepted; the broadened URL_RE (h\s*t\s*t\s*p + TLD patterns)
+//      now rejects them. Still open: LRM inside the scheme (h\u200Ettps://) and
+//      fullwidth scheme letters — the literal-ASCII pattern cannot see them
 //   G2 invisible-only content (ZWSP/LRM) passes the non-empty checks;
 //      a ZWSP-only userName is stored verbatim instead of 匿名の利用者
 //   G3 control (NUL/BEL/DEL), bidi, tag characters and lone surrogates are
@@ -47,6 +49,14 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
     // RLO *before* the scheme does not help the spammer: URL_RE still sees
     // the literal "https://" — pinned so this stays true.
     ["RLO-prefixed https URL", "\u202Ehttps://spam.example"],
+    // 以下は元監査（PR #62）で「G1: 見逃す」と固定されていた行。URL_RE の拡張
+    // （h\s*t\s*t\s*p は任意の ASCII "http" に一致、加えてTLDパターン）により
+    // 拒否に変わった。意図的な強化であり、この固定により検知された。
+    ["ZWSP between ':' and '//' (https:\\u200B//)", "https:\u200B//spam.example"],
+    ["fullwidth colon", "https\uFF1A//spam.example"],
+    // 副作用として、URLでない本文中の "http" やTLD風表記も拒否される（過剰拒否）
+    ["bare word http in prose", "これはhttpです"],
+    ["TLD-like mention without scheme", "見て spam.example.com"],
   ])("rejects %s", (_label, comment) => {
     const r = validateReviewInput({ ...goodReview(), comment });
     expect(r.ok).toBe(false);
@@ -54,14 +64,11 @@ describe("adversarial Unicode: URL filter (URL_RE)", () => {
   });
 
   it.each([
-    // Invisible characters splitting a real URL — rendered identically to the
-    // plain URL a reader would click/copy.
+    // 残る G1: 非ASCII文字を挟む/置き換える形は、ASCIIを前提とする URL_RE が
+    // 本来のURLとして認識できないため見逃される（レンダリング上はURLに見える）。
     ["LRM inside the scheme (h\\u200Ettps://)", "h\u200Ettps://spam.example"],
-    ["ZWSP between ':' and '//' (https:\\u200B//)", "https:\u200B//spam.example"],
-    // Fullwidth lookalikes — not technically URLs, but visually identical.
     ["fullwidth scheme letters", "\uFF48\uFF54\uFF54\uFF50\uFF53://spam.example"],
-    ["fullwidth colon", "https\uFF1A//spam.example"],
-  ])("does NOT catch %s (G1, documented)", (_label, comment) => {
+  ])("does NOT catch %s (G1, remaining)", (_label, comment) => {
     const r = validateReviewInput({ ...goodReview(), comment });
     expect(r.ok).toBe(true);
   });

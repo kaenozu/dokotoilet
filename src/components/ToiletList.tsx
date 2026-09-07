@@ -2,15 +2,11 @@ import React from 'react';
 import { ToiletFacility } from '../types';
 import { getGradeColor, isEvaluated } from '../lib/grade';
 import {
-  Sparkles,
-  MapPin,
   Search,
-  CheckCircle2,
   Building2,
   Store,
   Trees,
   Train,
-  Clock,
   Star,
 } from 'lucide-react';
 
