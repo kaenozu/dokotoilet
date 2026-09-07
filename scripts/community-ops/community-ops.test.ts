@@ -156,28 +156,38 @@ describe("export CLI", () => {
 });
 
 describe("restore", () => {
-  it("collects external facility ids from externalReviews, reports, and toilets", async () => {
-    const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-"));
-    const source = path.join(dir, "community.json");
-    await writeFile(
-      source,
-      JSON.stringify({
-        version: 2,
-        toilets: [{ id: "toilet-user-1", name: "通常", reviews: [] }],
-        helpfulVotes: {},
-        reports: [{ id: "rep-1", reviewId: "gone", toiletId: "od-通報のみ" }],
-        reviewKeys: {},
-        externalReviews: {
-          "osm-キーだけ": [],
-          "google-ChIJxxx": [{ id: "r1", rating: 3 }],
-          "invalid-id": [],
-        },
-      }),
-      "utf8"
-    );
-    const { collectExternalFacilityIds } = await import("./restore");
-    expect(await collectExternalFacilityIds(source)).toEqual(["google-ChIJxxx", "od-通報のみ", "osm-キーだけ"]);
-  });
+  // 動的 import + クロスプロセスファイルロック（loadRawDb → withFileLock）を含むため
+  // 兄弟テストと同じく明示タイムアウトを付ける（並列実行下での fs 遅延対策）。
+  it(
+    "collects external facility ids from externalReviews, reports, and toilets",
+    { timeout: 20_000 },
+    async () => {
+      const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-"));
+      const source = path.join(dir, "community.json");
+      await writeFile(
+        source,
+        JSON.stringify({
+          version: 2,
+          toilets: [{ id: "toilet-user-1", name: "通常", reviews: [] }],
+          helpfulVotes: {},
+          reports: [{ id: "rep-1", reviewId: "gone", toiletId: "od-通報のみ" }],
+          reviewKeys: {},
+          externalReviews: {
+            "osm-キーだけ": [],
+            "google-ChIJxxx": [{ id: "r1", rating: 3 }],
+            "invalid-id": [],
+          },
+        }),
+        "utf8"
+      );
+      const { collectExternalFacilityIds } = await import("./restore");
+      expect(await collectExternalFacilityIds(source)).toEqual([
+        "google-ChIJxxx",
+        "od-通報のみ",
+        "osm-キーだけ",
+      ]);
+    }
+  );
 
   it("treats a missing data file as nothing to restore", async () => {
     const { collectExternalFacilityIds } = await import("./restore");
