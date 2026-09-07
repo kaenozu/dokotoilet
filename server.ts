@@ -25,7 +25,11 @@ import { isOsmElementType, osmFacilityId } from "./src/lib/osmIds";
 function parseQueryNum(v: unknown): number | undefined {
   if (v === undefined) return undefined;
   if (typeof v === "number") return v;
-  if (typeof v === "string" && v.trim() !== "") return Number(v);
+  if (typeof v === "string" && v.trim() !== "") {
+    const s = v.trim();
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return NaN;
+    return Number(s);
+  }
   return NaN;
 }
 
@@ -35,9 +39,11 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || "3000", 10) || 3000;
 
   // Cloud Runはリバースプロキシ配下のため、rate-limitのIP判定用に1段だけ信頼する
+  // CDN追加時は段数を増やすと req.ip 偽装→投票なりすましの恐れがあるため要精査
   app.set("trust proxy", 1);
   // helmetの既定CSPは地図タイル（OSM/国土地理院）とVite開発サーバを壊すため調整する。
   // 開発時（Viteミドルウェア）はCSPを無効化するのが定石。
+  // connect-src/script-src は既定維持（地図タイル用の img-src のみ追加）。
   app.use(
     helmet({
       contentSecurityPolicy:
@@ -57,6 +63,11 @@ async function startServer() {
     })
   );
   app.use(express.json({ limit: "100kb" }));
+
+  // Health check (apiLimiter適用外: 死活監視をレート制限で落とさないため先に定義)
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
 
   // OSMプロキシの踏み台化を防ぐ（/api/配下は1分60リクエスト/IP）
   const apiLimiter = rateLimit({
@@ -80,19 +91,20 @@ async function startServer() {
     process.env.COMMUNITY_SALT
   );
 
+  const adminToken = process.env.ADMIN_TOKEN?.trim() || undefined;
+  if (adminToken) {
+    console.log("[community] admin moderation API enabled");
+  }
+
   app.use(
     "/api/community",
     createCommunityRouter(
       communityStore,
       communitySalt,
-      (facilityId) => communityRuntime.isKnownExternalFacility(facilityId)
+      (facilityId) => communityRuntime.isKnownExternalFacility(facilityId),
+      adminToken
     )
   );
-
-  // Health check
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
-  });
 
   // In-memory cache for live OpenStreetMap Overpass queries (15-minute TTL, LRU cap)
   const osmCache = new Map<string, { timestamp: number; data: any }>();
@@ -384,8 +396,25 @@ async function startServer() {
             Number.isFinite(t.lng)
         );
 
+      let truncated = false;
+      if (rawElements.length > 500) {
+        console.warn(
+          `[osm-proxy] truncating rawElements ${rawElements.length} to 500`
+        );
+        rawElements = rawElements.slice(0, 500);
+        truncated = true;
+      }
+      let limitedToilets = toilets;
+      if (limitedToilets.length > 400) {
+        console.warn(
+          `[osm-proxy] truncating toilets ${limitedToilets.length} to 400`
+        );
+        limitedToilets = limitedToilets.slice(0, 400);
+        truncated = true;
+      }
+
       await communityRuntime.observeExternalFacilities(
-        toilets
+        limitedToilets
           .map((t: any) => t?.id)
           .filter((id: unknown): id is string => typeof id === "string")
           .map((id: string) => ({
@@ -397,13 +426,14 @@ async function startServer() {
 
       const responsePayload = {
         elements: rawElements,
-        toilets,
-        count: toilets.length,
+        toilets: limitedToilets,
+        count: limitedToilets.length,
         source,
+        truncated,
         timestamp: new Date().toISOString(),
       };
 
-      if (upstreamSucceeded || toilets.length > 0) {
+      if (upstreamSucceeded || limitedToilets.length > 0) {
         osmCacheSet(cacheKey, responsePayload);
       }
       res.json(responsePayload);

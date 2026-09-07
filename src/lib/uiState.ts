@@ -16,6 +16,31 @@ export const isViewportAlreadyAt = (
 export const reviewHttpOutcome = (status: number) =>
   status >= 200 && status < 300 ? 'accepted' : 'rejected';
 
+/** uiState内の軽量バリデータ（App.tsxとの循環import回避のためここで定義）。 */
+export const isToiletFacilityLike = (v: unknown): v is ToiletFacility => {
+  if (!v || typeof v !== 'object') return false;
+  const t = v as Record<string, unknown>;
+  return (
+    typeof t.id === 'string' &&
+    typeof t.lat === 'number' &&
+    Number.isFinite(t.lat) &&
+    typeof t.lng === 'number' &&
+    Number.isFinite(t.lng)
+  );
+};
+
+export const sanitizeReviewsLike = (v: unknown): ToiletReview[] | null => {
+  if (!Array.isArray(v)) return null;
+  const out: ToiletReview[] = [];
+  for (const r of v) {
+    if (!r || typeof r !== 'object') return null;
+    const rr = r as Record<string, unknown>;
+    if (typeof rr.id !== 'string') return null;
+    out.push(r as ToiletReview);
+  }
+  return out;
+};
+
 export type ReviewResponseOutcome =
   | { kind: 'server-toilet'; toilet: ToiletFacility }
   | { kind: 'server-external'; facilityId: string; reviews: ToiletReview[] }
@@ -59,13 +84,20 @@ export const classifyReviewResponse = async (
 
   if (typeof data === 'object' && data !== null) {
     if ('toilet' in data && data.toilet && typeof data.toilet === 'object') {
-      return { kind: 'server-toilet', toilet: data.toilet as ToiletFacility };
+      if (!isToiletFacilityLike(data.toilet)) {
+        return { kind: 'invalid', message: 'サーバーの応答に不正な施設データが含まれています。入力内容を保持しています。' };
+      }
+      return { kind: 'server-toilet', toilet: data.toilet };
     }
     if (
       'facilityId' in data && data.facilityId === toiletId &&
       'reviews' in data && Array.isArray(data.reviews)
     ) {
-      return { kind: 'server-external', facilityId: toiletId, reviews: data.reviews as ToiletReview[] };
+      const reviews = sanitizeReviewsLike((data as { reviews: unknown }).reviews);
+      if (reviews === null) {
+        return { kind: 'invalid', message: 'サーバーの応答に不正な口コミデータが含まれています。入力内容を保持しています。' };
+      }
+      return { kind: 'server-external', facilityId: toiletId, reviews };
     }
   }
 

@@ -23,7 +23,7 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // AI Studio では DISABLE_HMR=true で HMR を無効化する（エージェントの編集によるちらつき防止）。
+      // DISABLE_HMR=true でHMR/ファイル監視を無効化 (エージェント編集時のちらつき・CPU対策)
       // その場合、ファイル監視も止めて CPU 消費を抑える。
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ToiletFacility, CleanlinessGrade } from '../types';
+import { ToiletFacility } from '../types';
 import {
   RefreshCw,
   Layers,
@@ -85,6 +85,8 @@ interface ToiletMapProps {
   /** 詳細パネル（drawer）が開いているか。開閉で地図コンテナ幅が変わるため
    *  Leaflet に invalidateSize を伝える（灰色タイル欠けの防止） */
   detailsOpen?: boolean;
+  /** モバイルタブ切替等のレイアウト変化キー。変化時にも invalidateSize を走らせる */
+  layoutKey?: string;
 }
 
 // 実測評価判定とグレード配色は src/lib/grade.ts へ移動（ToiletList / ToiletDetails と共有）
@@ -100,6 +102,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   onViewportChange,
   isLoadingOsm,
   detailsOpen = false,
+  layoutKey,
 }) => {
   const leafletContainerRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
@@ -108,6 +111,8 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   // 最新のハンドラを ref で保持（マーカー再構築を親の再レンダー毎に走らせない）
   const onSelectToiletRef = useRef(onSelectToilet);
   onSelectToiletRef.current = onSelectToilet;
+  const onViewportChangeRef = useRef(onViewportChange);
+  onViewportChangeRef.current = onViewportChange;
 
   const [currentMapCenter, setCurrentMapCenter] = useState(center);
   const [currentTileStyle, setCurrentTileStyle] = useState<MapTileStyle>('osm');
@@ -131,7 +136,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
         const c = map.getCenter();
         const nextCenter = { lat: c.lat, lng: c.lng };
         setCurrentMapCenter(nextCenter);
-        onViewportChange?.(nextCenter, map.getZoom());
+        onViewportChangeRef.current?.(nextCenter, map.getZoom());
       });
     }
 
@@ -245,7 +250,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       cancelAnimationFrame(raf);
       clearTimeout(timer);
     };
-  }, [detailsOpen]);
+  }, [detailsOpen, layoutKey]);
 
   const activeTileConfig =
     TILE_STYLES.find((s) => s.id === currentTileStyle) || TILE_STYLES[0];

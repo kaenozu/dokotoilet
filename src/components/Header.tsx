@@ -1,16 +1,12 @@
 import React from 'react';
 import {
   Sparkles,
-  MapPin,
   PlusCircle,
   Database,
   Navigation,
-  Filter,
   CheckCircle2,
-  ShieldCheck,
-  Search,
 } from 'lucide-react';
-import { CleanlinessGrade, FilterState, CityPreset } from '../types';
+import { FilterState, CityPreset } from '../types';
 import { CITY_PRESETS } from '../data/toilets';
 
 interface HeaderProps {
@@ -203,9 +199,11 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Data Source Filter */}
             <select
               value={filter.dataSource}
-              onChange={(e) =>
-                setFilter((prev) => ({ ...prev, dataSource: e.target.value }))
-              }
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v !== 'all' && v !== 'osm' && v !== 'google' && v !== 'opendata' && v !== 'community') return;
+                setFilter((prev) => ({ ...prev, dataSource: v }));
+              }}
               className="bg-surface border border-line text-ink-soft rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-accent focus:outline-none"
             >
               <option value="all">全データ元</option>

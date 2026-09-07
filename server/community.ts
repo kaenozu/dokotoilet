@@ -43,7 +43,8 @@ const CATEGORIES = [
 ] as const;
 
 const TOILET_ID_RE = /^toilet-user-[A-Za-z0-9-]{1,64}$/;
-const URL_RE = /https?:\/\/|www\.[a-z0-9-]+\.[a-z]{2,}/i;
+const URL_RE =
+  /(https?:\/\/|www\.|[a-z0-9-]+\.(com|net|org|io|jp|co|me|info|biz|dev|app|xyz|top|site|online|shop|click|link|tokyo|osaka)|h\s*t\s*t\s*p)/i;
 
 export interface ValidationResult<T> {
   ok: boolean;
@@ -111,6 +112,14 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
     body.cleanlinessScore > 5
   )
     return { ok: false, error: "invalid cleanlinessScore" };
+  if (typeof body.name === "string" && URL_RE.test(body.name))
+    return { ok: false, error: "name must not contain URLs" };
+  if (typeof body.address === "string" && URL_RE.test(body.address))
+    return { ok: false, error: "address must not contain URLs" };
+  if (typeof body.floorInfo === "string" && URL_RE.test(body.floorInfo))
+    return { ok: false, error: "floorInfo must not contain URLs" };
+  if (typeof body.description === "string" && URL_RE.test(body.description))
+    return { ok: false, error: "description must not contain URLs" };
 
   const a = body.attributes;
   if (a !== undefined && (a === null || typeof a !== "object" || Array.isArray(a)))
@@ -243,12 +252,30 @@ export function asyncRoute(handler: AsyncRouteHandler): RequestHandler {
   };
 }
 
+export type ReportStatus = "open" | "resolved";
+
 export interface StoredReport {
   id: string;
   toiletId: string;
   reviewId: string;
   reason: string;
   createdAt: string;
+  /** createdAt のミリ秒比較用（旧データは parse 時に createdAt から補完）。 */
+  at?: number;
+  status?: ReportStatus;
+  resolvedAt?: string;
+  resolution?: string;
+  adminNote?: string;
+}
+
+export interface ListReportsOptions {
+  status?: ReportStatus | "all";
+  limit?: number;
+  offset?: number;
+}
+
+function normalizeText(v: string): string {
+  return v.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 export interface ReviewKey {
@@ -300,19 +327,83 @@ export class CommunityStore {
   private parse(raw: string): CommunityDB {
     const parsed = JSON.parse(raw) as CommunityDB;
     if (!Array.isArray(parsed.toilets)) throw new Error("corrupt db");
+    const isPlainObject = (v: unknown): v is Record<string, unknown> =>
+      !!v && typeof v === "object" && !Array.isArray(v);
+    const helpfulVotes: Record<string, string[]> = {};
+    if (isPlainObject(parsed.helpfulVotes)) {
+      for (const [k, v] of Object.entries(parsed.helpfulVotes)) {
+        helpfulVotes[k] = Array.isArray(v)
+          ? (v as unknown[]).filter((x): x is string => typeof x === "string")
+          : [];
+      }
+    }
+    const reviewKeys: Record<string, ReviewKey> =
+      isPlainObject(parsed.reviewKeys)
+        ? (parsed.reviewKeys as Record<string, ReviewKey>)
+        : {};
+    const externalReviews: Record<string, ToiletReview[]> = {};
+    if (isPlainObject(parsed.externalReviews)) {
+      for (const [k, v] of Object.entries(parsed.externalReviews)) {
+        externalReviews[k] = Array.isArray(v) ? (v as ToiletReview[]) : [];
+      }
+    }
+    const reportsRaw: unknown[] = Array.isArray(parsed.reports)
+      ? (parsed.reports as unknown[])
+      : [];
+    const reports: StoredReport[] = [];
+    for (const r of reportsRaw) {
+      if (!r || typeof r !== "object") continue;
+      const rr = r as Partial<StoredReport> & Record<string, unknown>;
+      if (typeof rr.id !== "string" || typeof rr.reviewId !== "string") continue;
+      const createdAt =
+        typeof rr.createdAt === "string" ? rr.createdAt : new Date().toISOString();
+      const at =
+        typeof rr.at === "number" && Number.isFinite(rr.at)
+          ? rr.at
+          : Date.parse(createdAt) || Date.now();
+      reports.push({
+        id: rr.id,
+        toiletId: typeof rr.toiletId === "string" ? rr.toiletId : "",
+        reviewId: rr.reviewId,
+        reason: typeof rr.reason === "string" ? rr.reason : "",
+        createdAt,
+        at,
+        status: rr.status === "resolved" ? "resolved" : "open",
+        ...(typeof rr.resolvedAt === "string" ? { resolvedAt: rr.resolvedAt } : {}),
+        ...(typeof rr.resolution === "string" ? { resolution: rr.resolution } : {}),
+        ...(typeof rr.adminNote === "string" ? { adminNote: rr.adminNote } : {}),
+      });
+    }
+    const toiletsRaw = parsed.toilets as unknown[];
+    const toilets = toiletsRaw.filter(
+      (t): t is ToiletFacility =>
+        !!t &&
+        typeof t === "object" &&
+        typeof (t as { id?: unknown }).id === "string" &&
+        typeof (t as { lat?: unknown }).lat === "number" &&
+        Number.isFinite((t as { lat?: number }).lat) &&
+        typeof (t as { lng?: unknown }).lng === "number" &&
+        Number.isFinite((t as { lng?: number }).lng)
+    ) as ToiletFacility[];
+    const dropped =
+      toiletsRaw.length -
+      toilets.length +
+      (reportsRaw.length - reports.length);
+    const fallbackUsed =
+      !isPlainObject(parsed.helpfulVotes) ||
+      !Array.isArray(parsed.reports) ||
+      !isPlainObject(parsed.reviewKeys) ||
+      !isPlainObject(parsed.externalReviews);
+    if (dropped > 0 || fallbackUsed) {
+      console.error(`[community] dropped ${dropped} corrupt entries on load`);
+    }
     return {
       version: 2,
-      toilets: parsed.toilets,
-      helpfulVotes: parsed.helpfulVotes ?? {},
-      reports: parsed.reports ?? [],
-      reviewKeys:
-        parsed.reviewKeys && typeof parsed.reviewKeys === "object"
-          ? parsed.reviewKeys
-          : {},
-      externalReviews:
-        parsed.externalReviews && typeof parsed.externalReviews === "object"
-          ? (parsed.externalReviews as Record<string, ToiletReview[]>)
-          : {},
+      toilets,
+      helpfulVotes,
+      reports,
+      reviewKeys,
+      externalReviews,
     };
   }
 
@@ -358,7 +449,7 @@ export class CommunityStore {
     };
   }
 
-  // 重複投稿ガード: 同一IP＋同一コメントが24h以内は拒否
+  // 重複投稿ガード: 同一IP＋正規化コメント一致が24h以内は拒否
   private hasDuplicate(
     db: CommunityDB,
     reviews: ToiletReview[],
@@ -366,12 +457,14 @@ export class CommunityStore {
     ipHash: string
   ): boolean {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const norm = normalizeText(comment);
     return reviews.some((r) => {
       const key = db.reviewKeys[r.id];
       return (
         key !== undefined &&
         key.ipHash === ipHash &&
-        r.comment === comment &&
+        normalizeText(String((r as { comment?: unknown }).comment ?? "")) ===
+          norm &&
         key.at >= dayAgo
       );
     });
@@ -477,7 +570,7 @@ export class CommunityStore {
     toiletId: string,
     reviewId: string,
     reason: string
-  ): Promise<{ ok: boolean; found: boolean }> {
+  ): Promise<{ ok: boolean; found: boolean; duplicate?: boolean }> {
     return withFileLock(this.filePath, async () => {
       const db = await this.readDisk();
       const t = db.toilets.find((x) => x.id === toiletId);
@@ -485,15 +578,136 @@ export class CommunityStore {
       if (!reviews || !reviews.some((r) => r.id === reviewId)) {
         return { ok: false, found: false };
       }
+      const now = Date.now();
+      const dayAgo = now - 24 * 60 * 60 * 1000;
+      const normReason = normalizeText(reason);
+      const dup = db.reports.some(
+        (r) =>
+          r.reviewId === reviewId &&
+          normalizeText(r.reason ?? "") === normReason &&
+          (typeof r.at === "number" ? r.at : Date.parse(r.createdAt) || 0) >=
+            dayAgo &&
+          r.status !== "resolved"
+      );
+      if (dup) return { ok: false, found: true, duplicate: true };
       db.reports.push({
         id: `report-${crypto.randomUUID()}`,
         toiletId,
         reviewId,
         reason,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(now).toISOString(),
+        at: now,
+        status: "open",
       });
       await atomicWriteFile(this.filePath, JSON.stringify(db));
       return { ok: true, found: true };
+    });
+  }
+
+  async listReports(opts: ListReportsOptions = {}): Promise<StoredReport[]> {
+    const db = await this.load();
+    const status = opts.status ?? "all";
+    const rawOffset = Number(opts.offset ?? 0);
+    const rawLimit = Number(opts.limit ?? 50);
+    const offset = Number.isFinite(rawOffset) ? Math.max(0, Math.floor(rawOffset)) : 0;
+    const limit = Number.isFinite(rawLimit)
+      ? Math.max(0, Math.min(100, Math.floor(rawLimit)))
+      : 50;
+    let list = [...db.reports].sort((a, b) => (b.at ?? 0) - (a.at ?? 0));
+    if (status === "open" || status === "resolved") {
+      list = list.filter((r) => (r.status ?? "open") === status);
+    }
+    return list.slice(offset, offset + limit);
+  }
+
+  async resolveReport(
+    reportId: string,
+    note?: string
+  ): Promise<{ found: boolean; report?: StoredReport }> {
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
+      const r = db.reports.find((x) => x.id === reportId);
+      if (!r) return { found: false };
+      r.status = "resolved";
+      r.resolvedAt = new Date().toISOString();
+      if (typeof note === "string" && note.trim()) {
+        r.resolution = note.trim().slice(0, 500);
+        r.adminNote = r.resolution;
+      }
+      await atomicWriteFile(this.filePath, JSON.stringify(db));
+      return { found: true, report: { ...r } };
+    });
+  }
+
+  async deleteReview(
+    reviewId: string,
+    reason?: string
+  ): Promise<{
+    found: boolean;
+    facilityId?: string;
+    kind?: "community" | "external";
+    reviewCount?: number;
+  }> {
+    return withFileLock(this.filePath, async () => {
+      const db = await this.readDisk();
+      const now = new Date().toISOString();
+      const resolution =
+        typeof reason === "string" && reason.trim()
+          ? reason.trim().slice(0, 500)
+          : "admin delete";
+      const markReports = () => {
+        for (const r of db.reports) {
+          if (r.reviewId === reviewId && r.status !== "resolved") {
+            r.status = "resolved";
+            r.resolvedAt = now;
+            r.resolution = resolution;
+          }
+        }
+      };
+      const t = db.toilets.find((x) =>
+        Array.isArray(x.reviews) && x.reviews.some((r) => r.id === reviewId)
+      );
+      if (t) {
+        t.reviews = t.reviews.filter((r) => r.id !== reviewId);
+        t.reviewCount = t.reviews.length;
+        const summary = summarizeReviews(t.reviews);
+        if (!summary) {
+          t.cleanlinessScore = t.equipmentScore;
+          t.cleanlinessGrade = t.equipmentGrade;
+          delete (t as { overallScore?: number }).overallScore;
+          delete (t as { lastCleaned?: string }).lastCleaned;
+        } else {
+          t.cleanlinessScore = summary.cleanlinessScore;
+          t.cleanlinessGrade = summary.cleanlinessGrade;
+          t.overallScore = summary.overallScore;
+        }
+        delete db.reviewKeys[reviewId];
+        delete db.helpfulVotes[reviewId];
+        markReports();
+        await atomicWriteFile(this.filePath, JSON.stringify(db));
+        return {
+          found: true,
+          facilityId: t.id,
+          kind: "community" as const,
+          reviewCount: t.reviews.length,
+        };
+      }
+      for (const [fid, list] of Object.entries(db.externalReviews)) {
+        if (Array.isArray(list) && list.some((r) => r.id === reviewId)) {
+          db.externalReviews[fid] = list.filter((r) => r.id !== reviewId);
+          delete db.reviewKeys[reviewId];
+          delete db.helpfulVotes[reviewId];
+          markReports();
+          await atomicWriteFile(this.filePath, JSON.stringify(db));
+          return {
+            found: true,
+            facilityId: fid,
+            kind: "external" as const,
+            reviewCount: db.externalReviews[fid].length,
+          };
+        }
+      }
+      return { found: false };
     });
   }
 
@@ -537,7 +751,8 @@ export type ExternalFacilityValidator = (facilityId: string) => boolean | Promis
 export function createCommunityRouter(
   store: CommunityRepository,
   salt: string,
-  isKnownExternalFacility: ExternalFacilityValidator = () => true
+  isKnownExternalFacility: ExternalFacilityValidator = () => false,
+  adminToken?: string
 ): Router {
   const router = Router();
 
@@ -720,7 +935,110 @@ export function createCommunityRouter(
         res.status(404).json({ error: "review not found" });
         return;
       }
+      if ((r as { duplicate?: boolean }).duplicate) {
+        res.status(409).json({ error: "duplicate report" });
+        return;
+      }
       res.status(201).json({ ok: true });
+    })
+  );
+
+  const adminGuard: RequestHandler = (req, res, next) => {
+    if (!adminToken) {
+      res.status(404).json({ error: "not found" });
+      return;
+    }
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith("Bearer ")) {
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
+    const presented = Buffer.from(header.slice(7));
+    const expected = Buffer.from(adminToken);
+    if (
+      presented.length !== expected.length ||
+      !crypto.timingSafeEqual(presented, expected)
+    ) {
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
+    next();
+  };
+
+  router.get(
+    "/admin/reports",
+    adminGuard,
+    asyncRoute(async (req: Request, res: Response) => {
+      if (!store.listReports) {
+        res.status(501).json({ error: "not implemented" });
+        return;
+      }
+      const statusRaw =
+        typeof req.query.status === "string" ? req.query.status : "all";
+      const status: ListReportsOptions["status"] =
+        statusRaw === "open" || statusRaw === "resolved" ? statusRaw : "all";
+      const limit =
+        typeof req.query.limit === "string" && req.query.limit.trim() !== ""
+          ? Number(req.query.limit)
+          : 50;
+      const offset =
+        typeof req.query.offset === "string" && req.query.offset.trim() !== ""
+          ? Number(req.query.offset)
+          : 0;
+      const reports = await store.listReports({ status, limit, offset });
+      const toilets = await store.getToilets();
+      const names = new Map(toilets.map((t) => [t.id, t.name] as const));
+      res.json({
+        reports: reports.map((r) => ({
+          ...r,
+          facilityName: names.get(r.toiletId),
+        })),
+      });
+    })
+  );
+
+  router.post(
+    "/admin/reports/:id/resolve",
+    adminGuard,
+    postLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      if (!store.resolveReport) {
+        res.status(501).json({ error: "not implemented" });
+        return;
+      }
+      const body = req.body as { note?: unknown; adminNote?: unknown } | undefined;
+      const note =
+        typeof body?.note === "string"
+          ? body.note
+          : typeof body?.adminNote === "string"
+            ? body.adminNote
+            : undefined;
+      const r = await store.resolveReport(req.params.id, note);
+      if (!r.found) {
+        res.status(404).json({ error: "report not found" });
+        return;
+      }
+      res.json({ ok: true, report: r.report });
+    })
+  );
+
+  router.delete(
+    "/admin/reviews/:reviewId",
+    adminGuard,
+    postLimiter,
+    asyncRoute(async (req: Request, res: Response) => {
+      if (!store.deleteReview) {
+        res.status(501).json({ error: "not implemented" });
+        return;
+      }
+      const body = req.body as { reason?: unknown } | undefined;
+      const reason = typeof body?.reason === "string" ? body.reason : undefined;
+      const r = await store.deleteReview(req.params.reviewId, reason);
+      if (!r.found) {
+        res.status(404).json({ error: "review not found" });
+        return;
+      }
+      res.json({ ok: true, ...r });
     })
   );
 

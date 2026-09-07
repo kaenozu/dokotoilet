@@ -6,6 +6,7 @@ import {
 } from '../types';
 import { gradeForScore } from '../lib/scoring';
 import { facilityTypeForCategory } from '../lib/grade';
+import { newReviewId } from '../lib/ids';
 import { PlusCircle } from 'lucide-react';
 
 /** あり / 不明 / なし の3値ピッカー（不明=未確認。「なし」と区別する） */
@@ -76,7 +77,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
     const grade = gradeForScore(cleanlinessScore);
 
     const newFacility: ToiletFacility = {
-      id: `toilet-user-${crypto.randomUUID()}`,
+      id: `toilet-user-${newReviewId()}`,
       name: name.trim(),
       facilityType: facilityTypeForCategory(category),
       category,

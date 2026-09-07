@@ -3,6 +3,16 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+// Windows の npm shim (bun.ps1/bun.cmd) は shell なしでは spawn できないため、
+// win32 では shell 経由で起動する。bun実体がある環境ではそれを優先する。
+const BUN_BIN = process.execPath.toLowerCase().includes("bun") ? process.execPath : "bun";
+const NEED_SHELL = process.platform === "win32" && !process.execPath.toLowerCase().includes("bun");
+// shell:true の場合、スペース入りパスは手動で引用符化する (Nodeは自動引用しない)。
+function bunArgs(args: string[]): string[] {
+  if (!NEED_SHELL) return args;
+  return args.map((a) => (/[\s"]/.test(a) && !/^".*"$/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a));
+}
+const BUN_SHELL_OPT = NEED_SHELL ? { shell: true } as const : {} as const;
 import { CommunityStore } from "../../server/community";
 import type { DbFile, FacilityEntry, ReportEntry, ReviewEntry } from "./store";
 import {
@@ -135,12 +145,12 @@ describe("export CLI", () => {
     };
     await writeFile(source, JSON.stringify(raw), "utf8");
     const original = JSON.stringify(raw);
-    execFileSync("bun", [path.resolve("scripts/community-ops/export.ts"), "--out", destination], { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8" });
+    execFileSync(BUN_BIN, bunArgs([path.resolve("scripts/community-ops/export.ts"), "--out", destination]), { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8", ...BUN_SHELL_OPT });
     expect(JSON.parse(await readFile(destination, "utf8"))).toEqual(raw);
 
     await writeFile(source, "{broken", "utf8");
     await writeFile(destination, original, "utf8");
-    expect(() => execFileSync("bun", [path.resolve("scripts/community-ops/export.ts"), "--out", destination], { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8", stdio: "pipe" })).toThrow();
+    expect(() => execFileSync(BUN_BIN, bunArgs([path.resolve("scripts/community-ops/export.ts"), "--out", destination]), { cwd: process.cwd(), env: { ...process.env, COMMUNITY_STORE_PATH: source }, encoding: "utf8", stdio: "pipe", ...BUN_SHELL_OPT })).toThrow();
     expect(await readFile(destination, "utf8")).toBe(original);
   });
 });
@@ -225,10 +235,11 @@ describe("restore", () => {
     );
     const env = { ...process.env, COMMUNITY_STORE_PATH: source };
     const run = (args: string[]) =>
-      execFileSync("bun", [path.resolve("scripts/community-ops/restore.ts"), ...args], {
+      execFileSync(BUN_BIN, bunArgs([path.resolve("scripts/community-ops/restore.ts"), ...args]), {
         cwd: process.cwd(),
         env,
         encoding: "utf8",
+        ...BUN_SHELL_OPT,
       });
 
     const dry = run([]);
@@ -283,7 +294,7 @@ describe("commit CLI", () => {
     execFileSync("git", ["add", "--", unrelated, selected], { cwd: dir });
     await writeFile(selected, JSON.stringify({ version: 2, toilets: [{ id: "toilet-user-1", name: "追加（未ステージ変更）", reviews: [] }], helpfulVotes: {}, reports: [], reviewKeys: {}, externalReviews: {} }), "utf8");
     await writeFile(unrelated, "staged unrelated plus unstaged\n", "utf8");
-    execFileSync("bun", [path.resolve("scripts/community-ops/commit.ts"), "--commit", "--new", selected], { cwd: dir, env: { ...process.env, COMMUNITY_STORE_PATH: selected }, encoding: "utf8" });
+    execFileSync(BUN_BIN, bunArgs([path.resolve("scripts/community-ops/commit.ts"), "--commit", "--new", selected]), { cwd: dir, env: { ...process.env, COMMUNITY_STORE_PATH: selected }, encoding: "utf8", ...BUN_SHELL_OPT });
     const committed = execFileSync("git", ["show", "HEAD:community data.json"], { cwd: dir, encoding: "utf8" });
     expect(JSON.parse(committed).toilets[0].name).toBe("追加（未ステージ変更）");
     expect(execFileSync("git", ["diff", "--cached", "--name-only"], { cwd: dir, encoding: "utf8" }).trim()).toBe("unrelated.txt");
