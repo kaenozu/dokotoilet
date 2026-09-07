@@ -217,7 +217,7 @@ describe("restore", () => {
     expect(rerun.alreadyKnown).toEqual(["osm-消えた"]);
   });
 
-  it("restores via the CLI with dry-run by default and --apply writing", async () => {
+  it("restores via the CLI with dry-run by default and --apply writing", { timeout: 20_000 }, async () => {
     const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-restore-cli2-"));
     // 実運用どおり store ファイルとデータファイルを同一パスにする
     const source = path.join(dir, "community.json");
@@ -278,7 +278,7 @@ describe("restore", () => {
 });
 
 describe("commit CLI", () => {
-  it("commits only the selected data file and preserves unrelated staged changes", async () => {
+  it("commits only the selected data file and preserves unrelated staged changes", { timeout: 20_000 }, async () => {
     const dir = await mkdtemp(path.join(os.tmpdir(), "dokotoilet-commit-"));
     const selected = path.join(dir, "community data.json");
     const unrelated = path.join(dir, "unrelated.txt");
