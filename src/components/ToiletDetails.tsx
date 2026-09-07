@@ -407,6 +407,21 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <p className="text-xs text-ink-soft leading-relaxed bg-white p-3 rounded-lg border border-line">
             {facilityNote}
           </p>
+          {/* 推定グレードの根拠開示（実測レビューが付くまでの暫定目安） */}
+          {!evaluated && toilet.estimateBasis && toilet.estimateBasis.length > 0 && (
+            <details className="mt-2 text-xs">
+              <summary className="cursor-pointer text-faint hover:text-ink-soft font-medium">
+                推定の根拠を見る（{evaluationKindLabel(shown.kind)}）
+              </summary>
+              <ul className="mt-1 space-y-0.5 bg-white p-3 rounded-lg border border-dashed border-line">
+                {toilet.estimateBasis.map((b, i) => (
+                  <li key={i} className="text-[11px] text-faint leading-relaxed">
+                    • {b}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
       )}
 

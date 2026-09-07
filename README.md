@@ -171,6 +171,9 @@ bun scripts/opendata-import/run-kumagaya.ts --fetch    # 公式URLから再取�
   `src/data/googleSeed.ts` は口コミ本文を含まない（過去の引用は 2026-09 に除去済み）。
   Google 由来施設のスコアは件数と要約に基づく手動判断値で、`reviewCount === 0` のため
   UI上は「調査評価」として扱う（実測レビューとは区別表示）。
+- 設備からの推定は `src/lib/estimate.ts` に一本化（基準3.0＋設備・管理条件の加減点）。
+  推定はA止まり（S級は実測のみ）、根拠（`estimateBasis`）をUIで開示する。
+  適用先：熊谷OD取込（`scripts/opendata-import/kumagaya.ts`）とOSM変換（`server.ts`）。
 
 ## ライセンスとデータ帰属
 

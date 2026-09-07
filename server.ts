@@ -20,6 +20,7 @@ import {
   triFromYesNo,
 } from "./src/lib/osm";
 import { isOsmElementType, osmFacilityId } from "./src/lib/osmIds";
+import { estimateEquipmentScore } from "./src/lib/estimate";
 
 /** クエリパラメータ→数値。未指定は undefined、指定があれば数値化（数値化不能は NaN）。 */
 function parseQueryNum(v: unknown): number | undefined {
@@ -294,24 +295,29 @@ async function startServer() {
             category = "station";
           }
 
-          let grade: "S" | "A" | "B" | "C" | "D" = "B";
-          let score = 3.3;
-          if (isTheTokyoToilet) {
-            grade = "S";
-            score = 4.7;
-          } else if (
-            isWheelchair &&
-            (hasWashlet || hasDiaper || isOstomate)
-          ) {
-            grade = "A";
-            score = 4.2;
-          } else if (
-            tags.wheelchair === "no" &&
-            tags["toilets:position"] === "squat;urinal"
-          ) {
-            grade = "C";
-            score = 2.6;
-          }
+          // 設備推定スコア（実測口コミなし）。推定モデルは src/lib/estimate.ts に一本化。
+          // THE TOKYO TOILET は維持管理体制が明確なキュレーション枠（根拠を開示）
+          const positionTags = tags["toilets:position"] ?? "";
+          const estimate = estimateEquipmentScore({
+            category,
+            hasWashlet,
+            hasMultipurpose: isWheelchair
+              ? true
+              : tags.wheelchair === "no"
+              ? false
+              : null,
+            hasOstomate: isOstomate,
+            hasBabyTable: hasDiaper ? true : null,
+            toiletStyle:
+              /squat/.test(positionTags) && !/sit/.test(positionTags)
+                ? "japanese"
+                : null,
+            isFree,
+            isOpen24h,
+            landmark: isTheTokyoToilet,
+          });
+          const grade = estimate.grade;
+          const score = estimate.score;
 
           const pros: string[] = [];
           if (isTheTokyoToilet)
@@ -384,6 +390,7 @@ async function startServer() {
             cons,
             tips: safeContact ? `公式情報: ${safeContact}` : undefined,
             officialOpenDataId: facilityId,
+            estimateBasis: estimate.basis,
             googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${itemLat},${itemLng}`,
           };
         })

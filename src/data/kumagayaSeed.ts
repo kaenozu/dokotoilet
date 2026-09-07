@@ -13,15 +13,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1457857089932,
     "lng": 139.386599837991,
     "address": "埼玉県熊谷市宮町2-92",
-    "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
-    "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "cleanlinessGrade": "C",
+    "cleanlinessScore": 2.7,
+    "equipmentGrade": "C",
+    "equipmentScore": 2.7,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 2.7,
+      "odor": 2.7,
+      "supplies": 2.7,
+      "comfort": 2.7
     },
     "attributes": {
       "hasWashlet": null,
@@ -42,6 +42,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "和式のみ−0.3"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1457857089932,139.386599837991",
     "officialOpenDataId": "od-kumagaya-0019002"
   },
@@ -54,15 +58,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1389062285464,
     "lng": 139.388294008941,
     "address": "埼玉県熊谷市桜木町1-1-4",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.9,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.9,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.9,
+      "odor": 3.9,
+      "supplies": 3.9,
+      "comfort": 3.9
     },
     "attributes": {
       "hasWashlet": null,
@@ -83,6 +87,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2",
+      "駅・コンビニ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1389062285464,139.388294008941",
     "officialOpenDataId": "od-kumagaya-0025001"
   },
@@ -96,14 +108,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.384496186567,
     "address": "埼玉県熊谷市本町1-12",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3.3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -124,6 +136,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "和洋併設＋0.1"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1459669749151,139.384496186567",
     "officialOpenDataId": "od-kumagaya-0017001"
   },
@@ -136,15 +153,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1739435738167,
     "lng": 139.330082476314,
     "address": "埼玉県熊谷市籠原南1-5",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.7,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.7,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.7,
+      "odor": 3.7,
+      "supplies": 3.7,
+      "comfort": 3.7
     },
     "attributes": {
       "hasWashlet": null,
@@ -165,6 +182,13 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2",
+      "駅・コンビニ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1739435738167,139.330082476314",
     "officialOpenDataId": "od-kumagaya-0041001"
   },
@@ -206,6 +230,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "洋式のみ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1064950635416,139.318350959828",
     "officialOpenDataId": "od-kumagaya-0117000"
   },
@@ -218,15 +247,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1747938187782,
     "lng": 139.330212444709,
     "address": "埼玉県熊谷市新堀713",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.9,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.9,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.9,
+      "odor": 3.9,
+      "supplies": 3.9,
+      "comfort": 3.9
     },
     "attributes": {
       "hasWashlet": null,
@@ -247,6 +276,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2",
+      "駅・コンビニ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1747938187782,139.330212444709",
     "officialOpenDataId": "od-kumagaya-0102000"
   },
@@ -259,15 +296,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1442342668716,
     "lng": 139.384430503564,
     "address": "埼玉県熊谷市本町1-174",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -288,6 +325,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "和洋併設＋0.1",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1442342668716,139.384430503564",
     "officialOpenDataId": "od-kumagaya-0017001-2"
   },
@@ -300,15 +343,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2224829211954,
     "lng": 139.377439190449,
     "address": "埼玉県熊谷市妻沼1420-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.7,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.7,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.7,
+      "odor": 3.7,
+      "supplies": 3.7,
+      "comfort": 3.7
     },
     "attributes": {
       "hasWashlet": null,
@@ -329,6 +372,13 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2224829211954,139.377439190449",
     "officialOpenDataId": "od-kumagaya-0138000"
   },
@@ -341,15 +391,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2275846040907,
     "lng": 139.375258221395,
     "address": "埼玉県熊谷市妻沼1511-3",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -370,6 +420,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2275846040907,139.375258221395",
     "officialOpenDataId": "od-kumagaya-0138000-2"
   },
@@ -382,15 +438,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.227950953284,
     "lng": 139.377320623565,
     "address": "埼玉県熊谷市妻沼1493-12",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -411,6 +467,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "ベビー設備あり＋0.1",
+      "洋式のみ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.227950953284,139.377320623565",
     "officialOpenDataId": "od-kumagaya-0138000-3"
   },
@@ -423,15 +485,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2280644892796,
     "lng": 139.378093611595,
     "address": "埼玉県熊谷市妻沼1479-4",
-    "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
-    "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "cleanlinessGrade": "C",
+    "cleanlinessScore": 2.9,
+    "equipmentGrade": "C",
+    "equipmentScore": 2.9,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 2.9,
+      "odor": 2.9,
+      "supplies": 2.9,
+      "comfort": 2.9
     },
     "attributes": {
       "hasWashlet": null,
@@ -452,6 +514,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "和式のみ−0.3"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2280644892796,139.378093611595",
     "officialOpenDataId": "od-kumagaya-0138000-4"
   },
@@ -464,15 +531,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2072145626434,
     "lng": 139.405964437027,
     "address": "埼玉県熊谷市弁財1975",
-    "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
-    "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "cleanlinessGrade": "C",
+    "cleanlinessScore": 2.7,
+    "equipmentGrade": "C",
+    "equipmentScore": 2.7,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 2.7,
+      "odor": 2.7,
+      "supplies": 2.7,
+      "comfort": 2.7
     },
     "attributes": {
       "hasWashlet": null,
@@ -493,6 +560,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "和式のみ−0.3"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2072145626434,139.405964437027",
     "officialOpenDataId": "od-kumagaya-0046000"
   },
@@ -505,15 +576,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.142533379472,
     "lng": 139.395728142835,
     "address": "埼玉県熊谷市銀座3-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -534,6 +605,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.142533379472,139.395728142835",
     "officialOpenDataId": "od-kumagaya-0016003"
   },
@@ -546,15 +622,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1354353683848,
     "lng": 139.394814026164,
     "address": "埼玉県熊谷市曙町4-8",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -575,6 +651,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1354353683848,139.394814026164",
     "officialOpenDataId": "od-kumagaya-0010004"
   },
@@ -587,15 +668,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1416956488963,
     "lng": 139.382833052609,
     "address": "埼玉県熊谷市宮前町1-29",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -616,6 +697,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1416956488963,139.382833052609",
     "officialOpenDataId": "od-kumagaya-0024001"
   },
@@ -628,15 +714,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1457576768747,
     "lng": 139.367737302206,
     "address": "埼玉県熊谷市赤城町2-120",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -657,6 +743,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1457576768747,139.367737302206",
     "officialOpenDataId": "od-kumagaya-0027002"
   },
@@ -669,15 +760,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1412721095345,
     "lng": 139.372802230036,
     "address": "埼玉県熊谷市見晴町460",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -698,6 +789,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1412721095345,139.372802230036",
     "officialOpenDataId": "od-kumagaya-0143000"
   },
@@ -710,15 +806,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1476239073394,
     "lng": 139.386883044388,
     "address": "埼玉県熊谷市宮町2-68",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -739,6 +835,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1476239073394,139.386883044388",
     "officialOpenDataId": "od-kumagaya-0019002-2"
   },
@@ -751,15 +852,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.178060524071,
     "lng": 139.34373998193,
     "address": "埼玉県熊谷市玉井1973-314",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -780,6 +881,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.178060524071,139.34373998193",
     "officialOpenDataId": "od-kumagaya-0002000"
   },
@@ -792,15 +898,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1486388622663,
     "lng": 139.379420096672,
     "address": "埼玉県熊谷市本石1-10",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -821,6 +927,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1486388622663,139.379420096672",
     "officialOpenDataId": "od-kumagaya-0033001"
   },
@@ -833,15 +944,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1861208330747,
     "lng": 139.332818730478,
     "address": "埼玉県熊谷市別府2-83",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -862,6 +973,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1861208330747,139.332818730478",
     "officialOpenDataId": "od-kumagaya-0021002"
   },
@@ -874,15 +990,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1804953702317,
     "lng": 139.335325631562,
     "address": "埼玉県熊谷市別府5-51",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -903,6 +1019,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1804953702317,139.335325631562",
     "officialOpenDataId": "od-kumagaya-0021005"
   },
@@ -916,14 +1037,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.386692113914,
     "address": "埼玉県熊谷市小曽根992",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -944,6 +1065,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1747082965929,139.386692113914",
     "officialOpenDataId": "od-kumagaya-0070000"
   },
@@ -956,15 +1080,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1612211532079,
     "lng": 139.360726296988,
     "address": "埼玉県熊谷市石原120",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -985,6 +1109,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1612211532079,139.360726296988",
     "officialOpenDataId": "od-kumagaya-0029000"
   },
@@ -998,14 +1126,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.356394923247,
     "address": "埼玉県熊谷市中奈良2264",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1026,6 +1154,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1851422762576,139.356394923247",
     "officialOpenDataId": "od-kumagaya-0134000"
   },
@@ -1039,14 +1170,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.397428637129,
     "address": "埼玉県熊谷市上之1306",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1067,6 +1198,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1602990833638,139.397428637129",
     "officialOpenDataId": "od-kumagaya-0140000"
   },
@@ -1080,14 +1214,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.390818387931,
     "address": "埼玉県熊谷市肥塚702-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1108,6 +1242,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1613191333328,139.390818387931",
     "officialOpenDataId": "od-kumagaya-0028000"
   },
@@ -1121,14 +1258,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.396916422464,
     "address": "埼玉県熊谷市肥塚550-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1149,6 +1286,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1622220466499,139.396916422464",
     "officialOpenDataId": "od-kumagaya-0028000-2"
   },
@@ -1162,14 +1302,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.392242213061,
     "address": "埼玉県熊谷市肥塚980",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1190,6 +1330,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1682808223995,139.392242213061",
     "officialOpenDataId": "od-kumagaya-0028000-3"
   },
@@ -1203,14 +1346,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.394300874377,
     "address": "埼玉県熊谷市中央2-219",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1231,6 +1374,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1539140631086,139.394300874377",
     "officialOpenDataId": "od-kumagaya-0004002"
   },
@@ -1244,14 +1390,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.396831194175,
     "address": "埼玉県熊谷市中央3-169",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1272,6 +1418,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1559531943077,139.396831194175",
     "officialOpenDataId": "od-kumagaya-0004003"
   },
@@ -1285,14 +1434,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.393151771129,
     "address": "埼玉県熊谷市中央3-57",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1313,6 +1462,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1569011482546,139.393151771129",
     "officialOpenDataId": "od-kumagaya-0004003-2"
   },
@@ -1325,15 +1477,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1548941678821,
     "lng": 139.391605501873,
     "address": "埼玉県熊谷市中央1-148",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -1354,6 +1506,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1548941678821,139.391605501873",
     "officialOpenDataId": "od-kumagaya-0004001"
   },
@@ -1367,14 +1524,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.425956272201,
     "address": "埼玉県熊谷市久下1-42",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1395,6 +1552,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1147002113683,139.425956272201",
     "officialOpenDataId": "od-kumagaya-0023001"
   },
@@ -1408,14 +1568,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.427323270582,
     "address": "埼玉県熊谷市久下1-167",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1436,6 +1596,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1170222888816,139.427323270582",
     "officialOpenDataId": "od-kumagaya-0023001-2"
   },
@@ -1449,14 +1612,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.430519278655,
     "address": "埼玉県熊谷市久下3-103",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1477,6 +1640,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1160646404629,139.430519278655",
     "officialOpenDataId": "od-kumagaya-0023003"
   },
@@ -1490,14 +1656,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.434039126936,
     "address": "埼玉県熊谷市久下4-171",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1518,6 +1684,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1196195961273,139.434039126936",
     "officialOpenDataId": "od-kumagaya-0023004"
   },
@@ -1531,14 +1700,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.393743817265,
     "address": "埼玉県熊谷市肥塚393-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1559,6 +1728,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1601424723872,139.393743817265",
     "officialOpenDataId": "od-kumagaya-0028000-4"
   },
@@ -1572,14 +1744,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.345952962404,
     "address": "埼玉県熊谷市玉井南3-19",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1600,6 +1772,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1739513715864,139.345952962404",
     "officialOpenDataId": "od-kumagaya-0005003"
   },
@@ -1613,14 +1788,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.347055752848,
     "address": "埼玉県熊谷市玉井南2-88",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1641,6 +1816,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1766029446922,139.347055752848",
     "officialOpenDataId": "od-kumagaya-0005002"
   },
@@ -1653,15 +1831,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1537355054681,
     "lng": 139.398081186725,
     "address": "埼玉県熊谷市上之1774-2",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -1682,6 +1860,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1537355054681,139.398081186725",
     "officialOpenDataId": "od-kumagaya-0140000-2"
   },
@@ -1695,14 +1878,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.340465590533,
     "address": "埼玉県熊谷市玉井3-69",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1723,6 +1906,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1800352256533,139.340465590533",
     "officialOpenDataId": "od-kumagaya-0002003"
   },
@@ -1736,14 +1922,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.337101957484,
     "address": "埼玉県熊谷市玉井2-24",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1764,6 +1950,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1785480667596,139.337101957484",
     "officialOpenDataId": "od-kumagaya-0002002"
   },
@@ -1776,15 +1965,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1774138545711,
     "lng": 139.33952843818,
     "address": "埼玉県熊谷市玉井5-71",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -1805,6 +1994,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1774138545711,139.33952843818",
     "officialOpenDataId": "od-kumagaya-0002005"
   },
@@ -1818,14 +2012,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.355302970995,
     "address": "埼玉県熊谷市瀬南68",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1846,6 +2040,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1454627292982,139.355302970995",
     "officialOpenDataId": "od-kumagaya-0030000"
   },
@@ -1859,14 +2056,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.408904083914,
     "address": "埼玉県熊谷市平戸493",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1887,6 +2084,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1413457006762,139.408904083914",
     "officialOpenDataId": "od-kumagaya-0067000"
   },
@@ -1900,14 +2100,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.327461241723,
     "address": "埼玉県熊谷市籠原南1-303",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1928,6 +2128,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.172856759224,139.327461241723",
     "officialOpenDataId": "od-kumagaya-0041001-2"
   },
@@ -1941,14 +2144,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.330845759288,
     "address": "埼玉県熊谷市籠原南1-56",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1969,6 +2172,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1718720017693,139.330845759288",
     "officialOpenDataId": "od-kumagaya-0041001-3"
   },
@@ -1982,14 +2188,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.349053834578,
     "address": "埼玉県熊谷市玉井1886",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2010,6 +2216,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1819590032842,139.349053834578",
     "officialOpenDataId": "od-kumagaya-0002000-2"
   },
@@ -2023,14 +2232,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.377365309982,
     "address": "埼玉県熊谷市中奈良899-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2051,6 +2260,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1904380007851,139.377365309982",
     "officialOpenDataId": "od-kumagaya-0134000-2"
   },
@@ -2064,14 +2276,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.411035839151,
     "address": "埼玉県熊谷市上之3042-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2092,6 +2304,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.146985325838,139.411035839151",
     "officialOpenDataId": "od-kumagaya-0140000-3"
   },
@@ -2105,14 +2320,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.339600094368,
     "address": "埼玉県熊谷市下増田882-4",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2133,6 +2348,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2074103284254,139.339600094368",
     "officialOpenDataId": "od-kumagaya-0089000"
   },
@@ -2146,14 +2364,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.430921617784,
     "address": "埼玉県熊谷市下川上509",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2174,6 +2392,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1636680095262,139.430921617784",
     "officialOpenDataId": "od-kumagaya-0116000"
   },
@@ -2187,14 +2408,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.420461812355,
     "address": "埼玉県熊谷市大塚214",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2215,6 +2436,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1683946655337,139.420461812355",
     "officialOpenDataId": "od-kumagaya-0065000"
   },
@@ -2228,14 +2452,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.416234630037,
     "address": "埼玉県熊谷市上中条459-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2256,6 +2480,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1716281642087,139.416234630037",
     "officialOpenDataId": "od-kumagaya-0141000"
   },
@@ -2269,14 +2496,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.390764369097,
     "address": "埼玉県熊谷市今井1138",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2297,6 +2524,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1795216401622,139.390764369097",
     "officialOpenDataId": "od-kumagaya-0120000"
   },
@@ -2310,14 +2540,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.393636920749,
     "address": "埼玉県熊谷市四方寺110-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2338,6 +2568,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1868913412805,139.393636920749",
     "officialOpenDataId": "od-kumagaya-0060000"
   },
@@ -2351,14 +2584,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.385610085299,
     "address": "埼玉県熊谷市肥塚4-158",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2379,6 +2612,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1630140882191,139.385610085299",
     "officialOpenDataId": "od-kumagaya-0028004"
   },
@@ -2392,14 +2628,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.388911373043,
     "address": "埼玉県熊谷市肥塚4-37",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2420,6 +2656,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1617375204015,139.388911373043",
     "officialOpenDataId": "od-kumagaya-0028004-2"
   },
@@ -2433,14 +2672,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.366334129584,
     "address": "埼玉県熊谷市石原1267",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2461,6 +2700,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1517422507689,139.366334129584",
     "officialOpenDataId": "od-kumagaya-0029000-2"
   },
@@ -2474,14 +2716,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.396152187292,
     "address": "埼玉県熊谷市中西3-2378-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2502,6 +2744,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1509384650694,139.396152187292",
     "officialOpenDataId": "od-kumagaya-0013003"
   },
@@ -2514,15 +2759,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1760646868583,
     "lng": 139.332491614795,
     "address": "埼玉県熊谷市新堀地内",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2543,6 +2788,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1760646868583,139.332491614795",
     "officialOpenDataId": "od-kumagaya-0102000-2"
   },
@@ -2555,15 +2805,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1781453306923,
     "lng": 139.333791565048,
     "address": "埼玉県熊谷市新堀地内",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2584,6 +2834,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1781453306923,139.333791565048",
     "officialOpenDataId": "od-kumagaya-0102000-3"
   },
@@ -2596,15 +2851,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1774013256627,
     "lng": 139.331261641636,
     "address": "埼玉県熊谷市新堀地内",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2625,6 +2880,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1774013256627,139.331261641636",
     "officialOpenDataId": "od-kumagaya-0102000-4"
   },
@@ -2638,14 +2898,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.419703141586,
     "address": "埼玉県熊谷市相上1812",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2666,6 +2926,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.0919825764716,139.419703141586",
     "officialOpenDataId": "od-kumagaya-0053000"
   },
@@ -2678,15 +2941,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1368290497189,
     "lng": 139.385420778143,
     "address": "埼玉県熊谷市河原町2-173",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -2707,6 +2970,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1368290497189,139.385420778143",
     "officialOpenDataId": "od-kumagaya-0145002"
   },
@@ -2719,15 +2986,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1359327704625,
     "lng": 139.390052275651,
     "address": "埼玉県熊谷市万平町1-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2748,6 +3015,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1359327704625,139.390052275651",
     "officialOpenDataId": "od-kumagaya-0146001"
   },
@@ -2760,15 +3032,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1713675787682,
     "lng": 139.312113243726,
     "address": "埼玉県熊谷市拾六間774-2",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2789,6 +3061,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1713675787682,139.312113243726",
     "officialOpenDataId": "od-kumagaya-0105000"
   },
@@ -2801,15 +3078,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1825942003416,
     "lng": 139.339428694289,
     "address": "埼玉県熊谷市別府4-44",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2830,6 +3107,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1825942003416,139.339428694289",
     "officialOpenDataId": "od-kumagaya-0021004"
   },
@@ -2843,14 +3125,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.301102974337,
     "address": "埼玉県熊谷市御稜威ケ原284",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2871,6 +3153,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1566947180413,139.301102974337",
     "officialOpenDataId": "od-kumagaya-0086000"
   },
@@ -2883,15 +3168,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1690856455179,
     "lng": 139.327816065471,
     "address": "埼玉県熊谷市籠原南2-102",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -2912,6 +3197,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1690856455179,139.327816065471",
     "officialOpenDataId": "od-kumagaya-0041002"
   },
@@ -2925,14 +3214,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.417983469141,
     "address": "埼玉県熊谷市船木台3-4-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -2953,6 +3242,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.0772723859141,139.417983469141",
     "officialOpenDataId": "od-kumagaya-0026003"
   },
@@ -2965,15 +3257,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.17503023348,
     "lng": 139.333830521774,
     "address": "埼玉県熊谷市新堀598",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -2994,6 +3286,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.17503023348,139.333830521774",
     "officialOpenDataId": "od-kumagaya-0102000-5"
   },
@@ -3006,15 +3303,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1450757505572,
     "lng": 139.372255670263,
     "address": "埼玉県熊谷市伊勢町94",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -3035,6 +3332,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1450757505572,139.372255670263",
     "officialOpenDataId": "od-kumagaya-0036000"
   },
@@ -3048,14 +3351,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.371548302104,
     "address": "埼玉県熊谷市石原2019",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3076,6 +3379,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1479396622404,139.371548302104",
     "officialOpenDataId": "od-kumagaya-0029000-3"
   },
@@ -3088,15 +3394,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1578490448752,
     "lng": 139.345329771782,
     "address": "埼玉県熊谷市小島157-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -3117,6 +3423,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1578490448752,139.345329771782",
     "officialOpenDataId": "od-kumagaya-0088000"
   },
@@ -3129,15 +3441,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1953169098168,
     "lng": 139.336152616039,
     "address": "埼玉県熊谷市西別府1456",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -3158,6 +3470,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1953169098168,139.336152616039",
     "officialOpenDataId": "od-kumagaya-0122000"
   },
@@ -3170,15 +3488,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2241615150969,
     "lng": 139.358515629358,
     "address": "埼玉県熊谷市飯塚200",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3199,6 +3517,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2241615150969,139.358515629358",
     "officialOpenDataId": "od-kumagaya-0114000"
   },
@@ -3211,15 +3534,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2241279666773,
     "lng": 139.349144726112,
     "address": "埼玉県熊谷市妻沼西2-9",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3240,6 +3563,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2241279666773,139.349144726112",
     "officialOpenDataId": "od-kumagaya-0039002"
   },
@@ -3252,15 +3579,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.224206159957,
     "lng": 139.354191867177,
     "address": "埼玉県熊谷市妻沼西2-12",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3281,6 +3608,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.224206159957,139.354191867177",
     "officialOpenDataId": "od-kumagaya-0039002-2"
   },
@@ -3294,14 +3625,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.400278636673,
     "address": "埼玉県熊谷市上須戸952-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3322,6 +3653,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2060112345754,139.400278636673",
     "officialOpenDataId": "od-kumagaya-0100000"
   },
@@ -3335,14 +3669,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.40637323647,
     "address": "埼玉県熊谷市妻沼地内他",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3363,6 +3697,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2203705896474,139.40637323647",
     "officialOpenDataId": "od-kumagaya-0138000-5"
   },
@@ -3375,15 +3712,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.10927118211,
     "lng": 139.308586637453,
     "address": "埼玉県熊谷市板井377-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3404,6 +3741,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.10927118211,139.308586637453",
     "officialOpenDataId": "od-kumagaya-0117000-2"
   },
@@ -3416,15 +3758,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1478109759971,
     "lng": 139.389654820411,
     "address": "埼玉県熊谷市宮町2-39",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3445,6 +3787,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1478109759971,139.389654820411",
     "officialOpenDataId": "od-kumagaya-0019002-3"
   },
@@ -3458,14 +3804,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.379234931723,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3486,6 +3832,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1372969464199,139.379234931723",
     "officialOpenDataId": "od-kumagaya-0147000"
   },
@@ -3499,14 +3848,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.400845669027,
     "address": "埼玉県熊谷市久下4717",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3527,6 +3876,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1250521309042,139.400845669027",
     "officialOpenDataId": "od-kumagaya-0023000"
   },
@@ -3540,14 +3892,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.380515953866,
     "address": "埼玉県熊谷市村岡2062-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3568,6 +3920,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1311653749231,139.380515953866",
     "officialOpenDataId": "od-kumagaya-0118000"
   },
@@ -3581,14 +3936,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.373949030854,
     "address": "埼玉県熊谷市柿沼24-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3609,6 +3964,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1683869639626,139.373949030854",
     "officialOpenDataId": "od-kumagaya-0090000"
   },
@@ -3621,15 +3979,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1511365592545,
     "lng": 139.379726029207,
     "address": "埼玉県熊谷市石原3-27",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3650,6 +4008,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1511365592545,139.379726029207",
     "officialOpenDataId": "od-kumagaya-0029000-4"
   },
@@ -3663,14 +4025,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.3918186403,
     "address": "埼玉県熊谷市西城138～142",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3691,6 +4053,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.202906766867,139.3918186403",
     "officialOpenDataId": "od-kumagaya-0106000"
   },
@@ -3704,14 +4069,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.391308010206,
     "address": "埼玉県熊谷市八ツ口921",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3732,6 +4097,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2140741919471,139.391308010206",
     "officialOpenDataId": "od-kumagaya-0066000"
   },
@@ -3745,14 +4113,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.41007434384,
     "address": "埼玉県熊谷市中曽根653-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3773,6 +4141,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.102274380734,139.41007434384",
     "officialOpenDataId": "od-kumagaya-0072000"
   },
@@ -3785,15 +4156,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1256778297265,
     "lng": 139.326123565868,
     "address": "埼玉県熊谷市三本506",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3814,6 +4185,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1256778297265,139.326123565868",
     "officialOpenDataId": "od-kumagaya-0101000"
   },
@@ -3827,14 +4202,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.340244016268,
     "address": "埼玉県熊谷市押切381-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3855,6 +4230,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.13376359047,139.340244016268",
     "officialOpenDataId": "od-kumagaya-0128000"
   },
@@ -3868,14 +4246,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.316280091522,
     "address": "埼玉県熊谷市上新田101-1",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3896,6 +4274,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1307521712524,139.316280091522",
     "officialOpenDataId": "od-kumagaya-0068000"
   },
@@ -3909,14 +4290,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.349102855439,
     "address": "埼玉県熊谷市樋春165",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -3937,6 +4318,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1320762902229,139.349102855439",
     "officialOpenDataId": "od-kumagaya-0110000"
   },
@@ -3949,15 +4333,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1153332035877,
     "lng": 139.34904842512,
     "address": "埼玉県熊谷市成沢1151",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -3978,6 +4362,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1153332035877,139.34904842512",
     "officialOpenDataId": "od-kumagaya-0111000"
   },
@@ -3991,14 +4379,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.398885759441,
     "address": "埼玉県熊谷市小泉932-5",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4019,6 +4407,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1163106059522,139.398885759441",
     "officialOpenDataId": "od-kumagaya-0104000"
   },
@@ -4032,14 +4423,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.433007175517,
     "address": "埼玉県熊谷市小八林1326",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4060,6 +4451,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.0815199937077,139.433007175517",
     "officialOpenDataId": "od-kumagaya-0113000"
   },
@@ -4072,15 +4466,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1359899197038,
     "lng": 139.399651876961,
     "address": "埼玉県熊谷市銀座7-154",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.4,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.4,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.4,
+      "odor": 3.4,
+      "supplies": 3.4,
+      "comfort": 3.4
     },
     "attributes": {
       "hasWashlet": null,
@@ -4101,6 +4495,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "駅・コンビニ＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1359899197038,139.399651876961",
     "officialOpenDataId": "od-kumagaya-0016007"
   },
@@ -4113,15 +4512,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1445513042552,
     "lng": 139.373572763403,
     "address": "埼玉県熊谷市伊勢町94",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4142,6 +4541,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1445513042552,139.373572763403",
     "officialOpenDataId": "od-kumagaya-0036000-2"
   },
@@ -4155,14 +4560,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.373781562182,
     "address": "埼玉県熊谷市石原2019",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4183,6 +4588,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1534844407069,139.373781562182",
     "officialOpenDataId": "od-kumagaya-0029000-5"
   },
@@ -4195,15 +4603,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1530888492615,
     "lng": 139.346651205205,
     "address": "埼玉県熊谷市小島157-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4224,6 +4632,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1530888492615,139.346651205205",
     "officialOpenDataId": "od-kumagaya-0088000-2"
   },
@@ -4236,15 +4650,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1558376954626,
     "lng": 139.345244989479,
     "address": "埼玉県熊谷市小島157-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4265,6 +4679,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1558376954626,139.345244989479",
     "officialOpenDataId": "od-kumagaya-0088000-3"
   },
@@ -4277,15 +4697,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1563741427007,
     "lng": 139.346950428124,
     "address": "埼玉県熊谷市小島157-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4306,6 +4726,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1563741427007,139.346950428124",
     "officialOpenDataId": "od-kumagaya-0088000-4"
   },
@@ -4318,15 +4744,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1562403018545,
     "lng": 139.343137801642,
     "address": "埼玉県熊谷市小島157-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4347,6 +4773,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1562403018545,139.343137801642",
     "officialOpenDataId": "od-kumagaya-0088000-5"
   },
@@ -4359,15 +4791,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1943197231107,
     "lng": 139.333413852315,
     "address": "埼玉県熊谷市西別府1456",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4388,6 +4820,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1943197231107,139.333413852315",
     "officialOpenDataId": "od-kumagaya-0122000-2"
   },
@@ -4400,15 +4838,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1942888347218,
     "lng": 139.342281658607,
     "address": "埼玉県熊谷市西別府1456",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4429,6 +4867,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1942888347218,139.342281658607",
     "officialOpenDataId": "od-kumagaya-0122000-3"
   },
@@ -4441,15 +4885,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1950167714206,
     "lng": 139.341220773558,
     "address": "埼玉県熊谷市西別府1456",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.5,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.5,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.5,
+      "odor": 3.5,
+      "supplies": 3.5,
+      "comfort": 3.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -4470,6 +4914,12 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "オストメイト対応＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1950167714206,139.341220773558",
     "officialOpenDataId": "od-kumagaya-0122000-4"
   },
@@ -4482,15 +4932,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2237593384921,
     "lng": 139.359373174707,
     "address": "埼玉県熊谷市飯塚200",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4511,6 +4961,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2237593384921,139.359373174707",
     "officialOpenDataId": "od-kumagaya-0114000-2"
   },
@@ -4523,15 +4978,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.223656247473,
     "lng": 139.36036795294,
     "address": "埼玉県熊谷市飯塚200",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4552,6 +5007,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.223656247473,139.36036795294",
     "officialOpenDataId": "od-kumagaya-0114000-3"
   },
@@ -4564,15 +5024,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.2244535413171,
     "lng": 139.358291393484,
     "address": "埼玉県熊谷市飯塚200",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4593,6 +5053,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2244535413171,139.358291393484",
     "officialOpenDataId": "od-kumagaya-0114000-4"
   },
@@ -4606,14 +5071,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.427729011105,
     "address": "埼玉県熊谷市妻沼地内他",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4634,6 +5099,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2042780807761,139.427729011105",
     "officialOpenDataId": "od-kumagaya-0138000-6"
   },
@@ -4647,14 +5115,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.425483116315,
     "address": "埼玉県熊谷市妻沼地内他",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4675,6 +5143,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.205791368777,139.425483116315",
     "officialOpenDataId": "od-kumagaya-0138000-7"
   },
@@ -4688,14 +5159,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.381589360786,
     "address": "埼玉県熊谷市妻沼地内他",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4716,6 +5187,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.2337537483457,139.381589360786",
     "officialOpenDataId": "od-kumagaya-0138000-8"
   },
@@ -4728,15 +5202,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1071086954315,
     "lng": 139.310017156358,
     "address": "埼玉県熊谷市板井377-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.3,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.3,
+      "odor": 3.3,
+      "supplies": 3.3,
+      "comfort": 3.3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4757,6 +5231,11 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2",
+      "利用時間制限あり＋0.1（管理時間帯あり）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1071086954315,139.310017156358",
     "officialOpenDataId": "od-kumagaya-0117000-3"
   },
@@ -4769,15 +5248,15 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lat": 36.1266196423093,
     "lng": 139.326646606307,
     "address": "埼玉県熊谷市三本506",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.2,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.2,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3.2,
+    "equipmentGrade": "B",
+    "equipmentScore": 3.2,
     "subScores": {
-      "cleanliness": 4.2,
-      "odor": 4.2,
-      "supplies": 4.2,
-      "comfort": 4.2
+      "cleanliness": 3.2,
+      "odor": 3.2,
+      "supplies": 3.2,
+      "comfort": 3.2
     },
     "attributes": {
       "hasWashlet": null,
@@ -4798,6 +5277,10 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）",
+      "多機能トイレあり＋0.2"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1266196423093,139.326646606307",
     "officialOpenDataId": "od-kumagaya-0101000-2"
   },
@@ -4811,14 +5294,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.380403075061,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4839,6 +5322,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1370422473137,139.380403075061",
     "officialOpenDataId": "od-kumagaya-0147000-2"
   },
@@ -4852,14 +5338,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.383324590948,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4880,6 +5366,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1361970294626,139.383324590948",
     "officialOpenDataId": "od-kumagaya-0147000-3"
   },
@@ -4893,14 +5382,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.386607526616,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4921,6 +5410,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1352854914081,139.386607526616",
     "officialOpenDataId": "od-kumagaya-0147000-4"
   },
@@ -4934,14 +5426,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.390102448756,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -4962,6 +5454,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1337099422331,139.390102448756",
     "officialOpenDataId": "od-kumagaya-0147000-5"
   },
@@ -4975,14 +5470,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.391246204033,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -5003,6 +5498,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1328354059512,139.391246204033",
     "officialOpenDataId": "od-kumagaya-0147000-6"
   },
@@ -5016,14 +5514,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.377578653902,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -5044,6 +5542,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1378990292497,139.377578653902",
     "officialOpenDataId": "od-kumagaya-0147000-7"
   },
@@ -5057,14 +5558,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.375713362601,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -5085,6 +5586,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.138612952397,139.375713362601",
     "officialOpenDataId": "od-kumagaya-0147000-8"
   },
@@ -5098,14 +5602,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.370941121091,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -5126,6 +5630,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1400141616259,139.370941121091",
     "officialOpenDataId": "od-kumagaya-0147000-9"
   },
@@ -5139,14 +5646,14 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "lng": 139.373511675729,
     "address": "埼玉県熊谷市熊谷2553-2",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.4,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.4,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.4,
-      "odor": 3.4,
-      "supplies": 3.4,
-      "comfort": 3.4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -5167,6 +5674,9 @@ export const KUMAGAYA_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。",
+    "estimateBasis": [
+      "基準値3.0（管理状態不明の公衆トイレの中央値）"
+    ],
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.1398437993141,139.373511675729",
     "officialOpenDataId": "od-kumagaya-0147000-10"
   }

@@ -38,7 +38,10 @@ describe("mapKumagayaRows", () => {
     const f = facilities[0];
     expect(f.id).toBe("od-kumagaya-0000001");
     expect(f.dataSource).toBe("opendata");
-    expect(f.cleanlinessScore).toBe(3.4);
+    // 推定モデル（estimate.ts）: 情報なしの公園トイレは基準値3.0
+    expect(f.cleanlinessScore).toBe(3.0);
+    expect(f.equipmentGrade).toBe("B");
+    expect(f.estimateBasis?.length).toBeGreaterThan(0);
     expect(f.reviewCount).toBe(0);
     // 利用時間列が空でも「24時間」とは断定しない（未確認 = null）
     expect(f.attributes.isOpen24h).toBeNull();
@@ -61,12 +64,14 @@ describe("mapKumagayaRows", () => {
     expect(new Set(facilities.map((f) => f.id)).size).toBe(3);
   });
 
-  it("scores A with wheelchair + equipment, detects station", () => {
+  it("scores station + equipment via the shared estimate model", () => {
     const { facilities } = mapKumagayaRows(HEADER, [
       row({ "名称": "熊谷駅前便所", "車椅子使用者用トイレ有無": "有", "オストメイト設置トイレ有無": "有" }),
     ]);
-    expect(facilities[0].cleanlinessScore).toBe(4.2);
+    // 3.0 + 駅0.2 + 多機能0.2 + オストメイト0.2 = 3.6（推定はA止まりの範囲内）
+    expect(facilities[0].cleanlinessScore).toBe(3.6);
     expect(facilities[0].category).toBe("station");
+    expect(facilities[0].estimateBasis?.join("")).toContain("オストメイト");
   });
 
   it("derives 'both' style only when both counts are positive", () => {

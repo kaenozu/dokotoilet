@@ -34,6 +34,22 @@ describe("convertItems", () => {
     const f = facilities[0];
     expect(f.id).toBe("google-ChIJTEST123");
     expect(f.dataSource).toBe("google");
+    // 回帰: facilityTypeForCategory 共通化の際に FACILITY_TYPE[category] と
+    // 誤記して facilityType が undefined 欠落した。再発防止のため全カテゴリを検証
+    expect(f.facilityType).toBe("公衆トイレ");
+    for (const [category, label] of [
+      ["department", "商業施設・デパート"],
+      ["station", "駅・交通施設"],
+      ["convenience", "コンビニ"],
+      ["hotel", "ホテル・オフィス"],
+      ["cafe", "カフェ・飲食店"],
+    ] as const) {
+      const { facilities: one } = await convertItems(
+        [{ ...base, name: `種別確認-${category}`, category }],
+        { geocode: noGeo }
+      );
+      expect(one[0].facilityType).toBe(label);
+    }
     expect(f.cleanlinessScore).toBe(4.2);
     expect(f.equipmentScore).toBe(4.2);
     expect(f.attributes.hasWashlet).toBe(true);
