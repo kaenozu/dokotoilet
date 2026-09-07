@@ -7,6 +7,8 @@ import {
 import { gradeForScore } from '../lib/scoring';
 import { facilityTypeForCategory } from '../lib/grade';
 import { newReviewId } from '../lib/ids';
+import { toiletFormFeedback } from '../lib/reviewForm';
+import { BdiText } from './BdiText';
 import { PlusCircle } from 'lucide-react';
 
 /** あり / 不明 / なし の3値ピッカー（不明=未確認。「なし」と区別する） */
@@ -70,9 +72,12 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
 
   if (!isOpen) return null;
 
+  // 事前バリデーション（サーバー textPolicy と同一判定）。送信前に日本語 copy で理由を提示。
+  const formError = toiletFormFeedback({ name, address, floorInfo, description });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || formError) return;
 
     const grade = gradeForScore(cleanlinessScore);
 
@@ -167,6 +172,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
               placeholder="例: 新宿マルイ本館 4F レストルーム"
               className="w-full px-3 py-2 bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
             />
+            {formError && (
+              <p role="alert" className="text-danger text-xs mt-1">{formError}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -279,7 +287,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all flex items-center justify-center gap-2"
+            disabled={!!formError}
+            title={formError ?? undefined}
+            className="w-full py-2.5 px-4 bg-accent hover:bg-accent-strong text-white font-bold rounded-lg shadow-[0_3px_10px_rgba(11,110,82,0.22)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <PlusCircle className="w-4 h-4" />
             <span>マップにトイレを追加登録</span>

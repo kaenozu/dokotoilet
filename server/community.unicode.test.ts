@@ -44,8 +44,8 @@ import {
   validateReviewInput,
   validateReportInput,
 } from "./community";
-import { normalizeForUrlScan, containsUrlLike } from "./shared/textPolicy";
-import { sanitizeText, hasVisibleContent } from "./shared/textPolicy";
+import { normalizeForUrlScan, containsUrlLike } from "../src/lib/textPolicy";
+import { sanitizeText, hasVisibleContent } from "../src/lib/textPolicy";
 
 const goodReview = () => ({
   userName: "たろう",
