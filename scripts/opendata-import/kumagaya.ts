@@ -1,5 +1,5 @@
 import type { FacilityCategory, ToiletFacility } from "../../src/types";
-import { gradeForScore } from "../../src/lib/scoring";
+import { estimateEquipmentScore } from "../../src/lib/estimate";
 
 // 熊谷市「公衆トイレ一覧」（くまっぷオープンデータ、2023/10/02掲載）
 // 出典: https://www2.wagmap.jp/kumagaya/OpenData
@@ -119,14 +119,7 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
     const baby = has(r[c.baby]);
     const ostomate = has(r[c.ostomate]);
     const barrier = num(r[c.barrier]);
-
-    // 設備推定スコア（実測口コミなし）。サーバーのOSMマッピングと同基準
-    let score = 3.4;
-    let grade = gradeForScore(score);
-    if (wheelchair && (baby || ostomate || barrier > 0)) {
-      score = 4.2;
-      grade = gradeForScore(score);
-    }
+    const hasMultipurpose = wheelchair || barrier > 0;
 
     const yoshiki = num(r[c.mYoshiki]) + num(r[c.wYoshiki]) + num(r[c.uYoshiki]);
     const washiki = num(r[c.mWashiki]) + num(r[c.wWashiki]) + num(r[c.uWashiki]);
@@ -152,6 +145,19 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
     // 常時開放と断定せず null（未確認）とする。表示文言（常時開放）は openingHours 側。
     const isOpen24h: boolean | null = hasHours ? false : null;
     const category: FacilityCategory = name.includes("駅") ? "station" : "park";
+    // 設備推定スコア（実測口コミなし）。推定モデルは src/lib/estimate.ts に一本化
+    const estimate = estimateEquipmentScore({
+      category,
+      hasWashlet: null, // CSVにウォシュレット列なし。断定せず null
+      hasMultipurpose: hasMultipurpose,
+      hasOstomate: ostomate,
+      hasBabyTable: baby,
+      toiletStyle,
+      isFree: null,
+      isOpen24h,
+    });
+    const score = estimate.score;
+    const grade = estimate.grade;
     const place = (r[c.place] || "").trim();
 
     facilities.push({
@@ -188,6 +194,7 @@ export function mapKumagayaRows(header: string[], rows: string[][]): KumagayaMap
       reviewCount: 0,
       reviews: [],
       facilityNote: `出典：熊谷市「公衆トイレ一覧」（くまっぷオープンデータ）。公式設備データ。`,
+      estimateBasis: estimate.basis,
       googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
       officialOpenDataId: id,
     });

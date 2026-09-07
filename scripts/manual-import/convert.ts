@@ -175,7 +175,7 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     facilities.push({
       id,
       name,
-      facilityType: FACILITY_TYPE[category],
+      facilityType: FACILITY_TYPE(category),
       category,
       dataSource: "google",
       lat,

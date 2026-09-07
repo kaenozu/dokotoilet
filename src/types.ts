@@ -98,6 +98,9 @@ export interface ToiletFacility {
   // 記録し、「口コミなし」と「未取込」を区別するために使う。undefined＝不明
   externalReviewCount?: number;
   externalReviewSource?: string;
+  // 推定グレードの根拠（src/lib/estimate.ts の basis）。実測レビューが付くまでの
+  // 暫定目安であることをUIで開示するために使う。undefined＝推定根拠なし
+  estimateBasis?: string[];
   facilitySummary?: string;
   // 施設メモ。旧aiSummary（AIが生成したものではないため改名）
   facilityNote?: string;
