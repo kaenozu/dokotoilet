@@ -49,11 +49,15 @@ bun start        # 本番起動（dist/server.cjs）
 
 - 投稿系は 10回/分・IP、投票系は 30回/分・IP のレート制限。
 - スパムURL判定（コメント・通報理由・施設登録の各テキスト欄）は、NFKC正規化と
-  書式/制御文字（LRM・ZWSPなどの不可視文字）の除去を行った上でURLパターンに
-  一致させる（`server/shared/urlGuard.ts`）。全角英字（ｈｔｔｐｓ://）や不可視文字を
+  書式/制御文字（LRM・ZWSPなどの不可視文字）+ Default_Ignorable_Code_Point
+  （バリエーションセレクタ・ハングルフィラーなど、\p{C} ではないが表示上
+  完全に不可視の文字）の除去を行った上でURLパターンに一致させる
+  （`server/shared/urlGuard.ts`）。全角英字（ｈｔｔｐｓ://）や不可視文字を
   挟んだURLも検出する。本文中の "http" という語やTLD風表記も拒否される
   （意図的な過剰拒否。unicode監査スイート `server/community.unicode.test.ts` が
-  挙動を固定している）。
+  挙動を固定し、プロパティベースファズ `server/community.fuzz.test.ts`
+  （fast-check）が「任意のUnicode入力でクラッシュしない・URL/長さ/不可視文字の
+  保証をすり抜けない」を普遍的に検証している）。
 - 保存先は `data/community.json`（`COMMUNITY_STORE_PATH` で変更可）。
   **データはgit管理で運用する**（`.gitignore` で `data/community.json` のみ追跡）。
   再起動・デプロイ後の復元と、投稿内容の差分レビュー・手動キュレーションにgitを使う。
