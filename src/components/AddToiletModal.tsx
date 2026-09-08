@@ -4,7 +4,7 @@ import {
   FacilityCategory,
   TriState,
 } from '../types';
-import { gradeForScore } from '../lib/scoring';
+
 import { facilityTypeForCategory } from '../lib/grade';
 import { newReviewId } from '../lib/ids';
 import { toiletFormFeedback } from '../lib/reviewForm';
@@ -61,7 +61,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
   const [category, setCategory] = useState<FacilityCategory>('department');
   const [address, setAddress] = useState('');
   const [floorInfo, setFloorInfo] = useState('');
-  const [cleanlinessScore, setCleanlinessScore] = useState(4.5);
+
   // 設備は「あり/なし/不明」の3値。未確認を false（なし）と断定しない
   const [hasWashlet, setHasWashlet] = useState<TriState>(null);
   const [hasMultipurpose, setHasMultipurpose] = useState<TriState>(null);
@@ -79,8 +79,6 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
     e.preventDefault();
     if (!name.trim() || formError) return;
 
-    const grade = gradeForScore(cleanlinessScore);
-
     const newFacility: ToiletFacility = {
       id: `toilet-user-${newReviewId()}`,
       name: name.trim(),
@@ -92,19 +90,12 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
       lng: defaultLocation.lng,
       address: address.trim() || '現在地周辺',
       floorInfo: floorInfo.trim() || undefined,
-      cleanlinessGrade: grade,
-      cleanlinessScore,
-      // 登録者の申告スコアは実測口コミではないため、自動レビューは作らない。
-      // reviewCount: 0（未評価）でサーバー側の正規化（reviews: []）と一致させ、
-      // 口コミは通常の投稿フローで貯める（サーバー不整合の原因だった自動初回レビュー廃止）。
-      equipmentGrade: grade,
-      equipmentScore: cleanlinessScore,
-      subScores: {
-        cleanliness: cleanlinessScore,
-        odor: Math.min(5, cleanlinessScore + 0.1),
-        supplies: cleanlinessScore,
-        comfort: cleanlinessScore,
-      },
+      // 施設登録はメタデータだけを保存する。清潔度は登録後の通常レビューで評価する。
+      cleanlinessGrade: null as any,
+      cleanlinessScore: null as any,
+      equipmentGrade: null as any,
+      equipmentScore: null as any,
+      subScores: { cleanliness: null, odor: null, supplies: null, comfort: null } as any,
       attributes: {
         hasWashlet,
         hasMultipurpose,
@@ -120,7 +111,7 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
         hasPaperTowelOrDryer: null,
         toiletStyle: null,
       },
-      openingHours: isOpen24h ? '24時間営業' : '施設営業時間に準ずる',
+      openingHours: isOpen24h === true ? '24時間営業' : isOpen24h === false ? '施設営業時間に準ずる' : '営業時間未確認',
       description: description.trim() || 'ユーザーによって登録されたトイレ情報です。',
       reviewCount: 0,
       reviews: [],
@@ -222,26 +213,9 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
             />
           </div>
 
-          {/* Cleanliness Score */}
-          <div className="bg-surface-2 p-3 rounded-xl border border-line">
-            <div className="flex justify-between items-center mb-1">
-              <span className="font-semibold text-muted">
-                きれい度スコア: <strong className="text-accent text-sm">{cleanlinessScore}</strong>
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-accent-soft text-accent border border-accent/30">
-                Grade {gradeForScore(cleanlinessScore)}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="0.1"
-              value={cleanlinessScore}
-              onChange={(e) => setCleanlinessScore(parseFloat(e.target.value))}
-              className="w-full accent-[#0b6e52] cursor-pointer"
-            />
-          </div>
+          <p className="text-[11px] text-faint bg-surface-2 p-3 rounded-xl border border-line">
+            清潔度・におい・備品・快適度は、施設登録とは分離した通常のレビューで評価します。未確認の項目は推測して保存しません。
+          </p>
 
           {/* Equipment (tri-state: あり / 不明 / なし) */}
           <div>

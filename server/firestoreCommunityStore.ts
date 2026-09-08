@@ -439,11 +439,14 @@ export class FirestoreCommunityStore implements CommunityRepository {
       const facilityId = String(data.facilityId ?? "");
       const kind = data.facilityKind === "community" ? "community" : "external";
       const related = await tx.get(this.col("reports").where("reviewId", "==", reviewId)) as FirestoreQuerySnapshotLike;
+      const aggregateRef = this.col("facility_aggregates").doc(facilityId);
+      const aggregateSnap = kind === "community"
+        ? await tx.get(aggregateRef) as FirestoreDocumentSnapshotLike
+        : null;
       const allReviews = await tx.get(this.col("reviews").where("facilityId", "==", facilityId)) as FirestoreQuerySnapshotLike;
       const remaining = allReviews.docs
         .filter((doc) => doc.id !== reviewId && (doc.data() ?? {}).deleted !== true)
         .map(reviewFromDoc);
-      const aggregateRef = this.col("facility_aggregates").doc(facilityId);
       const facRef = this.col("community_toilets").doc(facilityId);
       const facSnap = kind === "community" ? await tx.get(facRef) as FirestoreDocumentSnapshotLike : null;
       tx.update(reviewRef, {
@@ -458,21 +461,29 @@ export class FirestoreCommunityStore implements CommunityRepository {
       tx.update(ref, { status: "resolved", resolvedAt: nowIso, resolution });
     }
     if (kind === "community" && facilityId) {
-      const count = remaining.length;
-      const overallSum = remaining.reduce(
-        (s, r) => s + (r.overallScore ?? r.rating ?? 0),
-        0
-      );
-      const cleanlinessSum = remaining.reduce((s, r) => s + (r.cleanlinessScore ?? 0), 0);
-      const odorSum = remaining.reduce((s, r) => s + (r.odorScore ?? 0), 0);
-      const suppliesSum = remaining.reduce((s, r) => s + (r.suppliesScore ?? 0), 0);
-      tx.set(aggregateRef, {
-          reviewCount: count,
-          overallSum,
-          cleanlinessSum,
-          odorSum,
-          suppliesSum,
-      });
+      const remainingCount = remaining.length;
+      const fallbackAggregate: AggregateDoc = {
+        reviewCount: remainingCount,
+        overallSum: remaining.reduce((s, r) => s + (r.overallScore ?? r.rating ?? 0), 0),
+        cleanlinessSum: remaining.reduce((s, r) => s + (r.cleanlinessScore ?? 0), 0),
+        odorSum: remaining.reduce((s, r) => s + (r.odorScore ?? 0), 0),
+        suppliesSum: remaining.reduce((s, r) => s + (r.suppliesScore ?? 0), 0),
+      };
+      // The aggregate is read in the same transaction as addReview.  Decrementing
+      // it, rather than rebuilding from a non-conflicting query, prevents a
+      // concurrent review from being lost between the query and commit.
+      const existingAggregate = aggregateSnap?.exists ? asAggregate(aggregateSnap.data()) : fallbackAggregate;
+      const deletedAggregate: AggregateDoc = {
+        reviewCount: Math.max(0, existingAggregate.reviewCount - 1),
+        overallSum: existingAggregate.overallSum - (data.overallScore ?? data.rating ?? 0),
+        cleanlinessSum: existingAggregate.cleanlinessSum - (data.cleanlinessScore ?? 0),
+        odorSum: existingAggregate.odorSum - (data.odorScore ?? 0),
+        suppliesSum: existingAggregate.suppliesSum - (data.suppliesScore ?? 0),
+      };
+        const count = deletedAggregate.reviewCount;
+        const overallSum = deletedAggregate.overallSum;
+        const cleanlinessSum = deletedAggregate.cleanlinessSum;
+        tx.set(aggregateRef, deletedAggregate);
       if (!facSnap?.exists) return { found: true, facilityId, kind, reviewCount: count };
         if (count === 0) {
           const raw = (facSnap.data() ?? {}) as Record<string, any>;

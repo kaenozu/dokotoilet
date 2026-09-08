@@ -22,6 +22,7 @@ export async function exportCommunitySnapshotFromFirestore(
 
   for (const doc of reviewSnap.docs) {
     const data = doc.data() ?? {};
+    if (data.deleted === true) continue;
     const facilityId = String(data.facilityId ?? "");
     if (!facilityId) continue;
     const target = data.facilityKind === "external" ? externalReviews : communityReviews;
@@ -66,6 +67,10 @@ export async function exportCommunitySnapshotFromFirestore(
       reviewId: String(data.reviewId ?? ""),
       reason: String(data.reason ?? ""),
       createdAt: String(data.createdAt ?? ""),
+      ...(data.status === "resolved" ? { status: "resolved" as const } : {}),
+      ...(typeof data.resolvedAt === "string" ? { resolvedAt: data.resolvedAt } : {}),
+      ...(typeof data.resolution === "string" ? { resolution: data.resolution } : {}),
+      ...(typeof data.adminNote === "string" ? { adminNote: data.adminNote } : {}),
     };
   });
 
