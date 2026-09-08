@@ -109,6 +109,14 @@ describe("createCommunityRuntime", () => {
       { id: "osm-node-2", source: "osm", origin: "live-osm" },
     ]);
     expect(await runtime.isKnownExternalFacility("osm-node-2")).toBe(true);
+
+    const restarted = await createCommunityRuntime({
+      backend: "json",
+      nodeEnv: "test",
+      jsonPath: path.join(dir, "community.json"),
+      initialExternalFacilities: [],
+    });
+    expect(await restarted.isKnownExternalFacility("osm-node-2")).toBe(true);
   });
 
   it("persists and validates external facilities through Firestore", async () => {

@@ -127,6 +127,14 @@ describe("publicToilets", () => {
     expect(out[0].reviews[0]).not.toHaveProperty("ipHash");
     expect(out[0].reviews[0].comment).toBe("x");
   });
+
+  it("drops malformed persisted reviews instead of making the GET mapper throw", () => {
+    const out = publicToilets([
+      { id: "t", reviews: [null, { id: "broken" }, { id: "ok", comment: "safe" }] } as any,
+    ]);
+    expect(out[0].reviews).toHaveLength(1);
+    expect(out[0].reviews[0]).toMatchObject({ id: "ok", comment: "safe" });
+  });
 });
 
 describe("hashIp", () => {

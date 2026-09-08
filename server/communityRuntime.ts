@@ -123,6 +123,11 @@ export async function createCommunityRuntime(
   // the legacy JSON validator path.
   registry.registerMany(Object.keys(await configured.store.getExternalReviews()));
 
+  // JSON stores known external IDs as empty review arrays so the registry survives restart.
+  if (configured.backend === "json") {
+    await configured.store.registerExternalFacilities(initial);
+  }
+
   if (configured.backend === "firestore") {
     const firestoreStore = configured.store;
     await firestoreStore.registerExternalFacilities(initial);
@@ -154,10 +159,13 @@ export async function createCommunityRuntime(
       registry.has(canonicalizeExternalFacilityId(facilityId)),
     observeExternalFacilities: async (facilities) => {
       // JSONバックエンドでは store.registerExternalFacilities が externalReviews の
-      // キーを作るため、ここで正準IDへ写像してから登録する。
-      registry.registerMany(
-        facilities.map((item) => canonicalizeExternalFacilityId(item.id))
-      );
+      // キーを作るため、ここで正準IDへ写像してから永続登録する。
+      const normalized = facilities.map((item) => ({
+        ...item,
+        id: canonicalizeExternalFacilityId(item.id),
+      }));
+      await configured.store.registerExternalFacilities(normalized);
+      registry.registerMany(normalized.map((item) => item.id));
     },
   };
 }
