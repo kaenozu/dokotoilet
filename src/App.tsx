@@ -67,41 +67,44 @@ const SEED_ID_ALIASES = buildFacilityIdAliases(RAW_SEED_TOILETS, SEED_TOILETS);
 const SEED_ID_SET = new Set(SEED_TOILETS.map((t) => t.id));
 
 export function sanitizeToiletFacility(raw: any): ToiletFacility {
-  const cleanlinessScore =
-    typeof raw?.cleanlinessScore === 'number' && !isNaN(raw.cleanlinessScore)
+  const unscoredCommunityRegistration =
+    raw?.dataSource === 'community' && raw?.reviewCount === 0 &&
+    raw?.cleanlinessScore == null && raw?.equipmentScore == null;
+  const cleanlinessScore = unscoredCommunityRegistration
+    ? null
+    : typeof raw?.cleanlinessScore === 'number' && !isNaN(raw.cleanlinessScore)
       ? raw.cleanlinessScore
       : typeof raw?.equipmentScore === 'number' && !isNaN(raw.equipmentScore)
       ? raw.equipmentScore
       : 3.0;
 
-  const cleanlinessGrade =
-    raw?.cleanlinessGrade || gradeForScore(cleanlinessScore);
+  const cleanlinessGrade = unscoredCommunityRegistration
+    ? null
+    : raw?.cleanlinessGrade || gradeForScore(cleanlinessScore);
 
-  const equipmentScore =
-    typeof raw?.equipmentScore === 'number' && !isNaN(raw.equipmentScore)
+  const equipmentScore = unscoredCommunityRegistration
+    ? null
+    : typeof raw?.equipmentScore === 'number' && !isNaN(raw.equipmentScore)
       ? raw.equipmentScore
       : cleanlinessScore;
 
-  const equipmentGrade =
-    raw?.equipmentGrade || gradeForScore(equipmentScore);
+  const equipmentGrade = unscoredCommunityRegistration
+    ? null
+    : raw?.equipmentGrade || gradeForScore(equipmentScore);
 
   const subScores = {
-    cleanliness:
+    cleanliness: unscoredCommunityRegistration ? null :
       typeof raw?.subScores?.cleanliness === 'number' && !isNaN(raw.subScores.cleanliness)
-        ? raw.subScores.cleanliness
-        : cleanlinessScore,
-    odor:
+        ? raw.subScores.cleanliness : cleanlinessScore,
+    odor: unscoredCommunityRegistration ? null :
       typeof raw?.subScores?.odor === 'number' && !isNaN(raw.subScores.odor)
-        ? raw.subScores.odor
-        : cleanlinessScore,
-    supplies:
+        ? raw.subScores.odor : cleanlinessScore,
+    supplies: unscoredCommunityRegistration ? null :
       typeof raw?.subScores?.supplies === 'number' && !isNaN(raw.subScores.supplies)
-        ? raw.subScores.supplies
-        : cleanlinessScore,
-    comfort:
+        ? raw.subScores.supplies : cleanlinessScore,
+    comfort: unscoredCommunityRegistration ? null :
       typeof raw?.subScores?.comfort === 'number' && !isNaN(raw.subScores.comfort)
-        ? raw.subScores.comfort
-        : cleanlinessScore,
+        ? raw.subScores.comfort : cleanlinessScore,
   };
 
   const rawAttrs = (raw?.attributes ?? {}) as Record<string, unknown>;
@@ -553,7 +556,6 @@ export default function App() {
           category: newFacility.category,
           address: newFacility.address,
           floorInfo: newFacility.floorInfo,
-          cleanlinessScore: newFacility.cleanlinessScore,
           description: newFacility.description,
           lat: newFacility.lat,
           lng: newFacility.lng,

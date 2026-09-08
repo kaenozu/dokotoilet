@@ -69,7 +69,8 @@ export interface ToiletInput {
   category: (typeof CATEGORIES)[number];
   address: string;
   floorInfo?: string;
-  cleanlinessScore: number;
+  /** Legacy field accepted for wire compatibility but never used for registration metadata. */
+  cleanlinessScore?: number;
   description: string;
   lat: number;
   lng: number;
@@ -94,9 +95,10 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
   if (typeof body.lng !== "number" || body.lng < -180 || body.lng > 180)
     return { ok: false, error: "invalid lng" };
   if (
-    typeof body.cleanlinessScore !== "number" ||
-    body.cleanlinessScore < 1 ||
-    body.cleanlinessScore > 5
+    body.cleanlinessScore !== undefined &&
+    (typeof body.cleanlinessScore !== "number" ||
+      body.cleanlinessScore < 1 ||
+      body.cleanlinessScore > 5)
   )
     return { ok: false, error: "invalid cleanlinessScore" };
 
@@ -140,7 +142,6 @@ export function validateToiletInput(body: any): ValidationResult<ToiletInput> {
       category: body.category,
       address: addressField.value,
       floorInfo: floorInfoField.value,
-      cleanlinessScore: body.cleanlinessScore,
       description: descriptionField.value,
       lat: body.lat,
       lng: body.lng,
@@ -910,7 +911,7 @@ export function createCommunityRouter(
         return;
       }
 
-      const t: ToiletFacility = {
+      const t = {
         id: v.value.id,
         name: v.value.name,
         facilityType:
@@ -929,16 +930,6 @@ export function createCommunityRouter(
         lng: v.value.lng,
         address: v.value.address,
         floorInfo: v.value.floorInfo,
-        cleanlinessGrade: gradeForScore(v.value.cleanlinessScore),
-        cleanlinessScore: v.value.cleanlinessScore,
-        equipmentGrade: gradeForScore(v.value.cleanlinessScore),
-        equipmentScore: v.value.cleanlinessScore,
-        subScores: {
-          cleanliness: v.value.cleanlinessScore,
-          odor: Math.min(5, v.value.cleanlinessScore + 0.1),
-          supplies: v.value.cleanlinessScore,
-          comfort: v.value.cleanlinessScore,
-        },
         attributes: {
           hasWashlet: v.value.attributes.hasWashlet,
           hasMultipurpose: v.value.attributes.hasMultipurpose,
@@ -953,14 +944,17 @@ export function createCommunityRouter(
           hasPaperTowelOrDryer: null,
           toiletStyle: null,
         },
-        openingHours: v.value.attributes.isOpen24h
-          ? "24時間営業"
-          : "施設営業時間に準ずる",
+        openingHours:
+          v.value.attributes.isOpen24h === true
+            ? "24時間営業"
+            : v.value.attributes.isOpen24h === false
+            ? "施設営業時間に準ずる"
+            : "営業時間未確認",
         description: v.value.description,
         reviewCount: 0,
         reviews: [],
         facilityNote: "ユーザー報告に基づく新規登録トイレ情報。",
-      };
+      } as unknown as ToiletFacility;
 
       const { added } = await store.addToilet(t);
       if (!added) {

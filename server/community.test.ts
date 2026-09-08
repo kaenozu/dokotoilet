@@ -429,6 +429,45 @@ describe("CommunityStore", () => {
   });
 });
 
+describe("community registration semantics", () => {
+  it("accepts metadata without a cleanliness review and preserves unknown hours", () => {
+    const result = validateToiletInput({
+      ...goodToilet(),
+      cleanlinessScore: undefined,
+      attributes: { isOpen24h: null },
+    });
+    expect(result.ok).toBe(true);
+    expect(result.value).not.toHaveProperty("cleanlinessScore");
+    expect(result.value?.attributes.isOpen24h).toBeNull();
+  });
+
+  it("does not derive review or equipment dimensions from registration metadata", async () => {
+    let saved: any;
+    const store = {
+      addToilet: async (toilet: any) => { saved = toilet; return { added: true }; },
+    } as any;
+    const app = express();
+    app.use(express.json());
+    app.use("/api/community", createCommunityRouter(store, "test"));
+    const server = createServer(app);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const port = (server.address() as any).port;
+    const response = await fetch(`http://127.0.0.1:${port}/api/community/toilets`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...goodToilet(), cleanlinessScore: undefined, attributes: { isOpen24h: null } }),
+    });
+    expect(response.status, await response.text()).toBe(201);
+    expect(saved).not.toHaveProperty("equipmentScore");
+    expect(saved).not.toHaveProperty("equipmentGrade");
+    expect(saved).not.toHaveProperty("subScores");
+    expect(saved).not.toHaveProperty("cleanlinessScore");
+    expect(saved.attributes.isOpen24h).toBeNull();
+    expect(saved.openingHours).toBe("営業時間未確認");
+    await new Promise<void>((resolve, reject) => server.close((e) => e ? reject(e) : resolve()));
+  });
+});
+
 describe("community router async errors", () => {
   it("returns 500 and remains usable when persistence fails", async () => {
     const failing = { getToilets: async () => { throw new Error("disk failure"); }, getExternalReviews: async () => ({}) } as any;
