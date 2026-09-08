@@ -97,7 +97,11 @@ class Collection implements FirestoreCollectionLike {
 class Tx implements FirestoreTransactionLike {
   private writes: Array<() => void> = [];
   constructor(private db: FakeFirestore) {}
-  async get(ref: FirestoreDocumentRefLike) { return ref.get(); }
+  async get(ref: FirestoreDocumentRefLike): Promise<FirestoreDocumentSnapshotLike>;
+  async get(query: FirestoreQueryLike): Promise<FirestoreQuerySnapshotLike>;
+  async get(ref: FirestoreDocumentRefLike | FirestoreQueryLike) {
+    return ref.get();
+  }
   create(ref: FirestoreDocumentRefLike, data: Plain) {
     this.writes.push(() => {
       const r = ref as DocRef;
@@ -252,6 +256,34 @@ describe("FirestoreCommunityStore", () => {
     expect(await store.addReport("wrong", reviewId, "reason")).toEqual({ ok: false, found: false });
     expect(await store.addReport("osm-node-1", reviewId, "reason")).toEqual({ ok: true, found: true });
     expect(db.bucket("reports").size).toBe(1);
+  });
+
+  it("serializes duplicate reports and permits a new report after resolution", async () => {
+    const db = new FakeFirestore();
+    const store = new FirestoreCommunityStore(db);
+    await store.registerExternalFacilities!([{ id: "osm-node-1", source: "osm", origin: "migration" }]);
+    const added = await store.addReview("osm-node-1", review("clean"), "ip-a");
+    const reviewId = added.reviews![0].id;
+    const results = await Promise.all([
+      store.addReport("osm-node-1", reviewId, "same reason"),
+      store.addReport("osm-node-1", reviewId, "same reason"),
+    ]);
+    expect(results.filter((r) => r.ok)).toHaveLength(1);
+    expect(results.filter((r) => r.duplicate)).toHaveLength(1);
+    const reportId = [...db.bucket("reports").keys()][0];
+    expect((await store.resolveReport(reportId)).found).toBe(true);
+    expect((await store.addReport("osm-node-1", reviewId, "same reason")).ok).toBe(true);
+  });
+
+  it("deletes a review and recomputes its aggregate in the same transaction", async () => {
+    const db = new FakeFirestore();
+    const store = new FirestoreCommunityStore(db);
+    await store.addToilet(facility());
+    const added = await store.addReview("toilet-user-a", review("clean"), "ip-a");
+    const reviewId = added.toilet!.reviews[0].id;
+    expect((await store.deleteReview(reviewId)).reviewCount).toBe(0);
+    expect(db.bucket("facility_aggregates").get("toilet-user-a")).toMatchObject({ reviewCount: 0 });
+    expect((await store.getToilets())[0].reviewCount).toBe(0);
   });
 
   it("lists known external facility ids after registration", async () => {

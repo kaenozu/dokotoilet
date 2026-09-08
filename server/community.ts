@@ -272,11 +272,38 @@ export interface CommunityDB {
 export function publicToilets(toilets: ToiletFacility[]): ToiletFacility[] {
   return toilets.map((t) => ({
     ...t,
-    reviews: t.reviews.map((r: any) => {
-      const { ipHash: _dropped, ...pub } = r;
-      return pub;
+    reviews: (Array.isArray(t.reviews) ? t.reviews : []).flatMap((raw: unknown) => {
+      const r = normalizePersistedReview(raw);
+      if (!r) return [];
+      const { ipHash: _dropped, ...pub } = r as ToiletReview & { ipHash?: unknown };
+      return [pub];
     }),
   }));
+}
+
+function normalizePersistedReview(raw: unknown): ToiletReview | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const value = raw as Record<string, unknown>;
+  if (typeof value.id !== "string" || !value.id || typeof value.comment !== "string") {
+    return null;
+  }
+  const score = (key: string, fallback: number): number => {
+    const n = value[key];
+    return typeof n === "number" && Number.isFinite(n) ? n : fallback;
+  };
+  return {
+    ...value,
+    id: value.id,
+    userName: typeof value.userName === "string" ? value.userName : "匿名",
+    rating: score("rating", score("overallScore", 0)),
+    overallScore: score("overallScore", score("rating", 0)),
+    cleanlinessScore: score("cleanlinessScore", 0),
+    odorScore: score("odorScore", 0),
+    suppliesScore: score("suppliesScore", 0),
+    comment: value.comment,
+    createdAt: typeof value.createdAt === "string" ? value.createdAt : "",
+    helpfulCount: score("helpfulCount", 0),
+  } as ToiletReview;
 }
 
 const EMPTY_DB: CommunityDB = {
@@ -365,7 +392,13 @@ export class CommunityStore {
         Number.isFinite((t as { lat?: number }).lat) &&
         typeof (t as { lng?: unknown }).lng === "number" &&
         Number.isFinite((t as { lng?: number }).lng)
-    ) as ToiletFacility[];
+    ).map((t) => ({
+      ...t,
+      reviews: (Array.isArray(t.reviews) ? t.reviews : []).flatMap((raw) => {
+        const normalized = normalizePersistedReview(raw);
+        return normalized ? [normalized] : [];
+      }),
+    })) as ToiletFacility[];
     const dropped =
       toiletsRaw.length -
       toilets.length +
@@ -406,6 +439,12 @@ export class CommunityStore {
         sanitizeField(r, "userName");
         sanitizeField(r, "comment");
       }
+    }
+    for (const [facilityId, list] of Object.entries(externalReviews)) {
+      externalReviews[facilityId] = list.flatMap((raw) => {
+        const normalized = normalizePersistedReview(raw);
+        return normalized ? [normalized] : [];
+      });
     }
     for (const list of Object.values(externalReviews)) {
       for (const r of list as unknown as Record<string, unknown>[]) {

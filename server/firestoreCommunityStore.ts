@@ -79,6 +79,7 @@ export interface FirestoreCollectionLike extends FirestoreQueryLike {
 
 export interface FirestoreTransactionLike {
   get(ref: FirestoreDocumentRefLike): Promise<FirestoreDocumentSnapshotLike>;
+  get(query: FirestoreQueryLike): Promise<FirestoreQuerySnapshotLike>;
   create(ref: FirestoreDocumentRefLike, data: Plain): FirestoreTransactionLike;
   set(ref: FirestoreDocumentRefLike, data: Plain, options?: Plain): FirestoreTransactionLike;
   update(ref: FirestoreDocumentRefLike, data: Plain): FirestoreTransactionLike;
@@ -351,30 +352,26 @@ export class FirestoreCommunityStore implements CommunityRepository {
     reason: string
   ): Promise<{ ok: boolean; found: boolean; duplicate?: boolean }> {
     const reviewRef = this.col("reviews").doc(reviewId);
-    const reviewSnap = await reviewRef.get();
-    if (
-      !reviewSnap.exists ||
-      reviewSnap.data()?.facilityId !== facilityId ||
-      (reviewSnap.data() as Record<string, any>)?.deleted === true
-    ) {
-      return { ok: false, found: false };
-    }
     const now = Date.now();
     const dayAgo = now - 24 * 60 * 60 * 1000;
     const normReason = normalizeReportText(reason);
-    const existing = await this.col("reports").where("reviewId", "==", reviewId).get();
-    const dup = existing.docs.some((d) => {
-      const data = (d.data() ?? {}) as Record<string, any>;
-      if (data.status === "resolved") return false;
-      return (
-        normalizeReportText(String(data.reason ?? "")) === normReason &&
-        reportAtOf(data) >= dayAgo
-      );
-    });
-    if (dup) return { ok: false, found: true, duplicate: true };
     const reportId = `report-${crypto.randomUUID()}`;
     const reportRef = this.col("reports").doc(reportId);
-    await this.db.runTransaction(async (tx) => {
+    return this.db.runTransaction(async (tx) => {
+      const reviewSnap = await tx.get(reviewRef) as FirestoreDocumentSnapshotLike;
+      if (
+        !reviewSnap.exists ||
+        reviewSnap.data()?.facilityId !== facilityId ||
+        (reviewSnap.data() as Record<string, any>)?.deleted === true
+      ) return { ok: false, found: false };
+      const existing = await tx.get(this.col("reports").where("reviewId", "==", reviewId)) as FirestoreQuerySnapshotLike;
+      const dup = existing.docs.some((d) => {
+        const data = (d.data() ?? {}) as Record<string, any>;
+        return data.status !== "resolved" &&
+          normalizeReportText(String(data.reason ?? "")) === normReason &&
+          reportAtOf(data) >= dayAgo;
+      });
+      if (dup) return { ok: false, found: true, duplicate: true };
       tx.create(reportRef, {
         id: reportId,
         facilityId,
@@ -385,8 +382,8 @@ export class FirestoreCommunityStore implements CommunityRepository {
         at: now,
         status: "open",
       });
+      return { ok: true, found: true };
     });
-    return { ok: true, found: true };
   }
 
   async listReports(opts: ListReportsOptions = {}): Promise<StoredReport[]> {
@@ -430,43 +427,36 @@ export class FirestoreCommunityStore implements CommunityRepository {
 
   async deleteReview(reviewId: string, reason?: string): Promise<DeleteReviewResult> {
     const reviewRef = this.col("reviews").doc(reviewId);
-    const snap = await reviewRef.get();
-    if (!snap.exists || (snap.data() as Record<string, any>)?.deleted === true) {
-      return { found: false };
-    }
-    const data = (snap.data() ?? {}) as Record<string, any>;
-    const facilityId = String(data.facilityId ?? "");
-    const kind = data.facilityKind === "community" ? "community" : "external";
     const nowIso = new Date().toISOString();
     const resolution =
       typeof reason === "string" && reason.trim()
         ? reason.trim().slice(0, 500)
         : "admin delete";
-    await this.db.runTransaction(async (tx) => {
-      const current = await tx.get(reviewRef);
-      if (!current.exists) return;
+    return this.db.runTransaction(async (tx) => {
+      const current = await tx.get(reviewRef) as FirestoreDocumentSnapshotLike;
+      if (!current.exists || current.data()?.deleted === true) return { found: false };
+      const data = (current.data() ?? {}) as Record<string, any>;
+      const facilityId = String(data.facilityId ?? "");
+      const kind = data.facilityKind === "community" ? "community" : "external";
+      const related = await tx.get(this.col("reports").where("reviewId", "==", reviewId)) as FirestoreQuerySnapshotLike;
+      const allReviews = await tx.get(this.col("reviews").where("facilityId", "==", facilityId)) as FirestoreQuerySnapshotLike;
+      const remaining = allReviews.docs
+        .filter((doc) => doc.id !== reviewId && (doc.data() ?? {}).deleted !== true)
+        .map(reviewFromDoc);
+      const aggregateRef = this.col("facility_aggregates").doc(facilityId);
+      const facRef = this.col("community_toilets").doc(facilityId);
+      const facSnap = kind === "community" ? await tx.get(facRef) as FirestoreDocumentSnapshotLike : null;
       tx.update(reviewRef, {
         deleted: true,
         deletedAt: nowIso,
         deleteReason: resolution,
       });
-    });
-    const related = await this.col("reports").where("reviewId", "==", reviewId).get();
     for (const doc of related.docs) {
       const rd = (doc.data() ?? {}) as Record<string, any>;
       if (rd.status === "resolved") continue;
       const ref = this.col("reports").doc(doc.id);
-      await this.db.runTransaction(async (tx) => {
-        const current = await tx.get(ref);
-        if (!current.exists) return;
-        tx.update(ref, {
-          status: "resolved",
-          resolvedAt: nowIso,
-          resolution,
-        });
-      });
+      tx.update(ref, { status: "resolved", resolvedAt: nowIso, resolution });
     }
-    const remaining = await this.reviewsForFacility(facilityId);
     if (kind === "community" && facilityId) {
       const count = remaining.length;
       const overallSum = remaining.reduce(
@@ -476,18 +466,14 @@ export class FirestoreCommunityStore implements CommunityRepository {
       const cleanlinessSum = remaining.reduce((s, r) => s + (r.cleanlinessScore ?? 0), 0);
       const odorSum = remaining.reduce((s, r) => s + (r.odorScore ?? 0), 0);
       const suppliesSum = remaining.reduce((s, r) => s + (r.suppliesScore ?? 0), 0);
-      await this.db.runTransaction(async (tx) => {
-        const aggRef = this.col("facility_aggregates").doc(facilityId);
-        tx.set(aggRef, {
+      tx.set(aggregateRef, {
           reviewCount: count,
           overallSum,
           cleanlinessSum,
           odorSum,
           suppliesSum,
-        });
-        const facRef = this.col("community_toilets").doc(facilityId);
-        const facSnap = await tx.get(facRef);
-        if (!facSnap.exists) return;
+      });
+      if (!facSnap?.exists) return { found: true, facilityId, kind, reviewCount: count };
         if (count === 0) {
           const raw = (facSnap.data() ?? {}) as Record<string, any>;
           const equipmentScore = Number(raw.equipmentScore) || 0;
@@ -514,10 +500,10 @@ export class FirestoreCommunityStore implements CommunityRepository {
             lastCleaned: "たった今（利用者が確認）",
           });
         }
-      });
       return { found: true, facilityId, kind, reviewCount: count };
     }
     return { found: true, facilityId, kind, reviewCount: remaining.length };
+    });
   }
 
   async registerExternalFacilities(facilities: ExternalFacilityObservation[]): Promise<void> {
