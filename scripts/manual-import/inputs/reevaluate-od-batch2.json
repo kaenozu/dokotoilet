@@ -1,0 +1,282 @@
+[
+  {
+    "address": "日本、〒360-0826 埼玉県熊谷市赤城町３丁目 堤公園",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJjWjISdYpH2ARlciiOwvgIP8",
+    "lat": 36.1457576768747,
+    "lng": 139.367737302206,
+    "name": "堤公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「堤公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0824 埼玉県熊谷市見晴町４４６",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ_aYZdAApH2ARZP9FQurAhxI",
+    "lat": 36.1412721095345,
+    "lng": 139.372802230036,
+    "name": "見晴公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「荒川桜堤・見晴公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0041 埼玉県熊谷市宮町２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ4RzGL4MpH2ARWGwI4rcW6VM",
+    "lat": 36.1476239073394,
+    "lng": 139.386883044388,
+    "name": "宮町公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「宮町公園 公衆トイレ」を確認。口コミ総数は1件、listing評価は3.0/5だが、直近口コミ1件の本文を信頼できる形で取得できず、清潔さへの肯定・否定件数を判定不能。総合星評価だけから清潔度を推定せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0815 埼玉県熊谷市本石１丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJyZ_SiiMpH2AR5GgHemZLoJI",
+    "lat": 36.1486388622663,
+    "lng": 139.379420096672,
+    "name": "本石公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「本石公園公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0856 埼玉県熊谷市別府２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJEQyBP3LZHmARgF80HBrO-uI",
+    "lat": 36.1861208330747,
+    "lng": 139.332818730478,
+    "name": "別府第1公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「別府第1公園 公衆トイレ」を確認。口コミ総数は1件、listing評価は2.0/5だが、直近口コミ1件の本文を信頼できる形で取得できず、清潔さへの肯定・否定件数を判定不能。低い星評価をそのまま清潔度とはみなさずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0856 埼玉県熊谷市別府５丁目３８−３８",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": false
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ70SPm2PZHmAR6JEvmQJxtDA",
+    "lat": 36.1804953702317,
+    "lng": 139.335325631562,
+    "name": "別府第3公園",
+    "openingHours": "06:30-17:00（Google Maps listing。埼玉県公式一覧では終日表記）",
+    "scoreBasis": "Google Mapsのトイレ単体listing「別府第3公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。2026年の現地紹介ではトイレとおむつ交換設備の存在を確認できるが、清潔さの評価根拠には使用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0801 埼玉県熊谷市中奈良２２６４",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJudJpNADZHmARklRDh5hvdnU",
+    "lat": 36.1851422762576,
+    "lng": 139.356394923247,
+    "name": "中奈良公園",
+    "openingHours": null,
+    "scoreBasis": "対象住所内でGoogle Mapsのトイレ単体listing「トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。営業時間・設備もlisting上で確認できる情報が不足しているためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0012 埼玉県熊谷市上之",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 3,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ389T5kEpH2AR1pjEppmmh3U",
+    "lat": 36.1602990833638,
+    "lng": 139.397428637129,
+    "name": "雀宮第1公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listing「雀宮第1公園 公衆トイレ」を確認。口コミ総数は3件、listing評価は2.3/5だが、直近3件の口コミ本文および新しい順・評価順の内容を信頼できる形で取得できず、清潔さへの肯定・否定件数を判定不能。星評価だけから清潔度を推定せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0015 埼玉県熊谷市肥塚",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJuYKJJE8pH2ARrb6gWmjJE0M",
+    "lat": 36.1613191333328,
+    "lng": 139.390818387931,
+    "name": "雀宮第4公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listing「雀宮第4公園トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0015 埼玉県熊谷市肥塚",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJu-Vu7-YpH2AR1sSYwn-Zjuc",
+    "lat": 36.1622220466499,
+    "lng": 139.396916422464,
+    "name": "雀宮第5公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listing「雀宮第5公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミが無いのでスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
