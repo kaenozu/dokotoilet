@@ -37,6 +37,9 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
   要約は必ず自分の文章で書き、件数と傾向は `scoreBasis` に記録する
 - 調査AIが口コミを要約する場合も、元の文章に近い言い回しのまま出力しないこと
 - スコアには必ず根拠を basis に書く（例：口コミ12件中9件が清潔に好意的）
+- 次元別スコア（`subScores`：便器・床の清潔さ / におい・換気 / 石鹸・ペーパー・除菌 / 広さ・快適さ）を
+  分かる範囲で1.0〜5.0で付ける。不明な次元は `null`（総合スコアにフォールバックされる）
+- `surveyedAt` に調査日（YYYY-MM-DD）を入れる
 - listingに表示される口コミ総数も必ず記録する（externalReviewCount。口コミ本文が取れなくても件数だけは書く。「口コミなし」と「未取込」の区別に使う。0件なら0と書く）
 - 出力は下記スキーマのJSONのみ（コードブロック1つ）。 employmentの説明は不要
 - JSONの後に、カバレッジの限界（調べ切れていない点）を3行以内で別に書く
@@ -55,6 +58,13 @@ Deep Research またはブラウジング有効のChatGPTにそのまま貼っ�
     "cleanlinessScore": 4.2,
     "confidence": "high | medium | low のいずれか",
     "scoreBasis": "根拠（口コミ何件中何件が肯定的か等）",
+    "subScores": {
+      "cleanliness": 4.5,
+      "odor": 4.0,
+      "supplies": 4.0,
+      "comfort": 4.5
+    },
+    "surveyedAt": "2026-09-10",
     "externalReviewCount": 114,
     "externalReviewSource": "Google Maps",
     "equipment": {

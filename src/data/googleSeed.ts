@@ -46,6 +46,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 114,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHXtAN-6NGGARLL6RIDLFPXo",
     "officialOpenDataId": "gmaps-ChIJHXtAN-6NGGARLL6RIDLFPXo"
   },
@@ -89,6 +90,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 69,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
     "officialOpenDataId": "gmaps-ChIJoXN2SauMGGAR17MwL12sXS8"
   },
@@ -132,6 +134,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 26,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn7NPqQWLGGARN8o1-fJF74o",
     "officialOpenDataId": "gmaps-ChIJn7NPqQWLGGARN8o1-fJF74o"
   },
@@ -175,6 +178,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 18,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJe3fBYgCLGGARb1EaXbqbbc4",
     "officialOpenDataId": "gmaps-ChIJe3fBYgCLGGARb1EaXbqbbc4"
   },
@@ -218,6 +222,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 14874,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJP6jlUFiLGGAR5fwuswd1KXA",
     "officialOpenDataId": "gmaps-ChIJP6jlUFiLGGAR5fwuswd1KXA"
   },
@@ -261,6 +266,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 9387,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJscDhJ4SLGGARbx0GlzPi9ng",
     "officialOpenDataId": "gmaps-ChIJscDhJ4SLGGARbx0GlzPi9ng"
   },
@@ -304,6 +310,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 8309,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJcyH-4qiMGGARGzk4lZCx2xo",
     "officialOpenDataId": "gmaps-ChIJcyH-4qiMGGARGzk4lZCx2xo"
   },
@@ -347,6 +354,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 46,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJMaI731OLGGARRjpKM-IoEkA",
     "officialOpenDataId": "gmaps-ChIJMaI731OLGGARRjpKM-IoEkA"
   },
@@ -390,6 +398,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 453,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJn-8w66eMGGAReKy7V_Fuh8g",
     "officialOpenDataId": "gmaps-ChIJn-8w66eMGGAReKy7V_Fuh8g"
   },
@@ -433,6 +442,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 513,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ0_O8DFiLGGARIMS75pBB_ug",
     "officialOpenDataId": "gmaps-ChIJ0_O8DFiLGGARIMS75pBB_ug"
   },
@@ -476,6 +486,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 985,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%82%BA%E7%86%8A%E8%B0%B7&query_place_id=ChIJSztt874pH2ARj5k4UVuSjrE",
     "officialOpenDataId": "gmaps-アズ熊谷"
   },
@@ -519,6 +530,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 1441,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%86%E3%82%A3%E3%82%A2%E3%83%A921&query_place_id=ChIJ61SKxr0pH2ARwsFdwlCifZM",
     "officialOpenDataId": "gmaps-ティアラ21"
   },
@@ -562,6 +574,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 2129,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%83%E3%83%88%E3%83%BC%E3%83%A2%E3%83%BC%E3%83%AB&query_place_id=ChIJQ9Ntfb0pH2ARRUyCmYl82XY",
     "officialOpenDataId": "gmaps-ニットーモール"
   },
@@ -605,6 +618,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 2556,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E6%9C%A8%E6%A9%8B%E7%99%BE%E8%B2%A8%E5%BA%97&query_place_id=ChIJ1YwZF8kpH2AR5jQWinl_TXg",
     "officialOpenDataId": "gmaps-八木橋百貨店"
   },
@@ -648,6 +662,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 1125,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%82%AA%E3%83%B3%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJEUxRkc4pH2ARjlKPFoWQMZo",
     "officialOpenDataId": "gmaps-イオン熊谷店"
   },
@@ -691,6 +706,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 91,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%AC%E9%AE%AE%E9%AD%9A%E5%B8%82%E5%A0%B4%E3%82%AF%E3%83%AB%E3%83%99%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A7%E5%BA%97&query_place_id=ChIJvemYjqMpH2AR-ZsdyAk0s3c",
     "officialOpenDataId": "gmaps-旬鮮魚市場クルベ熊谷銀座店"
   },
@@ -734,6 +750,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 921,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJk36DiL4pH2ARMjZ0E478A2w",
     "officialOpenDataId": "gmaps-熊谷駅"
   },
@@ -777,6 +794,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 54,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8A%E7%86%8A%E8%B0%B7%E9%A7%85&query_place_id=ChIJidAGHcYpH2AR_WKyE-wCgJI",
     "officialOpenDataId": "gmaps-上熊谷駅"
   },
@@ -820,6 +838,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 40,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E5%8E%9F%E9%A7%85&query_place_id=ChIJ-_kGFysoH2ARsTiRodGp19I",
     "officialOpenDataId": "gmaps-石原駅"
   },
@@ -863,6 +882,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 56,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E5%B8%82%E5%BD%B9%E6%89%80%E5%89%8D%E5%BA%97&query_place_id=ChIJpYeinbcpH2ARr0Lwy2y8RJA",
     "officialOpenDataId": "gmaps-セブン-イレブン-熊谷市役所前店"
   },
@@ -906,6 +926,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 34,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A73%E4%B8%81%E7%9B%AE%E5%BA%97&query_place_id=ChIJzVY72qIpH2ARf93fTkKLIHI",
     "officialOpenDataId": "gmaps-セブン-イレブン-熊谷銀座3丁目店"
   },
@@ -949,6 +970,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 37,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%9F%E3%83%8B%E3%82%B9%E3%83%88%E3%83%83%E3%83%97%20%E7%86%8A%E8%B0%B7%E4%B8%8A%E4%B9%8B%E5%BA%97&query_place_id=ChIJpfPlhA4pH2ARlk8QA1Ie0D4",
     "officialOpenDataId": "gmaps-ミニストップ-熊谷上之店"
   },
@@ -992,6 +1014,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 460,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E4%B9%83%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJxWJbbKApH2ARNBWxTnIDkTg",
     "officialOpenDataId": "gmaps-星乃珈琲店-熊谷店"
   },
@@ -1035,6 +1058,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 167,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E9%A4%A8%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJy8iIodQpH2ARxI9cGByZJ0Q",
     "officialOpenDataId": "gmaps-珈琲館-熊谷店"
   },
@@ -1078,6 +1102,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 745,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
     "officialOpenDataId": "gmaps-珈琲所-コメダ珈琲店-熊谷店"
   },
@@ -1121,6 +1146,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 615,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A4%E3%83%95%E3%83%AB%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJUZuleGQpH2AR8dIOmruLgjc",
     "officialOpenDataId": "gmaps-ジョイフル-熊谷店"
   },
@@ -1164,6 +1190,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 144,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJb8C6N7cpH2AR_vzU9BON8lQ",
     "officialOpenDataId": "gmaps-中央公園"
   },
@@ -1207,6 +1234,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 289,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E5%B9%B3%E5%85%AC%E5%9C%92&query_place_id=ChIJjZImeJYpH2ARVuBiHYXaG0o",
     "officialOpenDataId": "gmaps-万平公園"
   },
@@ -1250,6 +1278,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 153,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%A4%AE%E5%85%AC%E5%9C%92&query_place_id=ChIJs1h-0tMpH2ARHMye0CJTuhM",
     "officialOpenDataId": "gmaps-伊勢町ふれあい公園"
   },
@@ -1293,6 +1322,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 256,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%8D%92%E5%B7%9D%E5%85%AC%E5%9C%92&query_place_id=ChIJsU0pbsApH2AR4ijf6m89rFg",
     "officialOpenDataId": "gmaps-荒川公園"
   },
@@ -1334,6 +1364,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "reviewCount": 0,
     "reviews": [],
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=道の駅めぬま+熊谷市",
     "officialOpenDataId": "gmaps-道の駅めぬま"
   },
@@ -1377,6 +1408,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "externalReviewCount": 2769,
     "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=熊谷スポーツ文化公園+熊谷市",
     "officialOpenDataId": "gmaps-熊谷スポーツ文化公園"
   }

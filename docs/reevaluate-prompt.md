@@ -51,6 +51,9 @@ ChatGPT（Deep Research またはブラウジング有効）に貼って、登�
   要約は必ず自分の文章で書き、件数と傾向は `scoreBasis` に記録する
 - `scoreBasis` には必ず (a) 直近口コミの件数と傾向、(b) 前回スコアからの変更理由
   （例：「前回3.0→4.2：直近1年の口コミで清掃好評が増加」）を書く
+- 次元別スコア（`subScores`：便器・床の清潔さ / におい・換気 / 石鹸・ペーパー・除菌 / 広さ・快適さ）を
+  分かる範囲で1.0〜5.0で付ける。不明な次元は `null`（総合スコアにフォールバックされる）
+- `surveyedAt` に調査日（YYYY-MM-DD）を入れる
 - 設備は `true`（あり）/ `false`（なし）/ `null`（未確認）の3値。未確認を `false` にしない
 - 住所・座標は listing 記載のまま。推測で補完しない。不明は `null`
 - 出力は下記スキーマのJSONのみ（コードブロック1つ）。余計な説明は不要
@@ -70,6 +73,13 @@ ChatGPT（Deep Research またはブラウジング有効）に貼って、登�
     "cleanlinessScore": 4.2,
     "confidence": "high | medium | low のいずれか",
     "scoreBasis": "根拠（直近口コミ何件中何件が肯定的か＋前回スコアからの変更理由）",
+    "subScores": {
+      "cleanliness": 4.5,
+      "odor": 4.0,
+      "supplies": 4.0,
+      "comfort": 4.5
+    },
+    "surveyedAt": "2026-09-10",
     "externalReviewCount": 114,
     "externalReviewSource": "Google Maps",
     "equipment": {
