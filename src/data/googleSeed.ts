@@ -1,5 +1,5 @@
 // 自動生成: bun scripts/manual-import/run.ts --in shibuya-01.json --in kumagaya-manual-01.json --in kumagaya-02.json
-// 生成日: 2026-09-07
+// 生成日: 2026-09-10
 // 由来: ChatGPT手動調査（Google Maps掲載情報の要約・自治体調査）。座標欠落分はNominatimで補完。
 // 規約: 口コミ本文（ユーザー投稿の転載）は取り込まない。件数と要約のみ（README「データ方針」参照）。
 // 設備の不明値は null（未確認）として格納。信頼度lowは中立値3.0＋要確認メモ。
@@ -40,7 +40,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "07:00-23:00（毎日）",
-    "description": "清潔さへの直接言及3件中3件が肯定的。2023年の口コミでも「きれい」と明確に評価。",
+    "description": "現存・供用継続を渋谷区/THE TOKYO TOILETの現行案内と維持管理対象で再確認。直近傾向は、今回新たに取得できた2026年のトイレ清潔さ直接口コミはないものの、前回確認済みの清潔さ直接言及は肯定3件・否定0件で、今回も新たな否定材料は確認できなかった。前回比: 4.5→4.5（変更なし）。新しい直接口コミの母数が増えていないためconfidenceはmedium据え置き。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 114,
@@ -59,14 +59,14 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lng": 139.6915526,
     "address": "日本、〒150-0046 東京都渋谷区松濤２丁目１０−１０−７",
     "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.3,
+    "cleanlinessScore": 4.5,
     "equipmentGrade": "A",
-    "equipmentScore": 4.3,
+    "equipmentScore": 4.5,
     "subScores": {
-      "cleanliness": 4.3,
-      "odor": 4.3,
-      "supplies": 4.3,
-      "comfort": 4.3
+      "cleanliness": 4.5,
+      "odor": 4.5,
+      "supplies": 4.5,
+      "comfort": 4.5
     },
     "attributes": {
       "hasWashlet": true,
@@ -83,12 +83,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "24時間営業",
-    "description": "清潔さへの直接言及2件中2件が肯定的。2024年12月訪問の口コミでも改修後の清潔さを確認できるが、件数が少ないためlow。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "現存・供用継続を渋谷区/THE TOKYO TOILETの現行案内で再確認。直近傾向は、2026年2月のGoogle由来公開レビューで改修後トイレの清潔さを肯定する直接言及を1件確認し、過去の直接肯定も複数、今回の確認範囲ではトイレ清潔さの否定は確認できなかった。前回比: 4.3→4.5。2026年の新しい直接肯定材料が追加されたため上方修正。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 69,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJoXN2SauMGGAR17MwL12sXS8",
     "officialOpenDataId": "gmaps-ChIJoXN2SauMGGAR17MwL12sXS8"
   },
@@ -126,7 +126,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "月-金・日 05:00-00:00、土 05:00-01:00",
-    "description": "Google Mapsの公衆トイレlistingは4.6/5・26件と高評価だが、清潔さを明示する口コミ本文を今回取得できなかった。総合星評価を清潔さスコアへ推測転用しないため判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "Google Mapsの現行listingが存続し、営業時間表示も確認。直近傾向は、listing自体の総合評価は高いが、今回も新しい順・評価順に相当する公開取得範囲でトイレ清潔さを直接判定できる本文を十分確保できなかった。前回比: null→null（変更なし）。総合星評価を清潔さへ転用しないため判定不能。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 26,
@@ -155,7 +155,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "comfort": 2.5
     },
     "attributes": {
-      "hasWashlet": null,
+      "hasWashlet": true,
       "hasMultipurpose": true,
       "hasBabyTable": true,
       "hasNursingRoom": null,
@@ -169,7 +169,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "営業時間不明",
-    "description": "2026年公開の中央口改札内トイレ専門調査で総合2.8/5、清潔さ項目は約2.5/5。Google Maps listingは3.7/5・18件だが、清潔さに限定したGoogle口コミ本文の十分な抽出はできていないためmedium。",
+    "description": "駅の営業継続と中央口改札内トイレの現行設備を2026年の専門調査で再確認。直近傾向は、同調査の清潔さ評価がおよそ2.5/5で、設備更新はあるものの清潔感は高評価帯に届かない。Google Maps側で清潔さ直接口コミの十分な追加抽出はできなかった。前回比: 2.5→2.5（変更なし）。専門調査の2026年データが引き続き最も直接的な根拠。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 18,
@@ -187,15 +187,15 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 35.6591803,
     "lng": 139.7036853,
     "address": "日本、〒150-8510 東京都渋谷区渋谷２丁目２１−１",
-    "cleanlinessGrade": "S",
-    "cleanlinessScore": 4.6,
-    "equipmentGrade": "S",
-    "equipmentScore": 4.6,
+    "cleanlinessGrade": "A",
+    "cleanlinessScore": 4.5,
+    "equipmentGrade": "A",
+    "equipmentScore": 4.5,
     "subScores": {
-      "cleanliness": 4.6,
-      "odor": 4.6,
-      "supplies": 4.6,
-      "comfort": 4.6
+      "cleanliness": 4.5,
+      "odor": 4.5,
+      "supplies": 4.5,
+      "comfort": 4.5
     },
     "attributes": {
       "hasWashlet": null,
@@ -212,7 +212,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "平日・土 11:00-21:00、日・祝 11:00-20:00",
-    "description": "トイレの清潔さを明示する肯定口コミを2件確認。2025年訪問の5★口コミと4★口コミで綺麗さへの明確な言及があり、今回取得した範囲では否定的な清潔さ言及なし。ただしGoogle Maps全口コミの並べ替え監査は未完。",
+    "description": "営業継続、各階トイレ、多機能レストルームを公式で再確認。直近傾向は、2026年6〜7月の子育て設備レビューで清潔さ肯定が複数あり、今回の取得範囲で新しい明確な不衛生指摘は確認できなかった。一方、館内トイレ全体を直接評価する直近口コミの母数は少ない。前回比: 4.6→4.5。肯定傾向は維持するが、トイレ本体への直近直接証拠が限定的なため僅かに保守化。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 14874,
@@ -254,8 +254,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "hasPaperTowelOrDryer": null,
       "toiletStyle": null
     },
-    "openingHours": "10:00-21:00（ショップ営業時間基準）",
-    "description": "4★利用者口コミでトイレを明確に「キレイ」と評価。別の利用者投稿でもトイレの綺麗さへの強い肯定があり、施設衛生管理事例でも館内・トイレの清潔維持を確認。一方、直接の評価付き清潔口コミ数が少ないためmedium。",
+    "openingHours": "ショップ 10:00-21:00、レストラン 11:00-23:00（一部店舗を除く）",
+    "description": "営業継続、多目的トイレ、ベビー設備を公式で再確認。直近傾向は、2026年のベビー関連設備レビューで清潔側の評価が確認でき、施設の衛生管理情報とも整合する。今回の取得範囲では新しいトイレ清潔さの明確な否定は確認できないが、トイレ本体を直接評価する最新口コミ数は多くない。前回比: 4.4→4.4（変更なし）。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 9387,
@@ -274,14 +274,14 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lng": 139.6987487,
     "address": "日本、〒150-8377 東京都渋谷区宇田川町１５−１ 渋谷パルコ・ヒューリックビル B1-10階",
     "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.4,
+    "cleanlinessScore": 4,
     "equipmentGrade": "A",
-    "equipmentScore": 4.4,
+    "equipmentScore": 4,
     "subScores": {
-      "cleanliness": 4.4,
-      "odor": 4.4,
-      "supplies": 4.4,
-      "comfort": 4.4
+      "cleanliness": 4,
+      "odor": 4,
+      "supplies": 4,
+      "comfort": 4
     },
     "attributes": {
       "hasWashlet": null,
@@ -297,8 +297,8 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "hasPaperTowelOrDryer": null,
       "toiletStyle": null
     },
-    "openingHours": "11:00-21:00（毎日）",
-    "description": "3.5★旅行口コミでトイレを「ピカピカで綺麗」と明示。ほかにも改装後トイレの綺麗さへの肯定的言及を確認し、今回取得した範囲では清潔さについての明確な否定はなし。ただし清潔さを評価する最新口コミの母数が少ない。",
+    "openingHours": "11:00-21:00（店舗により異なる）",
+    "description": "営業継続、多目的・オールジェンダー・ベビーベッド・パウダースペースを公式で再確認。直近傾向は、過去のトイレ清潔さ直接言及は肯定側だが、今回2026年の新しい直接清潔口コミを十分追加取得できなかった。明確な新規否定も確認できない。前回比: 4.4→4.0。肯定傾向は残す一方、根拠の鮮度不足を反映して基準点を保守化。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 8309,
@@ -341,12 +341,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "24時間営業",
-    "description": "Google Maps listingは3.0/5・46件。3.5★口コミでトイレを利用できることは確認できたが、トイレ自体の清潔さへの言及ではないため判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗listingの登録継続と24時間営業を前回情報と現行店舗情報で突合。直近傾向は、トイレ利用可能という情報はあるが、今回も清潔さを直接評価できる新しい口コミを十分確認できなかった。前回比: null→null（変更なし）。店舗総合評価は清潔さへ転用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 46,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJMaI731OLGGARRjpKM-IoEkA",
     "officialOpenDataId": "gmaps-ChIJMaI731OLGGARRjpKM-IoEkA"
   },
@@ -384,7 +384,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "08:00-22:00（毎日）",
-    "description": "店舗口コミからビル共用トイレを使用することは確認できたが、トイレそのものの清潔さを評価した十分な口コミ本文を取得できず判定不能。Google Mapsの店舗総合3.7/5・452件は清潔さへ転用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と営業時間を公式で再確認。直近傾向は、ビル共用トイレを利用する施設であることは確認できるが、今回もトイレ清潔さの新しい直接口コミを十分取得できなかった。前回比: null→null（変更なし）。店舗全体の評価や内装評価は清潔さスコアに使っていない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 453,
@@ -427,12 +427,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "平日 07:00-21:00、土日祝 07:30-20:00",
-    "description": "3★口コミでトイレが2つあり1つが故障中だったとの利用情報は確認したが、清潔さへの評価ではない。Google Maps店舗総合3.6/5・513件を清潔さへ推測転用せず判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と営業時間を公式で再確認。直近傾向は、過去にトイレ設備の利用状況に関する言及はあるが、今回も清潔さそのものを直接評価できる新しい口コミを十分確認できなかった。前回比: null→null（変更なし）。設備故障の過去言及だけでは清潔さを採点しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 513,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ0_O8DFiLGGARIMS75pBB_ug",
     "officialOpenDataId": "gmaps-ChIJ0_O8DFiLGGARIMS75pBB_ug"
   },
@@ -470,7 +470,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "本館 10:00-20:30（館・店舗により異なる）",
-    "description": "2020年の授乳室併設部について埃・カビ様汚れ、臭いゴミ箱の投稿を確認。一方で現行の子育て設備情報には清潔側の評価もあるが、最近のトイレ本体の星付き清潔口コミ数を確定できず判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "営業継続と、本館各階トイレ・4F等の多目的トイレ・4F授乳室を公式で再確認。直近傾向は、子育て設備側の清潔情報はあるものの、館内トイレ本体について2026年の直接的な清潔さ口コミを十分確認できなかった。前回比: null→null（変更なし）。2020年の否定材料だけで現在を断定しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 985,
@@ -513,12 +513,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "ショッピング・カフェ 10:00-21:00（店舗により異なる）",
-    "description": "2026年更新のMAMAMAPで4F赤ちゃん休憩室は清潔側のアンケート結果を確認したが、回答母数が公開表示から確定できず、館内トイレ全体の清潔度へ一般化できない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "営業継続、各階の車椅子対応トイレと4F赤ちゃんの駅を現行案内で再確認。直近傾向は、2026年更新の子育て設備情報で清潔側の評価があるが、館内トイレ全体を直接評価する新しい口コミ母数を確保できなかった。前回比: null→null（変更なし）。子育て設備の評価を全トイレへ一般化しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 1441,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: テナント店のGoogleマップリンク（同建物）。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%86%E3%82%A3%E3%82%A2%E3%83%A921&query_place_id=ChIJ61SKxr0pH2ARwsFdwlCifZM",
     "officialOpenDataId": "gmaps-ティアラ21"
   },
@@ -532,14 +532,14 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lng": 139.3942232,
     "address": "〒360-0032 埼玉県熊谷市銀座2丁目245",
     "cleanlinessGrade": "B",
-    "cleanlinessScore": 3.8,
+    "cleanlinessScore": 3,
     "equipmentGrade": "B",
-    "equipmentScore": 3.8,
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 3.8,
-      "odor": 3.8,
-      "supplies": 3.8,
-      "comfort": 3.8
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -556,12 +556,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "10:00-20:30（ヤオコー等一部店舗は異なる）",
-    "description": "清潔さ関連を3系統で確認。2019年の利用記でトイレを明確に高評価、現行MAMAMAPも子育て設備の清潔側評価。一方、Yahoo!マップには古さを指摘する4★投稿が1件あり、満点評価にはしない。",
+    "description": "営業継続と3Fベビールーム・トイレ付近のおむつ替え設備を公式で再確認。直近傾向は、2025〜2026年の子育て設備情報は清潔側だが、2024年の施設口コミではトイレを含む老朽感への否定的示唆があり、トイレ本体の新しい直接口コミが不足。前回比: 3.8→null。古い肯定口コミ中心の採点を取り消し、現在傾向を確定できないため判定不能へ変更。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 2129,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。 座標出典: マピオン電話帳・Yahoo!マップ一致。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%83%E3%83%88%E3%83%BC%E3%83%A2%E3%83%BC%E3%83%AB&query_place_id=ChIJQ9Ntfb0pH2ARRUyCmYl82XY",
     "officialOpenDataId": "gmaps-ニットーモール"
   },
@@ -587,9 +587,9 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "attributes": {
       "hasWashlet": null,
       "hasMultipurpose": true,
-      "hasBabyTable": null,
+      "hasBabyTable": true,
       "hasNursingRoom": null,
-      "hasPowderRoom": null,
+      "hasPowderRoom": true,
       "hasOstomate": null,
       "isFree": null,
       "isOpen24h": false,
@@ -599,7 +599,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "10:00-18:30（休業日あり）",
-    "description": "多目的トイレの実在と利用設備は確認できたが、清潔さを直接評価する近年の星付き口コミを十分確認できなかった。プライバシー設備への好意的投稿は清潔度判定には流用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "営業継続、4F・7F・8Fの多目的トイレとベビー対応設備を公式で再確認。子育て設備の清潔アンケートは肯定側だが、直近傾向として館内トイレ本体を直接評価する2026年の口コミを十分確認できなかった。前回比: null→null（変更なし）。設備の存在や赤ちゃん休憩室評価のみでは採点しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 2556,
@@ -642,12 +642,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "1F食品 8:00-22:00、2F-3F 9:00-21:00",
-    "description": "トイレ利用可能な大型商業施設であることは確認したが、今回取得できた公開口コミではトイレ清潔さの直接言及を十分確認できず、施設総合評価は代用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と営業時間を現行公式情報で再確認。直近傾向は、施設利用口コミは多いが、今回もトイレ清潔さを直接評価する新しい口コミを十分確認できなかった。前回比: null→null（変更なし）。店舗総合評価をトイレ清潔さへ転用しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 1125,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%82%AA%E3%83%B3%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJEUxRkc4pH2ARjlKPFoWQMZo",
     "officialOpenDataId": "gmaps-イオン熊谷店"
   },
@@ -685,12 +685,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "通常営業 10:00-21:00、夜間営業 21:30-24:00",
-    "description": "公式サイトで公衆トイレ・多目的トイレを確認。ただし現CLBE開業後の清潔さ直接口コミを十分確認できず、前身ベルク時代の口コミは現店舗スコアへ流用しなかった。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "2026年6月開業後も営業継続中で、公式店舗ページに公衆トイレ・多目的トイレの設備表示を再確認。直近傾向は、開業後の口コミは増えているがトイレ清潔さを直接判定できる十分な新規口コミを確認できなかった。前回比: null→null（変更なし）。前身店舗の評価は引き続き流用しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 91,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳（前身ベルク同建物・同住所）。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%AC%E9%AE%AE%E9%AD%9A%E5%B8%82%E5%A0%B4%E3%82%AF%E3%83%AB%E3%83%99%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A7%E5%BA%97&query_place_id=ChIJvemYjqMpH2AR-ZsdyAk0s3c",
     "officialOpenDataId": "gmaps-旬鮮魚市場クルベ熊谷銀座店"
   },
@@ -728,7 +728,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "始発-終電（改札内トイレ。新幹線改札窓口 6:15-23:30）",
-    "description": "トイレ専門サイト等3系統で「きれい」「比較的きれい」「新しくて綺麗」とする直接言及を確認し、今回確認範囲では清潔さの明確な否定は見つからなかった。ただし投稿時期が古いものを含み、Google Maps星付きレビューの全件集計ではない。",
+    "description": "駅の営業継続とトイレ設備を再確認。直近傾向は、前回までに複数のトイレ専門情報で清潔側の直接評価が一致しており、今回の取得範囲でも新たな明確な不衛生指摘は確認できなかった。ただしGoogle Mapsの2026年直近本文を十分追加取得できていない。前回比: 4.0→4.0（変更なし）。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 921,
@@ -771,7 +771,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "営業時間不明",
-    "description": "秩父鉄道公式でバリアフリートイレの設置は確認できたが、清潔さを直接評価する公開口コミを十分確認できなかった。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "秩父鉄道の駅として営業継続し、バリアフリートイレ設置情報を再確認。直近傾向は、今回もトイレ清潔さを直接評価する新しい口コミを十分確認できなかった。前回比: null→null（変更なし）。設備の存在だけでは清潔さを推定しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 54,
@@ -814,7 +814,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "営業時間不明",
-    "description": "秩父鉄道公式で2025年7月8日-8月26日のトイレリニューアル工事完了を確認したが、工事後の清潔さ口コミを十分確認できず、改修済みという事実だけで高得点にはしていない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "秩父鉄道の駅として営業継続し、2025年8月にトイレリニューアル工事が完了していることを再確認。直近傾向は、改修後の清潔さを直接評価する2026年の口コミを十分取得できなかった。前回比: null→null（変更なし）。改修済みという事実だけで高得点にはしない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 40,
@@ -832,49 +832,6 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 36.145577,
     "lng": 139.387768,
     "address": "〒360-0041 埼玉県熊谷市宮町2丁目99-1",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4.4,
-    "equipmentGrade": "A",
-    "equipmentScore": 4.4,
-    "subScores": {
-      "cleanliness": 4.4,
-      "odor": 4.4,
-      "supplies": 4.4,
-      "comfort": 4.4
-    },
-    "attributes": {
-      "hasWashlet": null,
-      "hasMultipurpose": null,
-      "hasBabyTable": null,
-      "hasNursingRoom": null,
-      "hasPowderRoom": null,
-      "hasOstomate": null,
-      "isFree": null,
-      "isOpen24h": true,
-      "hasSoap": null,
-      "hasAlcohol": null,
-      "hasPaperTowelOrDryer": null,
-      "toiletStyle": null
-    },
-    "openingHours": "24時間",
-    "description": "Yahoo!マップ等の確認範囲で清潔さ好意的言及2件。うち1件は5★でトイレを明示して「すごく綺麗」、もう1件は4★で店舗を「キレイ」と評価。トイレの否定的清潔言及は今回確認範囲では見つからなかった。",
-    "reviewCount": 0,
-    "reviews": [],
-    "externalReviewCount": 56,
-    "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。 座標出典: NAVITIMEスポット情報。",
-    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E5%B8%82%E5%BD%B9%E6%89%80%E5%89%8D%E5%BA%97&query_place_id=ChIJpYeinbcpH2ARr0Lwy2y8RJA",
-    "officialOpenDataId": "gmaps-セブン-イレブン-熊谷市役所前店"
-  },
-  {
-    "id": "google-セブン-イレブン-熊谷銀座3丁目店",
-    "name": "セブン-イレブン 熊谷銀座3丁目店",
-    "facilityType": "コンビニ",
-    "category": "convenience",
-    "dataSource": "google",
-    "lat": 36.141482,
-    "lng": 139.3965973,
-    "address": "日本、〒360-0032 埼玉県熊谷市銀座３丁目１−３１−１",
     "cleanlinessGrade": "A",
     "cleanlinessScore": 4,
     "equipmentGrade": "A",
@@ -900,33 +857,33 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "24時間",
-    "description": "食べログ3★の1件でトイレがよく清掃されていたとの直接言及を確認。ただし2016年訪問の単独口コミで古く、現在状態を強く保証できないためconfidenceはlow。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と24時間営業を確認。直近傾向は、前回までの確認範囲でトイレ清潔さの肯定的直接言及を含む複数の清潔側レビューがあり、今回新たな明確な否定は確認できなかった。ただし2026年の最新直接口コミを十分追加取得できていない。前回比: 4.4→4.0。肯定傾向は維持するが根拠鮮度を反映して保守化。",
     "reviewCount": 0,
     "reviews": [],
-    "externalReviewCount": 34,
+    "externalReviewCount": 56,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: セブン-イレブン公式店舗検索。",
-    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A73%E4%B8%81%E7%9B%AE%E5%BA%97&query_place_id=ChIJzVY72qIpH2ARf93fTkKLIHI",
-    "officialOpenDataId": "gmaps-セブン-イレブン-熊谷銀座3丁目店"
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E5%B8%82%E5%BD%B9%E6%89%80%E5%89%8D%E5%BA%97&query_place_id=ChIJpYeinbcpH2ARr0Lwy2y8RJA",
+    "officialOpenDataId": "gmaps-セブン-イレブン-熊谷市役所前店"
   },
   {
-    "id": "google-ミニストップ-熊谷上之店",
-    "name": "ミニストップ 熊谷上之店",
+    "id": "google-セブン-イレブン-熊谷銀座3丁目店",
+    "name": "セブン-イレブン 熊谷銀座3丁目店",
     "facilityType": "コンビニ",
     "category": "convenience",
     "dataSource": "google",
-    "lat": 36.1515641,
-    "lng": 139.4131191,
-    "address": "〒360-0012 埼玉県熊谷市上之3885-1",
-    "cleanlinessGrade": "C",
-    "cleanlinessScore": 2.8,
-    "equipmentGrade": "C",
-    "equipmentScore": 2.8,
+    "lat": 36.141482,
+    "lng": 139.3965973,
+    "address": "日本、〒360-0032 埼玉県熊谷市銀座３丁目１−３１−１",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 2.8,
-      "odor": 2.8,
-      "supplies": 2.8,
-      "comfort": 2.8
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -943,12 +900,55 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "24時間",
-    "description": "公開レビュー集約ページのトイレ直接言及4件を確認。清潔1件、普通1件、ウォシュレットなし1件、落書き・古い公衆便所のようとの強い否定1件で評価が割れる。各投稿の星と日付を確定できないためlow。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と24時間営業を確認。直近傾向は、清潔さを直接肯定する根拠が2016年の単独口コミに偏り、2026年現在を判断できる新しい直接口コミを十分確認できなかった。前回比: 4.0→null。古い単独根拠で現在スコアを維持するのは不適切と判断し判定不能へ変更。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 0,
+    "reviews": [],
+    "externalReviewCount": 34,
+    "externalReviewSource": "Google Maps",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%96%E3%83%B3-%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%20%E7%86%8A%E8%B0%B7%E9%8A%80%E5%BA%A73%E4%B8%81%E7%9B%AE%E5%BA%97&query_place_id=ChIJzVY72qIpH2ARf93fTkKLIHI",
+    "officialOpenDataId": "gmaps-セブン-イレブン-熊谷銀座3丁目店"
+  },
+  {
+    "id": "google-ミニストップ-熊谷上之店",
+    "name": "ミニストップ 熊谷上之店",
+    "facilityType": "コンビニ",
+    "category": "convenience",
+    "dataSource": "google",
+    "lat": 36.1515641,
+    "lng": 139.4131191,
+    "address": "〒360-0012 埼玉県熊谷市上之3885-1",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
+    "subScores": {
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
+    },
+    "attributes": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasNursingRoom": null,
+      "hasPowderRoom": null,
+      "hasOstomate": null,
+      "isFree": null,
+      "isOpen24h": true,
+      "hasSoap": null,
+      "hasAlcohol": null,
+      "hasPaperTowelOrDryer": null,
+      "toiletStyle": null
+    },
+    "openingHours": "24時間",
+    "description": "公式店舗検索で営業継続・24時間営業を再確認。直近取得可能なトイレ直接言及は、清潔側1件、中立的1件、設備不足1件、古さ・汚れへの強い否定1件と割れており、新しい2026年直接評価の追加は確認できなかった。前回比: 2.8→3.0。否定が複数支配的とは言えず、基準上「可もなく不可もなく」に寄せたが、投稿時期が不明なためconfidenceはlow。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 37,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%83%9F%E3%83%8B%E3%82%B9%E3%83%88%E3%83%83%E3%83%97%20%E7%86%8A%E8%B0%B7%E4%B8%8A%E4%B9%8B%E5%BA%97&query_place_id=ChIJpfPlhA4pH2ARlk8QA1Ie0D4",
     "officialOpenDataId": "gmaps-ミニストップ-熊谷上之店"
   },
@@ -986,12 +986,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "8:00-21:00（L.O.20:15）",
-    "description": "店舗口コミは多数確認できたが、今回取得できた範囲でトイレ清潔さを直接評価する十分な言及を確認できなかった。店内雰囲気や料理評価は代用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "公式サイトで営業継続・営業時間を再確認し、トイレマップでもトイレ利用情報を確認。直近傾向は、同トイレの評価・コメントが0件で、Google Maps側でも清潔さを直接判定できる新しい口コミを十分取得できなかった。前回比: null→null（変更なし）。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 460,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: NAVITIMEスポット情報。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E4%B9%83%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJxWJbbKApH2ARNBWxTnIDkTg",
     "officialOpenDataId": "gmaps-星乃珈琲店-熊谷店"
   },
@@ -1029,12 +1029,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "8:00-21:00",
-    "description": "公式店舗情報は確認できたが、トイレ清潔さを直接評価する公開口コミを十分確認できなかったためスコア化しない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と営業時間を現行店舗情報で再確認。直近傾向は、2026年の店舗口コミは確認できるが、トイレ清潔さを直接評価する十分な新規言及を確認できなかった。前回比: null→null（変更なし）。店舗全体の清潔感は代用していない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 167,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E9%A4%A8%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJy8iIodQpH2ARxI9cGByZJ0Q",
     "officialOpenDataId": "gmaps-珈琲館-熊谷店"
   },
@@ -1072,13 +1072,13 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "7:00-23:00（L.O.22:30）",
-    "description": "店舗全体の清潔感を好意的に述べる4★口コミは確認したが、トイレ自体への直接言及ではないため清潔度スコアへ流用しない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "店舗の営業継続と営業時間を現行店舗情報で再確認。直近傾向は、店舗全体の清潔感を評価する口コミはあるものの、トイレ自体を直接評価する2026年の十分な清潔口コミを確認できなかった。前回比: null→null（変更なし）。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 745,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: マピオン電話帳。",
-    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%8F%88%E7%90%B2%E6%89%80%20%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJLVyEeLMpH2ARJwwQp_LV7XI",
     "officialOpenDataId": "gmaps-珈琲所-コメダ珈琲店-熊谷店"
   },
   {
@@ -1115,12 +1115,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "24時間",
-    "description": "飲食店としての口コミは多数確認できたが、今回取得範囲でトイレ清潔さを直接評価する十分な言及を確認できなかったためスコア化しない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "公式店舗情報で営業継続・24時間営業を再確認。直近傾向は、2026年の店舗口コミは複数あるが、トイレ清潔さを直接評価する十分な新規言及を確認できなかった。前回比: null→null（変更なし）。飲食・接客評価は清潔さに流用しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 615,
     "externalReviewSource": "Google Maps",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。 座標出典: ジョイフル公式サイト。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A4%E3%83%95%E3%83%AB%20%E7%86%8A%E8%B0%B7%E5%BA%97&query_place_id=ChIJUZuleGQpH2AR8dIOmruLgjc",
     "officialOpenDataId": "gmaps-ジョイフル-熊谷店"
   },
@@ -1133,15 +1133,15 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 36.1478109759971,
     "lng": 139.389654820411,
     "address": "〒360-0041 埼玉県熊谷市宮町2丁目37番地1",
-    "cleanlinessGrade": "C",
-    "cleanlinessScore": 2.8,
-    "equipmentGrade": "C",
-    "equipmentScore": 2.8,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 2.8,
-      "odor": 2.8,
-      "supplies": 2.8,
-      "comfort": 2.8
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1158,7 +1158,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "緑化センター 9:00-21:00（水曜・年末年始休館。トイレはセンター内）",
-    "description": "2021年利用の3★口コミ1件がトイレを明確に「綺麗とは言えず、薄暗い」と指摘。一方、2022年5★口コミにはトイレがあり公園が綺麗との広い表現もあるため、強い断定は避けた。口コミが古いためlow。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "公園・緑化センターの供用継続を確認。直近傾向は、2026年の子育て設備情報では清潔側の評価がある一方、トイレ本体の直接評価として確認できる主な否定は2021年と古く、現在状態を判断できる新しい直接口コミが不足。前回比: 2.8→null。古い否定1件を現在の点数として維持せず判定不能へ変更。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 144,
@@ -1201,7 +1201,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "終日（自治会等により利用時間制限の場合あり）",
-    "description": "埼玉県公式でバリアフリートイレと終日利用を確認したが、清潔さを直接評価する口コミを十分確認できなかった。公園・桜の高評価はトイレ評価に流用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "公園の供用継続とバリアフリートイレ・終日利用情報を公的情報で再確認。直近傾向は、今回もトイレ清潔さを直接評価する新しい口コミを十分確認できなかった。前回比: null→null（変更なし）。公園全体の景観評価はトイレ清潔さに流用しない。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 289,
@@ -1244,7 +1244,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "終日（自治会等により利用時間制限の場合あり）",
-    "description": "熊谷市公式でトイレ設置、埼玉県公式でバリアフリートイレ・終日利用を確認。ただしYahoo!マップ等17件の施設口コミで、今回取得範囲ではトイレ清潔さの直接言及を確認できず判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "description": "熊谷市・埼玉県の現行情報で公園とトイレ、バリアフリー設備の供用継続を再確認。直近傾向は、施設口コミはあるがトイレ清潔さを直接評価する新しい言及を十分確認できなかった。前回比: null→null（変更なし）。指定Google Maps URLは施設名文字列と不一致を含むが、変更禁止条件に従い原文を保持。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 153,
@@ -1287,7 +1287,7 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "toiletStyle": null
     },
     "openingHours": "営業時間不明",
-    "description": "熊谷市の2025年市民アンケート自由意見に、荒川公園のトイレをきれいにしてほしい旨の記載が2件。星評価ではないが、同時期に同方向の改善要望が複数あるため2.0。肯定的なトイレ清潔言及は今回確認範囲で見つからなかった。",
+    "description": "公園の供用継続を確認。直近傾向は、2025年の熊谷市市民アンケートで荒川公園トイレの清掃・改善を求める同方向の意見が2件あり、今回の確認範囲でもそれを覆す複数の新しい肯定材料は確認できなかった。前回比: 2.0→2.0（変更なし）。複数の近年否定材料が同方向のため2.0を維持。",
     "reviewCount": 0,
     "reviews": [],
     "externalReviewCount": 256,
@@ -1305,15 +1305,15 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 36.2150966,
     "lng": 139.3696194,
     "address": "埼玉県熊谷市弥藤吾720",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4,
-    "equipmentGrade": "A",
-    "equipmentScore": 4,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 4,
-      "odor": 4,
-      "supplies": 4,
-      "comfort": 4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1329,13 +1329,11 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "hasPaperTowelOrDryer": null,
       "toiletStyle": null
     },
-    "openingHours": "施設により異なる（農産物直売所9:00〜17:30等）",
-    "description": "旅行口コミサイトで施設評価4.0前後・200件超の投稿があり、トイレ休憩目的の立ち寄り言及もある。トイレの清潔さへの否定的言及は確認できず、身障者トイレ・ベビーベッド等の設備情報もあるため4.0と判断。トイレ単体の星評価ではない点に注意。",
+    "openingHours": "施設により異なる（めぬまアグリパーク 平日10:00-17:30、土日祝9:30-17:30。季節・休館日あり）",
+    "description": "熊谷市・道の駅公式情報で施設の営業継続、車椅子対応トイレ・ベビー設備を再確認。直近傾向は、トイレ休憩利用の言及はあるものの、清潔さを直接評価する十分な新しい口コミを確認できなかった。前回比: 4.0→null。前回は施設全体の旅行口コミ評価を含めて推定していたため、今回の厳格基準ではその転用を撤回し判定不能へ変更。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
-    "externalReviewCount": 245,
-    "externalReviewSource": "じゃらんnet",
-    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:medium）。",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=道の駅めぬま+熊谷市",
     "officialOpenDataId": "gmaps-道の駅めぬま"
   },
@@ -1348,15 +1346,15 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "lat": 36.1659921,
     "lng": 139.4083062,
     "address": "埼玉県熊谷市上川上300",
-    "cleanlinessGrade": "A",
-    "cleanlinessScore": 4,
-    "equipmentGrade": "A",
-    "equipmentScore": 4,
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
     "subScores": {
-      "cleanliness": 4,
-      "odor": 4,
-      "supplies": 4,
-      "comfort": 4
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
     },
     "attributes": {
       "hasWashlet": null,
@@ -1372,12 +1370,12 @@ export const GOOGLE_SEED: ToiletFacility[] = [
       "hasPaperTowelOrDryer": null,
       "toiletStyle": null
     },
-    "openingHours": "散策自由（駐車場5:00〜22:00、公式）",
-    "description": "旅行口コミサイトで施設全体の評価は高め（200件超・高評価多め）だが、トイレの清潔さへの直接言及は希薄。多目的トイレ台帳の登録はあるが2016年時点の情報で現状不明。「多目的トイレがもう少し」との数への要望あり。施設全体評価からの推定のため要現地確認。（清潔さは判定不能のため中立値。要現地確認）",
+    "openingHours": "公園利用可。駐車場5:00-22:00、管理事務所8:30-21:30（休館日あり）",
+    "description": "埼玉県の現行公式情報で施設の供用継続、駐車場・管理時間、多目的トイレ設備を再確認。直近傾向は、最新の一般口コミは多数あるがトイレ清潔さへの直接言及が乏しく、清潔度を確定できない。前回比: 4.0→null。前回は施設全体の高評価を強く参照していたため、今回の厳格基準では推定を撤回。Google系の現行表示では施設レビュー総数は2,769件。（清潔さは判定不能のため中立値。要現地確認）",
     "reviewCount": 0,
     "reviews": [],
-    "externalReviewCount": 248,
-    "externalReviewSource": "じゃらんnet",
+    "externalReviewCount": 2769,
+    "externalReviewSource": "Google Maps",
     "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=熊谷スポーツ文化公園+熊谷市",
     "officialOpenDataId": "gmaps-熊谷スポーツ文化公園"

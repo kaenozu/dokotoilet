@@ -1,48 +1,51 @@
 {
-  "center": [36.15, 139.39],
+  "center": [
+    36.15,
+    139.39
+  ],
   "maxKm": 30,
   "items": [
     {
-      "name": "道の駅めぬま",
-      "category": "convenience",
-      "lat": null,
-      "lng": null,
       "address": "埼玉県熊谷市弥藤吾720",
-      "openingHours": "施設により異なる（農産物直売所9:00〜17:30等）",
-      "cleanlinessScore": 4.0,
-      "confidence": "medium",
-      "scoreBasis": "旅行口コミサイトで施設評価4.0前後・200件超の投稿があり、トイレ休憩目的の立ち寄り言及もある。トイレの清潔さへの否定的言及は確認できず、身障者トイレ・ベビーベッド等の設備情報もあるため4.0と判断。トイレ単体の星評価ではない点に注意。",
-      "externalReviewCount": 245,
-      "externalReviewSource": "じゃらんnet",
+      "category": "convenience",
+      "cleanlinessScore": null,
+      "confidence": "low",
       "equipment": {
-        "hasWashlet": null,
-        "hasMultipurpose": true,
         "hasBabyTable": true,
+        "hasMultipurpose": true,
         "hasPowderRoom": null,
+        "hasWashlet": null,
         "isOpen24h": null
       },
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=道の駅めぬま+熊谷市"
+      "externalReviewCount": null,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=道の駅めぬま+熊谷市",
+      "lat": 36.2150966,
+      "lng": 139.3696194,
+      "name": "道の駅めぬま",
+      "openingHours": "施設により異なる（めぬまアグリパーク 平日10:00-17:30、土日祝9:30-17:30。季節・休館日あり）",
+      "scoreBasis": "熊谷市・道の駅公式情報で施設の営業継続、車椅子対応トイレ・ベビー設備を再確認。直近傾向は、トイレ休憩利用の言及はあるものの、清潔さを直接評価する十分な新しい口コミを確認できなかった。前回比: 4.0→null。前回は施設全体の旅行口コミ評価を含めて推定していたため、今回の厳格基準ではその転用を撤回し判定不能へ変更。"
     },
     {
-      "name": "熊谷スポーツ文化公園",
-      "category": "park",
-      "lat": null,
-      "lng": null,
       "address": "埼玉県熊谷市上川上300",
-      "openingHours": "散策自由（駐車場5:00〜22:00、公式）",
-      "cleanlinessScore": 4.0,
+      "category": "park",
+      "cleanlinessScore": null,
       "confidence": "low",
-      "scoreBasis": "旅行口コミサイトで施設全体の評価は高め（200件超・高評価多め）だが、トイレの清潔さへの直接言及は希薄。多目的トイレ台帳の登録はあるが2016年時点の情報で現状不明。「多目的トイレがもう少し」との数への要望あり。施設全体評価からの推定のため要現地確認。",
-      "externalReviewCount": 248,
-      "externalReviewSource": "じゃらんnet",
       "equipment": {
-        "hasWashlet": null,
-        "hasMultipurpose": true,
         "hasBabyTable": null,
+        "hasMultipurpose": true,
         "hasPowderRoom": null,
+        "hasWashlet": null,
         "isOpen24h": null
       },
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=熊谷スポーツ文化公園+熊谷市"
+      "externalReviewCount": 2769,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=熊谷スポーツ文化公園+熊谷市",
+      "lat": 36.1659921,
+      "lng": 139.4083062,
+      "name": "熊谷スポーツ文化公園",
+      "openingHours": "公園利用可。駐車場5:00-22:00、管理事務所8:30-21:30（休館日あり）",
+      "scoreBasis": "埼玉県の現行公式情報で施設の供用継続、駐車場・管理時間、多目的トイレ設備を再確認。直近傾向は、最新の一般口コミは多数あるがトイレ清潔さへの直接言及が乏しく、清潔度を確定できない。前回比: 4.0→null。前回は施設全体の高評価を強く参照していたため、今回の厳格基準では推定を撤回。Google系の現行表示では施設レビュー総数は2,769件。"
     }
   ]
 }
