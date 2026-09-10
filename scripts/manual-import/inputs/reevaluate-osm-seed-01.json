@@ -1,0 +1,198 @@
+[
+  {
+    "address": "日本、〒150-0041 東京都渋谷区神南1丁目5-11",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 31,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJaQdVPjmNGGAR9oEOe4XREX0",
+    "lat": 35.6648,
+    "lng": 139.6993,
+    "name": "渋谷区役所前 公衆便所",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listingを確認。口コミ総数31件。今回の取得経路では新しい順・評価順の口コミ本文を直接確認できた件数は0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。Google Mapsの総合星評価を清潔度へ転用せず、清潔さの直近傾向を判定できないためnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒150-0001 東京都渋谷区神宮前4丁目12-5",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": true,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 77,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJvV5a7F6NGGARoqyfQb_Huzk",
+    "lat": 35.6667,
+    "lng": 139.7097,
+    "name": "表参道ヒルズ前 公衆便所",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listingを確認。口コミ総数77件。今回の取得経路では新しい順・評価順の口コミ本文を直接確認できた件数は0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。口コミ総合評価だけでは清潔さを判定できないためnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒150-0034 東京都渋谷区代官山町17-10 公園",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 4,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJU_5iDTyLGGARdz7maJtOVqY",
+    "lat": 35.6487424,
+    "lng": 139.7036635,
+    "name": "代官山公園 公衆トイレ",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Maps上で代官山公園のバリアフリートイレ単体listingを確認。口コミ総数4件。今回、新しい順・評価順として本文を直接確認できた口コミは0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。4件の総合評価のみから清潔度を推定せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒150-0035 東京都渋谷区鉢山町3-33",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 8,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJyYnJ41CLGGARrf3YaRGGwME",
+    "lat": 35.6530295,
+    "lng": 139.6989983,
+    "name": "鉢山公園 公衆トイレ",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listingを確認し、今回取得時の口コミ総数は8件。取得できたGoogle Maps由来のレビュー要約2件中2件が利用環境について肯定的で、うち1件は清潔さへの直接的な肯定、否定的な清潔さ言及は0件だった。ただし2件の投稿日および新しい順・評価順での位置を確認できず、直近口コミの母数として確定できないためcleanlinessScoreはnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒151-0053 東京都渋谷区代々木2丁目13-3",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 21,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJiTmcidGMGGARRbTAsCn9-rI",
+    "lat": 35.6871,
+    "lng": 139.6963,
+    "name": "代々木二丁目あおい公園 公衆便所",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listingを確認。口コミ総数21件。今回、新しい順・評価順として本文を直接確認できた口コミは0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。総合星評価からの推定を行わず、清潔さは判定不能としてnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒104-0061 東京都中央区銀座6丁目13-1",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 9,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJF9sr8CWLGGARyJeKS91Hc78",
+    "lat": 35.6693,
+    "lng": 139.7654,
+    "name": "元木挽橋際 公衆便所 (銀座4丁目)",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsの元木挽橋際公衆便所の単体listingを確認。取得できたlisting情報では口コミ総数9件。今回、新しい順・評価順として本文を直接確認できた口コミは0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。なお中央区公式所在地は銀座6丁目13番2号で、登録名に含まれる「銀座4丁目」とは一致しない。清潔さの直接根拠が不足するためnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒104-0061 東京都中央区銀座5丁目1-1",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 34,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJrZy-eu-LGGARceILlnPP798",
+    "lat": 35.6743,
+    "lng": 139.7699,
+    "name": "数寄屋橋公園 公衆トイレ (銀座5丁目)",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listingを確認。口コミ総数34件。今回、新しい順・評価順として本文を直接確認できた口コミは0件で、直近確認可能口コミ0件中、清潔さ肯定0件・否定0件。公園全体に対する過去の口コミにはトイレを清潔側に評価する言及も確認できたが、Google Maps単体listingの直近口コミではないためスコア根拠には採用せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
