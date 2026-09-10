@@ -1,0 +1,30 @@
+[
+  {
+    "name": "下増田公園",
+    "category": "park",
+    "lat": 36.2074103284254,
+    "lng": 139.339600094368,
+    "address": "日本、〒360-0851 埼玉県熊谷市下増田公園",
+    "openingHours": null,
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "Google Mapsで「下増田公園 公衆トイレ」のトイレ単体listingを確認。口コミ総数は1件。直近1件について清潔さへの肯定・否定件数を判定できる口コミ本文を新しい順・評価順で取得できなかったため、清潔さスコアは判定保留。",
+    "subScores": {
+      "cleanliness": null,
+      "odor": null,
+      "supplies": null,
+      "comfort": null
+    },
+    "surveyedAt": "2026-09-10",
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": null
+    },
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8B%E5%A2%97%E7%94%B0%E5%85%AC%E5%9C%92%20%E5%85%AC%E8%A1%86%E3%83%88%E3%82%A4%E3%83%AC&query_place_id=ChIJFz-Q5CvZHmARWZO9X0TZHBk"
+  }
+]
