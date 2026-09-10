@@ -1,0 +1,338 @@
+[
+  {
+    "address": "日本、〒360-0018 埼玉県熊谷市中央２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ2z24isMpH2ARIqcYOEA4xjk",
+    "lat": 36.1539140631086,
+    "lng": 139.394300874377,
+    "name": "箱田第1公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「箱田第1公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0018 埼玉県熊谷市中央３丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJDzCO3BQpH2AR8KiofOAkBvA",
+    "lat": 36.1559531943077,
+    "lng": 139.396831194175,
+    "name": "箱田第2公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「箱田第2公園 公衆トイレ」を確認。口コミ総数1件。直近口コミ1件の本文を確認可能な形で取得できず、清潔さへの肯定・否定の傾向は判定不能。listingの総合評価2.0のみを清潔度へ転用せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0018 埼玉県熊谷市中央１丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ4ysI7rspH2ARYbWdlk5DRAc",
+    "lat": 36.1548941678821,
+    "lng": 139.391605501873,
+    "name": "箱田第4公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用可能時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsでトイレ単体listing「箱田第4公園 公衆トイレ」を確認。口コミ総数1件。直近口コミ1件の本文を確認可能な形で取得できず、清潔さへの肯定・否定の傾向は判定不能。listingの総合評価3.0のみを清潔度へ転用せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0026 埼玉県熊谷市久下１丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJKwuQEzgrH2ARx-5IcztsAdQ",
+    "lat": 36.1147002113683,
+    "lng": 139.425956272201,
+    "name": "久下第1公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「久下第1公園 公衆トイレ」を確認。口コミ総数1件。直近口コミ1件の本文を確認可能な形で取得できず、清潔さへの肯定・否定の傾向は判定不能。listingの総合評価1.0だけでは清潔さに対する評価か判断できないためnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0026 埼玉県熊谷市久下１丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ1VpMtq4rH2AREAmMZZc0oxE",
+    "lat": 36.1170222888816,
+    "lng": 139.427323270582,
+    "name": "久下第2公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「久下第2公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0026 埼玉県熊谷市久下３丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJwUcpoRQrH2AR2OiKaT_lJmk",
+    "lat": 36.1160646404629,
+    "lng": 139.430519278655,
+    "name": "久下第3公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsでトイレ単体listing「久下第3公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0026 埼玉県熊谷市久下４丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJZW8SC0crH2ARzIvjcjNmyEk",
+    "lat": 36.1196195961273,
+    "lng": 139.434039126936,
+    "name": "久下第4公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "対象の久下4丁目でGoogle Mapsのトイレ単体listing「公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。listing名に公園名が含まれないため施設対応関係の確度も考慮しconfidenceをlowとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0015 埼玉県熊谷市肥塚３９３−１",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJLcRjxmEpH2ARtDgsuCxkU3g",
+    "lat": 36.1601424723872,
+    "lng": 139.393743817265,
+    "name": "雀宮第2公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsでトイレ単体listing「雀宮第２公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0854 埼玉県熊谷市玉井南３丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJcweZlBvXHmAR-S9tJv-C6z8",
+    "lat": 36.1739513715864,
+    "lng": 139.345952962404,
+    "name": "玉井稲荷木第1公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「玉井稲荷木第1公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0854 埼玉県熊谷市玉井南２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJGTm7bHvZHmAR0sfsp7vRrmU",
+    "lat": 36.1766029446922,
+    "lng": 139.347055752848,
+    "name": "玉井稲荷木第2公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「玉井稲荷木第2公園 公衆トイレ」を確認。口コミ総数1件。直近口コミ1件の本文を確認可能な形で取得できず、清潔さへの肯定・否定の傾向は判定不能。listingの総合評価5.0のみを根拠に清潔度5.0とはせずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0012 埼玉県熊谷市上之",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ80xwLOUpH2AR48KV8acse4Q",
+    "lat": 36.1537355054681,
+    "lng": 139.398081186725,
+    "name": "上之公園",
+    "openingHours": "終日（埼玉県公式。自治会等により利用可能時間が制限される場合あり）",
+    "scoreBasis": "Google Mapsでトイレ単体listing「上之公園 公衆トイレ」を確認。口コミ総数1件。直近口コミ1件の本文を確認可能な形で取得できず、清潔さへの肯定・否定の傾向は判定不能。listingの総合評価1.0だけでは清潔さに対する評価か判断できないためnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0853 埼玉県熊谷市玉井３丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ-WTFYXDZHmAR9cGSyiOyMKo",
+    "lat": 36.1800352256533,
+    "lng": 139.340465590533,
+    "name": "玉井在家第1公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「玉井在家第1公園 公衆トイレ」を確認。直近口コミ0件のため、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
