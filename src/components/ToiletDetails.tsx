@@ -221,7 +221,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                 {evaluated
                   ? gradeColor.label
                   : shown.kind === 'survey'
-                    ? `調査評価 ${shown.grade}相当（実測レビューなし）`
+                    ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
                     : `推定 ${shown.grade}相当（実測レビューなし）`}
               </p>
               <p className="text-[11px] text-faint mt-0.5">

@@ -157,4 +157,46 @@ describe("convertItems", () => {
     );
     expect(facilities[0].facilityNote).toContain("マピオン電話帳");
   });
+
+  it("uses per-dimension subScores with fallback to overall", async () => {
+    const { facilities } = await convertItems(
+      [
+        {
+          ...base,
+          cleanlinessScore: 4.2,
+          subScores: { cleanliness: 4.8, odor: 3.2, supplies: null, comfort: 9 },
+        },
+      ],
+      { geocode: noGeo }
+    );
+    const sub = facilities[0].subScores;
+    expect(sub.cleanliness).toBe(4.8);
+    expect(sub.odor).toBe(3.2);
+    expect(sub.supplies).toBe(4.2); // null→総合へフォールバック
+    expect(sub.comfort).toBe(4.2); // 範囲外→総合へフォールバック
+    // 総合スコア・グレードは従来どおり
+    expect(facilities[0].cleanlinessScore).toBe(4.2);
+  });
+
+  it("omits subScores input entirely without changing output", async () => {
+    const { facilities } = await convertItems([{ ...base }], { geocode: noGeo });
+    expect(facilities[0].subScores).toEqual({
+      cleanliness: 4.2,
+      odor: 4.2,
+      supplies: 4.2,
+      comfort: 4.2,
+    });
+  });
+
+  it("records surveyedAt only when it is YYYY-MM-DD", async () => {
+    const { facilities } = await convertItems(
+      [{ ...base, surveyedAt: "2026-09-10" }],
+      { geocode: noGeo }
+    );
+    expect(facilities[0].surveyedAt).toBe("2026-09-10");
+    const bad = await convertItems([{ ...base, surveyedAt: "2026/09/10" }], {
+      geocode: noGeo,
+    });
+    expect(bad.facilities[0].surveyedAt).toBeUndefined();
+  });
 });

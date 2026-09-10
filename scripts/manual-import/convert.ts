@@ -28,6 +28,15 @@ export interface ManualItem {
   cleanlinessScore: number | null;
   confidence: string;
   scoreBasis: string;
+  // 次元別スコア（任意）。未指定・範囲外の次元は総合スコアにフォールバックする
+  subScores?: {
+    cleanliness?: number | null;
+    odor?: number | null;
+    supplies?: number | null;
+    comfort?: number | null;
+  };
+  // 調査実施日（YYYY-MM-DD）。形式不正は取り込まない
+  surveyedAt?: string;
   equipment: ManualEquipment;
   googleMapsUrl: string;
   geoQuery?: string;
@@ -172,6 +181,10 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
     const id = `google-${placeId}`.slice(0, 80);
 
     const basis = typeof item.scoreBasis === "string" && item.scoreBasis ? item.scoreBasis : "根拠の記載なし";
+    // 次元別スコア: 有効な次元だけ採用し、欠落・範囲外は総合スコアへフォールバック
+    const dim = (v: unknown): number =>
+      typeof v === "number" && Number.isFinite(v) && v >= 1 && v <= 5 ? round1(v) : score;
+    const sub = item.subScores ?? {};
     facilities.push({
       id,
       name,
@@ -185,7 +198,7 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
       cleanlinessScore: score,
       equipmentGrade: grade,
       equipmentScore: score,
-      subScores: { cleanliness: score, odor: score, supplies: score, comfort: score },
+      subScores: { cleanliness: dim(sub.cleanliness), odor: dim(sub.odor), supplies: dim(sub.supplies), comfort: dim(sub.comfort) },
       attributes: {
         hasWashlet: bool(eq.hasWashlet),
         hasMultipurpose: bool(eq.hasMultipurpose),
@@ -220,6 +233,10 @@ export async function convertItems(items: ManualItem[], opts: ConvertOpts): Prom
           }
         : {}),
       facilityNote: `Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:${item.confidence || "不明"}）。${coordNote}`,
+      // 調査日の形式不正は取り込まない（鮮度表示の誤りを防ぐ）
+      ...(typeof item.surveyedAt === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.surveyedAt)
+        ? { surveyedAt: item.surveyedAt }
+        : {}),
       googleMapsUrl: item.googleMapsUrl,
       officialOpenDataId: `gmaps-${placeId}`.slice(0, 80),
     });
