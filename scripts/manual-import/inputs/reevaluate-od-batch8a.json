@@ -1,0 +1,142 @@
+[
+  {
+    "address": "〒360-0105 埼玉県熊谷市板井719-1",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJtSI-LfLXHmARy1yxFo6wIow",
+    "lat": 36.1064950635416,
+    "lng": 139.318350959828,
+    "name": "和田川上流公衆便所",
+    "openingHours": null,
+    "scoreBasis": "指定座標から約2mの位置に、Google Maps上で「出雲乃伊波比神社 観光トイレ」というトイレ単体listingを確認。熊谷市資料にある和田川上流公衆便所とも位置・施設種別が整合するため同一物理施設の可能性が高いが、listing名がOD名と異なるため低信頼。口コミ総数は0件で、直近口コミ0件のため清潔さの肯定・否定傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0032 埼玉県熊谷市",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJz7qO75spH2ARiUegKmLA7MQ",
+    "lat": 36.142533379472,
+    "lng": 139.395728142835,
+    "name": "東公園",
+    "openingHours": "24時間",
+    "scoreBasis": "Google Maps上で「東公園 公衆トイレ」というトイレ単体listingを再発見。口コミ総数は2件。レビュー本文を新しい順・評価順で取得できなかったため、直近2件中の清潔さ肯定・否定件数は判定不能。Google Mapsの総合星3.5は清潔度スコアへ流用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0033 埼玉県熊谷市曙町4丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJu0BzwakpH2ARM-7pyAWNalE",
+    "lat": 36.1354353683848,
+    "lng": 139.394814026164,
+    "name": "曙公園",
+    "openingHours": "終日（自治会等により利用可能時間が制限される場合あり）",
+    "scoreBasis": "Google Maps上で「曙公園 公衆トイレ」というトイレ単体listingを再発見。口コミ総数は0件で、直近口コミ0件のため清潔さの肯定・否定傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0015 埼玉県熊谷市肥塚",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJZbSP-1EpH2ARAvU_JgIuGd4",
+    "lat": 36.1682808223995,
+    "lng": 139.392242213061,
+    "name": "肥塚公園",
+    "openingHours": "24時間",
+    "scoreBasis": "指定座標近傍を再検索し、約21mの位置に名称が「公衆トイレ」のGoogle Maps単体listingを確認。肥塚公園の位置と整合するがlisting側に公園名が明記されていないため低信頼。口コミ総数は0件で、直近口コミ0件のため清潔さの肯定・否定傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0018 埼玉県熊谷市中央3丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJr88CAIApH2ARvwbOStk1t2M",
+    "lat": 36.1569011482546,
+    "lng": 139.393151771129,
+    "name": "箱田第3公園",
+    "openingHours": "24時間",
+    "scoreBasis": "指定座標近傍を再検索し、約27mの位置に名称が「公衆トイレ」のGoogle Maps単体listingを確認。中央3丁目かつ箱田第3公園の指定座標近傍だが、listing側に公園名が明記されていないため低信頼。口コミ総数は0件で、直近口コミ0件のため清潔さの肯定・否定傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
