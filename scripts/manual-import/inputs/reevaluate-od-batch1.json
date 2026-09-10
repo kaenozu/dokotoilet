@@ -1,0 +1,254 @@
+[
+  {
+    "address": "〒360-0041 埼玉県熊谷市宮町２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ3db2HGkpH2ARJH_2qpFnLTg",
+    "lat": 36.1457857089932,
+    "lng": 139.386599837991,
+    "name": "髙城神社境内公衆便所",
+    "openingHours": null,
+    "scoreBasis": "Google Maps上で公衆トイレ単体listingを確認。口コミ総数0件。直近0件のため、清潔さに関する肯定・否定傾向を判定できない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0036 埼玉県熊谷市桜木町１丁目1−４",
+    "category": "station",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 3,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJj4qu_74pH2ARZu5C7v3erBY",
+    "lat": 36.1389062285464,
+    "lng": 139.388294008941,
+    "name": "熊谷駅南口広場公衆便所",
+    "openingHours": "24時間",
+    "scoreBasis": "Google Mapsの口コミ総数3件。新しい順・評価順の口コミ本文を取得できず、直近3件中で清潔さを評価可能な本文は確認できなかったため、肯定・否定傾向は判定不能。Google Mapsの総合星評価は清潔さスコアには転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0042 埼玉県熊谷市本町１丁目１２",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJu4ZvlRIpH2ARxHkoFFffACI",
+    "lat": 36.1459669749151,
+    "lng": 139.384496186567,
+    "name": "千形神社境内公衆便所",
+    "openingHours": null,
+    "scoreBasis": "Google Maps上で公衆トイレ単体listingを確認。口コミ総数0件。直近0件のため、清潔さに関する肯定・否定傾向を判定できない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0847 埼玉県熊谷市新堀７１３",
+    "category": "station",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJDf8fZS7YHmARBgyLnL_hrZs",
+    "lat": 36.1739435738167,
+    "lng": 139.330082476314,
+    "name": "籠原駅南口広場公衆便所",
+    "openingHours": "24時間",
+    "scoreBasis": "Google Mapsの口コミ総数2件。新しい順・評価順の口コミ本文を取得できず、直近2件中で清潔さを評価可能な本文は確認できなかったため、肯定・否定傾向は判定不能。Google Mapsの総合星評価は清潔さスコアには転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0841 埼玉県熊谷市新堀７１３ イーサイト籠原 2F",
+    "category": "station",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ9yiQRgDZHmARf8OYjFTWTTg",
+    "lat": 36.1747938187782,
+    "lng": 139.330212444709,
+    "name": "籠原駅ビル内公衆便所",
+    "openingHours": "終日",
+    "scoreBasis": "Google Mapsでは「籠原駅北口公衆トイレ」の名称で、イーサイト籠原2F・新堀713の単体listingを確認。口コミ総数1件。口コミ本文を取得できず、直近1件の清潔さに関する肯定・否定傾向は判定不能。Google Mapsの総合星評価は清潔さスコアには転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0201 埼玉県熊谷市妻沼1706-1 市営めぬま観光駐車場東コーナ",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJGcuJbbYnH2ARDvpbZrjpBPQ",
+    "lat": 36.2224829211954,
+    "lng": 139.377439190449,
+    "name": "聖天山お客様お迎えトイレ",
+    "openingHours": null,
+    "scoreBasis": "OD座標から約29mのGoogle Maps単体listing「聖天山お客様 多機能トイレ」を確認したため同一候補として採用したが、Maps上の名称・住所表記がODと異なる。Google Mapsの口コミ総数1件。口コミ本文を取得できず、直近1件の清潔さ傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0201 埼玉県熊谷市妻沼",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 3,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJwzMDafcnH2ARvuelkhdet7U",
+    "lat": 36.2275846040907,
+    "lng": 139.375258221395,
+    "name": "聖天山境内トイレ",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでは「聖天堂 公衆トイレ」の単体listingを確認。OD施設との名称・住所表記に差があるため同一性の確度は限定的。口コミ総数3件だが本文を取得できず、直近3件の清潔さに関する肯定・否定傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0201 埼玉県熊谷市妻沼１４７９−４ バスロータリー南東コーナ",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJow77nT0nH2ARmM1MTuMB9NM",
+    "lat": 36.2280644892796,
+    "lng": 139.378093611595,
+    "name": "バスターミナルトイレ",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでは「バス駐車場 公衆トイレ」の単体listingを住所一致で確認。口コミ総数0件。直近0件のため、清潔さに関する肯定・否定傾向を判定できない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "〒360-0222 埼玉県熊谷市葛和田１９７５",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJnzKF5QMnH2AR7geFDAOxw8Y",
+    "lat": 36.2072145626434,
+    "lng": 139.405964437027,
+    "name": "花埋み観光トイレ",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsで施設名が一致する公衆トイレ単体listingを確認したが、Maps住所は葛和田1975でODの弁財1975と異なるため同一性には住所表記上の残余リスクがある。口コミ総数1件。口コミ本文を取得できず、直近1件の清潔さ傾向は判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
