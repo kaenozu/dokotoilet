@@ -1,4 +1,4 @@
-// 自動生成: bun scripts/manual-import/run.ts --in shibuya-01.json --in kumagaya-manual-01.json --in kumagaya-02.json --in reevaluate-osm-seed-01.json --in reevaluate-od-batch1.json --in reevaluate-od-batch2.json --in reevaluate-od-batch3.json --in reevaluate-od-batch4.json --in reevaluate-od-batch5.json --in reevaluate-od-batch6.json --in reevaluate-od-batch7.json --in reevaluate-od-batch8a.json
+// 自動生成: bun scripts/manual-import/run.ts --in shibuya-01.json --in kumagaya-manual-01.json --in kumagaya-02.json --in reevaluate-osm-seed-01.json --in reevaluate-od-batch1.json --in reevaluate-od-batch2.json --in reevaluate-od-batch3.json --in reevaluate-od-batch4.json --in reevaluate-od-batch5.json --in reevaluate-od-batch6.json --in reevaluate-od-batch7.json --in reevaluate-od-batch8a.json --in reevaluate-od-batch8b.json
 // 生成日: 2026-09-10
 // 由来: ChatGPT手動調査（Google Maps掲載情報の要約・自治体調査）。座標欠落分はNominatimで補完。
 // 規約: 口コミ本文（ユーザー投稿の転載）は取り込まない。件数と要約のみ（README「データ方針」参照）。
@@ -4579,5 +4579,49 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJr88CAIApH2ARvwbOStk1t2M",
     "officialOpenDataId": "gmaps-ChIJr88CAIApH2ARvwbOStk1t2M"
+  },
+  {
+    "id": "google-下増田公園",
+    "name": "下増田公園",
+    "facilityType": "公衆トイレ",
+    "category": "park",
+    "dataSource": "google",
+    "lat": 36.2074103284254,
+    "lng": 139.339600094368,
+    "address": "日本、〒360-0851 埼玉県熊谷市下増田公園",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
+    "subScores": {
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
+    },
+    "attributes": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasNursingRoom": null,
+      "hasPowderRoom": null,
+      "hasOstomate": null,
+      "isFree": null,
+      "isOpen24h": null,
+      "hasSoap": null,
+      "hasAlcohol": null,
+      "hasPaperTowelOrDryer": null,
+      "toiletStyle": null
+    },
+    "openingHours": "営業時間不明",
+    "description": "Google Mapsで「下増田公園 公衆トイレ」のトイレ単体listingを確認。口コミ総数は1件。直近1件について清潔さへの肯定・否定件数を判定できる口コミ本文を新しい順・評価順で取得できなかったため、清潔さスコアは判定保留。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 0,
+    "reviews": [],
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-10",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8B%E5%A2%97%E7%94%B0%E5%85%AC%E5%9C%92%20%E5%85%AC%E8%A1%86%E3%83%88%E3%82%A4%E3%83%AC&query_place_id=ChIJFz-Q5CvZHmARWZO9X0TZHBk",
+    "officialOpenDataId": "gmaps-下増田公園"
   }
 ]
