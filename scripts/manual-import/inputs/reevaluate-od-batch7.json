@@ -1,0 +1,142 @@
+[
+  {
+    "address": "日本、〒360-0824 埼玉県熊谷市見晴町",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=熊谷荒川緑地ソフトボール場トイレ&query_place_id=ChIJV4CnwK4pH2ARXIfqsP7D-z8",
+    "lat": 36.1398437993141,
+    "lng": 139.373511675729,
+    "name": "熊谷荒川緑地",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsのトイレ単体listing「熊谷荒川緑地ソフトボール場トイレ」を確認。直近口コミ0件で、清潔さへの肯定・否定傾向を判定できる情報がないため判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0117 埼玉県熊谷市上新田３６０ 0117",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=上新田広場%20公衆トイレ&query_place_id=ChIJs-K0FQDXHmARL_hN4D3fzYM",
+    "lat": 36.1307521712524,
+    "lng": 139.316280091522,
+    "name": "上新田広場",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsのトイレ単体listing「上新田広場 公衆トイレ」を確認。listing上の口コミ総数は2件だが、直近口コミ2件の本文を取得できず、清潔さへの肯定・否定件数は算定不能。総合評価4.5は清潔度には転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0112 埼玉県熊谷市樋春１０２３−１",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": true,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=樋春北広場公衆トイレ&query_place_id=ChIJlcf_LADXHmARXbCTCIxrCoc",
+    "lat": 36.1320762902229,
+    "lng": 139.349102855439,
+    "name": "樋春北広場",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsのトイレ単体listing「樋春北広場公衆トイレ」を確認。listing上の口コミ総数は1件だが、直近口コミ1件の本文を取得できず、清潔さへの肯定・否定件数は算定不能。総合評価3.0は清潔度には転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0122 埼玉県熊谷市小泉９５２−９",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=切所沼%20公衆トイレ&query_place_id=ChIJi9CFM4wrH2ARFh6Plk_7_28",
+    "lat": 36.1163106059522,
+    "lng": 139.398885759441,
+    "name": "切所沼親水公園（駐車場側）",
+    "openingHours": "24時間営業",
+    "scoreBasis": "指定座標近傍のGoogle Mapsトイレ単体listing「切所沼 公衆トイレ」を確認。listing上の口コミ総数は1件だが、直近口コミ1件の本文を取得できず、清潔さへの肯定・否定件数は算定不能。総合評価3.0は清潔度には転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒369-0103 埼玉県熊谷市小八林１３５６",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=中の淵公衆トイレ&query_place_id=ChIJ3zIT3BQrH2ARiP7niTqSSAM",
+    "lat": 36.0815199937077,
+    "lng": 139.433007175517,
+    "name": "中の淵親水公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "指定座標近傍のGoogle Mapsトイレ単体listing「中の淵公衆トイレ」を確認。listing上の口コミ総数は1件だが、直近口コミ1件の本文を取得できず、清潔さへの肯定・否定件数は算定不能。総合評価3.0は清潔度には転用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
