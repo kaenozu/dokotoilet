@@ -1,0 +1,142 @@
+[
+  {
+    "address": "日本、〒360-0853 埼玉県熊谷市玉井２丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJjYx7rebZHmARhgJCFTX7FSM",
+    "lat": 36.1785480667596,
+    "lng": 139.337101957484,
+    "name": "玉井在家第2公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「玉井在家第２公園 公衆トイレ」を確認。直近口コミ0件として確認でき、清潔さへの肯定0件・否定0件で傾向判定不能。口コミ情報不足のためスコア化していない。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0853 埼玉県熊谷市玉井５丁目",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJW1FurRDZHmARMNXevVwbVNU",
+    "lat": 36.1774138545711,
+    "lng": 139.33952843818,
+    "name": "玉井在家第3公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「玉井在家第3公園 公衆トイレ」を確認。口コミ総数2件、listing総合評価4.0。直近2件の口コミ本文を新しい順・評価順で信頼できる形では取得できず、清潔さへの肯定・否定件数を判定不能。総合星評価だけを清潔度へ転用せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0847 埼玉県熊谷市籠原南１丁目３０４−１５",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJRcL6XLbZHmARGBOj_ZhzP88",
+    "lat": 36.172856759224,
+    "lng": 139.327461241723,
+    "name": "籠原南第1公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「籠原南第一公園 公衆トイレ」を確認。口コミ総数1件、listing総合評価2.0。直近1件の口コミ本文を新しい順・評価順で信頼できる形では取得できず、清潔さへの肯定・否定件数を判定不能。低い星評価だけから清潔度を推定せずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0847 埼玉県熊谷市籠原南１丁目５７",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": null
+    },
+    "externalReviewCount": 1,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJWS5L_wbZHmAR7YcCTqfNTvk",
+    "lat": 36.1718720017693,
+    "lng": 139.330845759288,
+    "name": "籠原南第2公園",
+    "openingHours": null,
+    "scoreBasis": "Google Mapsでトイレ単体listing「籠原南第二公園 公衆トイレ」を確認。口コミ総数1件、listing総合評価1.0。直近1件の口コミ本文を新しい順・評価順で信頼できる形では取得できず、その評価が清潔さへの否定的評価か判定不能。星評価のみでは清潔度を決めずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  },
+  {
+    "address": "日本、〒360-0012 埼玉県熊谷市上之３０４０−１",
+    "category": "park",
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "equipment": {
+      "hasBabyTable": null,
+      "hasMultipurpose": null,
+      "hasPowderRoom": null,
+      "hasWashlet": null,
+      "isOpen24h": true
+    },
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJQViVipcpH2ARrR2HmeMmFsM",
+    "lat": 36.146985325838,
+    "lng": 139.411035839151,
+    "name": "吉原公園",
+    "openingHours": "24時間営業",
+    "scoreBasis": "Google Mapsでトイレ単体listing「吉原公園 公衆トイレ」を確認。口コミ総数2件、listing総合評価5.0。直近2件の口コミ本文を新しい順・評価順で信頼できる形では取得できず、清潔さへの肯定・否定件数を判定不能。満点の星評価だけから清潔度5.0とはせずnullとした。",
+    "subScores": {
+      "cleanliness": null,
+      "comfort": null,
+      "odor": null,
+      "supplies": null
+    },
+    "surveyedAt": "2026-09-10"
+  }
+]
