@@ -91,11 +91,11 @@ export const AddToiletModal: React.FC<AddToiletModalProps> = ({
       address: address.trim() || '現在地周辺',
       floorInfo: floorInfo.trim() || undefined,
       // 施設登録はメタデータだけを保存する。清潔度は登録後の通常レビューで評価する。
-      cleanlinessGrade: null as any,
-      cleanlinessScore: null as any,
-      equipmentGrade: null as any,
-      equipmentScore: null as any,
-      subScores: { cleanliness: null, odor: null, supplies: null, comfort: null } as any,
+      cleanlinessGrade: null,
+      cleanlinessScore: null,
+      equipmentGrade: null,
+      equipmentScore: null,
+      subScores: { cleanliness: null, odor: null, supplies: null, comfort: null },
       attributes: {
         hasWashlet,
         hasMultipurpose,

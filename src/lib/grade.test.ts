@@ -6,6 +6,7 @@ import {
   facilityTypeForCategory,
   getGradeColor,
   isEvaluated,
+  formatDisplayScore,
 } from './grade';
 
 describe('isEvaluated', () => {
@@ -62,6 +63,11 @@ describe('displayGrade', () => {
   });
   it('falls back to the equipment estimate otherwise', () => {
     expect(displayGrade(base)).toEqual({ grade: 'B', score: 3.4, kind: 'estimated' });
+  });
+  it('formats nullable scores without treating null as zero', () => {
+    expect(formatDisplayScore(null)).toBe('未評価');
+    expect(formatDisplayScore(undefined)).toBe('未評価');
+    expect(formatDisplayScore(3.4)).toBe('3.4');
   });
 });
 

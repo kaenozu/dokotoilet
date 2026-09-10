@@ -34,10 +34,10 @@ export interface ToiletAttributes {
 }
 
 export interface SubScores {
-  cleanliness: number; // 便器・床の清潔度 (1.0 - 5.0)
-  odor: number;        // におい・消臭状態 (1.0 - 5.0)
-  supplies: number;    // 備品充実度 (石鹸・ペーパー・除菌) (1.0 - 5.0)
-  comfort: number;     // 快適度・広さ・照明 (1.0 - 5.0)
+  cleanliness: number | null; // 便器・床の清潔度 (1.0 - 5.0)
+  odor: number | null;        // におい・消臭状態 (1.0 - 5.0)
+  supplies: number | null;    // 備品充実度 (石鹸・ペーパー・除菌) (1.0 - 5.0)
+  comfort: number | null;     // 快適度・広さ・照明 (1.0 - 5.0)
 }
 
 export interface ToiletReview {
@@ -77,13 +77,13 @@ export interface ToiletFacility {
   // 実測レビューの「清潔さ次元」平均のランク・スコア。reviewCount === 0 の場合は
   // 設備推定値/Google手動調査値を表示用に入れ、UI上は「調査」「推定」タグ付きの
   // グレードとして扱うこと（displayGrade/evaluationKind参照）
-  cleanlinessGrade: CleanlinessGrade;
-  cleanlinessScore: number; // 1.0 - 5.0（便器・床の清潔さの実測平均）
+  cleanlinessGrade: CleanlinessGrade | null;
+  cleanlinessScore: number | null; // 1.0 - 5.0（未評価はnull）
   /** 総合満足度の実測平均（口コミ1件以上で設定。0件は未定義＝未評価） */
   overallScore?: number;
   // 設備タグからの推定ランク・スコア（実測ではない）
-  equipmentGrade: CleanlinessGrade;
-  equipmentScore: number; // 1.0 - 5.0
+  equipmentGrade: CleanlinessGrade | null;
+  equipmentScore: number | null; // 1.0 - 5.0（未評価はnull）
   // 設備推定の内訳（口コミ表示は reviews から次元別に導出。comfort は入力項目が
   // ないため常にこの推定値）
   subScores: SubScores;

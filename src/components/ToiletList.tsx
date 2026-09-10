@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToiletFacility } from '../types';
-import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
+import { displayGrade, evaluationKindLabel, formatDisplayScore, getGradeColor, isEvaluated } from '../lib/grade';
 import { BdiText } from './BdiText';
 import {
   Search,
@@ -121,7 +121,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                       }
                     >
                       <span className="text-base font-black leading-none">
-                        {shown.grade}
+                        {shown.grade ?? '未評価'}
                       </span>
                     </div>
                     {!evaluated && (
@@ -139,7 +139,7 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     <span className="font-bold">
                       {evaluated
                         ? (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')
-                        : `${evaluationKindLabel(shown.kind)} ${Number(shown.score).toFixed(1)}`}
+                        : `${evaluationKindLabel(shown.kind)} ${formatDisplayScore(shown.score)}`}
                     </span>
                     <span className="text-faint">({toilet.reviewCount ?? 0})</span>
                   </div>

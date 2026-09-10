@@ -662,7 +662,9 @@ export class CommunityStore {
     return withFileLock(this.filePath, async () => {
       const db = await this.readDisk();
       const hit = this.findReview(db, reviewId);
-      if (!hit) return { helpfulCount: 0, voted: false, found: false };
+      if (!hit || (hit.review as ToiletReview & { deleted?: boolean }).deleted === true) {
+        return { helpfulCount: 0, voted: false, found: false };
+      }
       const { review } = hit;
       const voters = db.helpfulVotes[reviewId] ?? [];
       if (voters.includes(ipHash)) {

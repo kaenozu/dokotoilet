@@ -27,20 +27,24 @@ export const evaluationKind = (toilet?: EvaluationSource | null): EvaluationKind
 };
 
 export interface GradeDisplay {
-  grade: CleanlinessGrade;
-  score: number;
+  grade: CleanlinessGrade | null;
+  score: number | null;
   kind: EvaluationKind;
 }
 
-/** 一覧・地図・詳細で共通の「表示用グレード」。実測が無ければ調査/推定値を出す */
+/** 未評価を0.0として表示せず、明示的なラベルに変換する */
+export const formatDisplayScore = (score: number | null | undefined): string =>
+  score == null ? '未評価' : score.toFixed(1);
+
+/** 一覧・地図・詳細で共通の「表示用グレード」。未評価はnullのまま表示へ伝える */
 export const displayGrade = (toilet: {
   reviewCount: number;
   dataSource: string;
   externalReviewCount?: number;
-  cleanlinessGrade: CleanlinessGrade;
-  cleanlinessScore: number;
-  equipmentGrade: CleanlinessGrade;
-  equipmentScore: number;
+  cleanlinessGrade: CleanlinessGrade | null;
+  cleanlinessScore: number | null;
+  equipmentGrade: CleanlinessGrade | null;
+  equipmentScore: number | null;
 }): GradeDisplay => {
   const kind = evaluationKind(toilet);
   if (kind === 'measured')

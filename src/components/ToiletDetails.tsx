@@ -4,7 +4,7 @@ import {
   CleanlinessGrade,
   DataSourceType,
 } from '../types';
-import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
+import { displayGrade, evaluationKindLabel, formatDisplayScore, getGradeColor, isEvaluated } from '../lib/grade';
 import { summarizeReviews } from '../lib/scoring';
 import { BdiText } from './BdiText';
 import {
@@ -96,6 +96,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   const hasUnfetched = !evaluated && externalCount > 0;
   const externalSource = toilet.externalReviewSource || 'Google Maps';
   const gradeColor = getGradeColor(shown.grade);
+  const shownGrade = shown.grade ?? '未評価';
   // 口コミがある施設は「清潔さ・におい・備品」のバーを口コミ集計値から導出して
   // 上部スコアとの表示不整合を防ぐ（comfort は入力項目が無いため設備推定値を維持）
   const measured =
@@ -191,17 +192,17 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               title={
                 evaluated
                   ? gradeColor.label
-                  : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
+                  : `${evaluationKindLabel(shown.kind)} ${shownGrade}相当`
               }
             >
               <span className="text-2xl font-black leading-none">
-                {shown.grade}
+                {shownGrade}
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-ink">
-                  {shown.score.toFixed(1)}
+                  {formatDisplayScore(shown.score)}
                 </span>
                 <span className="text-xs text-faint">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -221,8 +222,8 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                 {evaluated
                   ? gradeColor.label
                   : shown.kind === 'survey'
-                    ? `調査評価 ${shown.grade}相当（実測レビューなし）`
-                    : `推定 ${shown.grade}相当（実測レビューなし）`}
+                    ? `調査評価 ${shownGrade}相当（実測レビューなし）`
+                    : `推定 ${shownGrade}相当（実測レビューなし）`}
               </p>
               <p className="text-[11px] text-faint mt-0.5">
                 {evaluated
@@ -249,12 +250,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>便器・床の清潔感</span>
-              <span className="font-semibold text-ink">{barScores.cleanliness.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{formatDisplayScore(barScores.cleanliness)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-accent h-1.5 rounded-full"
-                style={{ width: `${(barScores.cleanliness / 5) * 100}%` }}
+                style={{ width: `${((barScores.cleanliness ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -262,12 +263,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>におい・換気状態</span>
-              <span className="font-semibold text-ink">{barScores.odor.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{formatDisplayScore(barScores.odor)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#0284c7] h-1.5 rounded-full"
-                style={{ width: `${(barScores.odor / 5) * 100}%` }}
+                style={{ width: `${((barScores.odor ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -275,12 +276,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>石鹸・ペーパー・除菌</span>
-              <span className="font-semibold text-ink">{barScores.supplies.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{formatDisplayScore(barScores.supplies)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#6366f1] h-1.5 rounded-full"
-                style={{ width: `${(barScores.supplies / 5) * 100}%` }}
+                style={{ width: `${((barScores.supplies ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -288,12 +289,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>広さ・快適性・明るさ</span>
-              <span className="font-semibold text-ink">{barScores.comfort.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{formatDisplayScore(barScores.comfort)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#f59e0b] h-1.5 rounded-full"
-                style={{ width: `${(barScores.comfort / 5) * 100}%` }}
+                style={{ width: `${((barScores.comfort ?? 0) / 5) * 100}%` }}
               />
             </div>
           </div>
