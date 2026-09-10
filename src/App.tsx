@@ -700,7 +700,7 @@ export default function App() {
         </div>
 
         {selectedToilet && (
-          <div className="fixed md:static inset-y-0 right-0 z-20 w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
+          <div className="fixed md:static inset-y-0 right-0 z-[1000] md:z-auto w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
             <ToiletDetails
               toilet={selectedToilet}
               onClose={() => setSelectedToiletId(null)}
@@ -766,7 +766,7 @@ export default function App() {
       />
 
       {toastMessage && (
-        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink/95 backdrop-blur-md text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/10 shadow-2xl flex items-center gap-2 pointer-events-auto">
+        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-[3000] bg-ink/95 backdrop-blur-md text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-white/10 shadow-2xl flex items-center gap-2 pointer-events-auto">
           <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

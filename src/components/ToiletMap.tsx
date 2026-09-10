@@ -264,7 +264,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
     TILE_STYLES.find((s) => s.id === currentTileStyle) || TILE_STYLES[0];
 
   return (
-    <div className="relative w-full h-full min-h-[420px] bg-canvas overflow-hidden">
+    <div className="relative w-full h-full min-h-[420px] bg-canvas overflow-hidden isolate z-0">
       <div ref={leafletContainerRef} className="w-full h-full" />
 
       {/* Floating Map Controls & Overlays */}
