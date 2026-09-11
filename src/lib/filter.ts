@@ -1,10 +1,9 @@
-import type { FilterState, ToiletFacility } from "../types";
+import type { FilterState, ToiletFacility, ToiletSortOption } from "../types";
 import { displayGrade } from "./grade";
+import { calculateDistanceMeters } from "./geo";
 
 /**
- * 一覧・地図共通の「絞り込み → 清潔度順ソート」純関数（App の useMemo から切り出し）。
- * ToiletList は「清潔度順にソート」と表示しているため、フィルタ後は必ず
- * sortToiletsForDisplay（filterAndSortToilets）を通すこと。
+ * 一覧・地図共通の「絞り込み → ソート」純関数。
  * FilterState の全フィールドがここで参照される（未使用フィールドの混入防止）。
  */
 
@@ -18,8 +17,45 @@ export function displayScore(t: ToiletFacility): number {
   return isEvaluated(t) ? t.cleanlinessScore : t.equipmentScore;
 }
 
-/** フィルタ1件分の判定（検索・清潔度・設備・データ元） */
-export function matchesFilter(t: ToiletFacility, f: FilterState): boolean {
+/** フィルタ1件分の判定（検索・清潔度・設備・データ元・お気に入り・利用シーンプリセット） */
+export function matchesFilter(
+  t: ToiletFacility,
+  f: FilterState,
+  favoriteIdSet?: Set<string>
+): boolean {
+  // お気に入りフィルタ
+  if ((f.onlyFavorites || f.quickPreset === 'favorites') && favoriteIdSet && !favoriteIdSet.has(t.id)) {
+    return false;
+  }
+
+  // 利用シーン別ワンタッププリセット
+  if (f.quickPreset === 'baby') {
+    // 赤ちゃん連れ: おむつ交換台または授乳室あり
+    if (t.attributes.hasBabyTable !== true && t.attributes.hasNursingRoom !== true) {
+      return false;
+    }
+  } else if (f.quickPreset === 'barrier_free') {
+    // バリアフリー: 多機能トイレまたはオストメイトあり
+    if (t.attributes.hasMultipurpose !== true && t.attributes.hasOstomate !== true) {
+      return false;
+    }
+  } else if (f.quickPreset === 'female_safe') {
+    // 女性安心: パウダールームあり、または商業施設・ホテル等の安心施設
+    if (
+      t.attributes.hasPowderRoom !== true &&
+      t.category !== 'department' &&
+      t.category !== 'hotel' &&
+      t.attributes.hasWashlet !== true
+    ) {
+      return false;
+    }
+  } else if (f.quickPreset === 'night_24h') {
+    // 24時間利用可能
+    if (t.attributes.isOpen24h !== true) {
+      return false;
+    }
+  }
+
   // Search query（施設名・住所・種別・フロア。大文字小文字は区別しない）
   const q = f.searchQuery.trim().toLowerCase();
   if (q) {
@@ -57,9 +93,10 @@ export function matchesFilter(t: ToiletFacility, f: FilterState): boolean {
 
 export function filterToilets(
   toilets: ToiletFacility[],
-  f: FilterState
+  f: FilterState,
+  favoriteIdSet?: Set<string>
 ): ToiletFacility[] {
-  return toilets.filter((t) => matchesFilter(t, f));
+  return toilets.filter((t) => matchesFilter(t, f, favoriteIdSet));
 }
 
 /**
@@ -79,10 +116,49 @@ export function sortToiletsForDisplay(
   });
 }
 
-/** フィルタ → 清潔度順ソートを1本化したエントリポイント */
+/**
+ * 距離順ソート: 基準座標（現在地またはマップ中心）からの直線距離の昇順で並べる。
+ */
+export function sortToiletsByDistance(
+  toilets: ToiletFacility[],
+  referencePoint: { lat: number; lng: number }
+): ToiletFacility[] {
+  return [...toilets].sort((a, b) => {
+    const distA = calculateDistanceMeters(referencePoint.lat, referencePoint.lng, a.lat, a.lng);
+    const distB = calculateDistanceMeters(referencePoint.lat, referencePoint.lng, b.lat, b.lng);
+    if (distA !== distB) return distA - distB;
+    return a.id.localeCompare(b.id);
+  });
+}
+
+/**
+ * ソート条件に応じた並び替え
+ */
+export function sortToilets(
+  toilets: ToiletFacility[],
+  sortOption: ToiletSortOption = 'cleanliness',
+  referencePoint?: { lat: number; lng: number } | null
+): ToiletFacility[] {
+  if (sortOption === 'distance' && referencePoint) {
+    return sortToiletsByDistance(toilets, referencePoint);
+  }
+  if (sortOption === 'reviews') {
+    return [...toilets].sort((a, b) => {
+      const diff = (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+      if (diff !== 0) return diff;
+      return displayScore(b) - displayScore(a) || a.id.localeCompare(b.id);
+    });
+  }
+  return sortToiletsForDisplay(toilets);
+}
+
+/** フィルタ → ソートを1本化したエントリポイント */
 export function filterAndSortToilets(
   toilets: ToiletFacility[],
-  f: FilterState
+  f: FilterState,
+  sortOption: ToiletSortOption = 'cleanliness',
+  referencePoint?: { lat: number; lng: number } | null,
+  favoriteIdSet?: Set<string>
 ): ToiletFacility[] {
-  return sortToiletsForDisplay(filterToilets(toilets, f));
+  return sortToilets(filterToilets(toilets, f, favoriteIdSet), sortOption, referencePoint);
 }

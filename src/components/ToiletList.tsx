@@ -1,6 +1,7 @@
 import React from 'react';
-import { ToiletFacility } from '../types';
+import { ToiletFacility, ToiletSortOption } from '../types';
 import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
+import { calculateDistanceMeters, formatDistance, formatWalkingTime } from '../lib/geo';
 import { BdiText } from './BdiText';
 import {
   Search,
@@ -9,6 +10,10 @@ import {
   Trees,
   Train,
   Star,
+  Footprints,
+  RotateCcw,
+  Sparkles,
+  ArrowUpDown,
 } from 'lucide-react';
 
 interface ToiletListProps {
@@ -17,6 +22,12 @@ interface ToiletListProps {
   onSelectToilet: (toilet: ToiletFacility) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  sortOption?: ToiletSortOption;
+  onSortChange?: (option: ToiletSortOption) => void;
+  referenceLocation?: { lat: number; lng: number } | null;
+  onResetFilters?: () => void;
+  isFavorite?: (toiletId: string) => boolean;
+  onToggleFavorite?: (toiletId: string) => void;
 }
 
 export const ToiletList: React.FC<ToiletListProps> = ({
@@ -25,6 +36,12 @@ export const ToiletList: React.FC<ToiletListProps> = ({
   onSelectToilet,
   searchQuery,
   setSearchQuery,
+  sortOption = 'cleanliness',
+  onSortChange,
+  referenceLocation,
+  onResetFilters,
+  isFavorite,
+  onToggleFavorite,
 }) => {
   const getCategoryIcon = (cat: string) => {
     switch (cat) {
@@ -55,18 +72,65 @@ export const ToiletList: React.FC<ToiletListProps> = ({
             className="w-full pl-9 pr-3 py-1.5 text-xs bg-surface-2 border border-line rounded-lg text-ink placeholder-faint focus:bg-white focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors"
           />
         </div>
-        <div className="flex items-center justify-between text-[11px] text-faint mt-2 px-1">
-          <span>該当件数: <strong className="text-ink font-semibold">{toilets.length}</strong> 件</span>
-          <span className="text-accent font-medium">清潔度順にソート</span>
+
+        {/* Sort and Count Bar */}
+        <div className="flex items-center justify-between text-[11px] text-faint mt-2.5 px-0.5">
+          <span>
+            該当件数: <strong className="text-ink font-semibold">{toilets.length}</strong> 件
+          </span>
+
+          {onSortChange ? (
+            <div className="inline-flex items-center p-0.5 bg-surface-2 rounded-lg border border-line">
+              <button
+                type="button"
+                onClick={() => onSortChange('cleanliness')}
+                className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
+                  sortOption === 'cleanliness'
+                    ? 'bg-white text-accent font-bold shadow-xs'
+                    : 'text-muted hover:text-ink'
+                }`}
+              >
+                清潔度順
+              </button>
+              <button
+                type="button"
+                onClick={() => onSortChange('distance')}
+                className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
+                  sortOption === 'distance'
+                    ? 'bg-white text-accent font-bold shadow-xs'
+                    : 'text-muted hover:text-ink'
+                }`}
+              >
+                近い順
+              </button>
+            </div>
+          ) : (
+            <span className="text-accent font-medium">清潔度順にソート</span>
+          )}
         </div>
       </div>
 
       {/* Toilet Card List */}
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {toilets.length === 0 ? (
-          <div className="text-center py-10 px-4 text-xs text-faint">
-            <p className="font-semibold text-ink-soft">該当するトイレが見つかりません</p>
-            <p className="mt-1 text-faint">検索条件を変更するか、マップの「この周辺の公衆トイレをOSM取得」をお試しください。</p>
+          <div className="text-center py-12 px-4 text-xs text-faint flex flex-col items-center">
+            <div className="w-10 h-10 rounded-full bg-surface-2 border border-line flex items-center justify-center text-faint mb-3">
+              <Search className="w-5 h-5" />
+            </div>
+            <p className="font-semibold text-ink-soft text-sm">該当するトイレが見つかりません</p>
+            <p className="mt-1 text-faint max-w-xs leading-relaxed">
+              検索ワードや設備フィルターの条件を緩めるか、マップの「この周辺の公衆トイレをOSM取得」をお試しください。
+            </p>
+            {onResetFilters && (
+              <button
+                type="button"
+                onClick={onResetFilters}
+                className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface border border-line text-accent hover:bg-surface-2 hover:border-line-strong font-medium shadow-xs transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>フィルター条件をリセット</span>
+              </button>
+            )}
           </div>
         ) : (
           toilets.map((toilet) => {
@@ -78,6 +142,15 @@ export const ToiletList: React.FC<ToiletListProps> = ({
             const gradeColor = getGradeColor(shown.grade);
             const isSelected = selectedToilet?.id === toilet.id;
             const attrs = toilet.attributes || ({} as any);
+
+            const distMeters = referenceLocation
+              ? calculateDistanceMeters(
+                  referenceLocation.lat,
+                  referenceLocation.lng,
+                  toilet.lat,
+                  toilet.lng
+                )
+              : null;
 
             return (
               <div
@@ -91,11 +164,17 @@ export const ToiletList: React.FC<ToiletListProps> = ({
               >
                 <div className="flex items-start justify-between gap-2.5">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 mb-1">
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                       <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-surface-2 text-muted">
                         {getCategoryIcon(toilet.category)}
                         {toilet.facilityType}
                       </span>
+                      {distMeters !== null && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200">
+                          <Footprints className="w-3 h-3 text-sky-600" />
+                          {formatWalkingTime(distMeters)} ({formatDistance(distMeters)})
+                        </span>
+                      )}
                       {attrs.isOpen24h && (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                           24h
@@ -106,12 +185,15 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                       <BdiText text={toilet.name} />
                     </h3>
                     <p className="text-[11px] text-faint line-clamp-1 mt-0.5">
+                      {toilet.floorInfo ? (
+                        <span className="text-accent font-medium mr-1">[{toilet.floorInfo}]</span>
+                      ) : null}
                       <BdiText text={toilet.address} />
                     </p>
                   </div>
 
-                  {/* Cleanliness Grade Box（実測が無ければ調査/推定グレード＋出所タグ） */}
-                  <div className="flex flex-col items-center gap-0.5 shrink-0">
+                  {/* Cleanliness Grade Box & Favorite */}
+                  <div className="flex flex-col items-center gap-1 shrink-0">
                     <div
                       className={`stamp-plate w-9 h-9 ${gradeColor.bg} text-white ${
                         evaluated ? '' : 'opacity-80 saturate-[.65]'
@@ -132,6 +214,23 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                       <span className="text-[9px] font-medium text-faint leading-none">
                         {unscored ? '未評価' : evaluationKindLabel(shown.kind)}
                       </span>
+                    )}
+                    {onToggleFavorite && isFavorite && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleFavorite(toilet.id);
+                        }}
+                        className={`p-1 rounded-md transition-colors ${
+                          isFavorite(toilet.id)
+                            ? 'text-amber-500 hover:text-amber-600 bg-amber-50'
+                            : 'text-faint hover:text-amber-400 hover:bg-surface-2'
+                        }`}
+                        title={isFavorite(toilet.id) ? 'お気に入りを解除' : 'お気に入りに保存'}
+                      >
+                        <Star className={`w-3.5 h-3.5 ${isFavorite(toilet.id) ? 'fill-amber-400 text-amber-500' : ''}`} />
+                      </button>
                     )}
                   </div>
                 </div>

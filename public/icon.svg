@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Background with slight rounding -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Central emblem: Clean toilet & sparkle symbol -->
+  <g filter="url(#shadow)" fill="#ffffff" transform="translate(106, 86)">
+    <!-- Main Restroom / Commode Form -->
+    <path d="M70 40 C70 18 88 0 110 0 L190 0 C212 0 230 18 230 40 L230 140 L70 140 Z" fill="#ffffff" opacity="0.95"/>
+    <path d="M40 160 C40 148 50 138 62 138 L238 138 C250 138 260 148 260 160 C260 220 220 270 150 270 C80 270 40 220 40 160 Z" fill="#ffffff"/>
+    <path d="M120 270 L180 270 L195 330 C198 340 190 350 180 350 L120 350 C110 350 102 340 105 330 Z" fill="#ffffff" opacity="0.9"/>
+    <!-- Lid accent -->
+    <rect x="55" y="122" width="190" height="18" rx="9" fill="#e6fffa"/>
+    <!-- Sparkle 1 (Top right) -->
+    <path d="M250 30 Q250 65 285 65 Q250 65 250 100 Q250 65 215 65 Q250 65 250 30 Z" fill="#fef08a"/>
+    <!-- Sparkle 2 (Small left) -->
+    <path d="M20 70 Q20 90 40 90 Q20 90 20 110 Q20 90 0 90 Q20 90 20 70 Z" fill="#fef08a" opacity="0.9"/>
+    <!-- Water / Hygiene ripple detail -->
+    <circle cx="150" cy="190" r="28" fill="#10b981" opacity="0.2"/>
+  </g>
+</svg>

@@ -21,6 +21,17 @@ interface ReviewModalProps {
   onSubmitReview: (toiletId: string, review: ToiletReview) => Promise<boolean>;
 }
 
+const QUICK_REVIEW_TAGS = [
+  '除菌液・ペーパー完備',
+  '便座・床が清潔',
+  'におい無く快適',
+  '明るく安心感あり',
+  '混雑していた',
+  '個室が広め',
+  '荷物置きあり',
+  '清掃巡回直後',
+];
+
 export const ReviewModal: React.FC<ReviewModalProps> = ({
   toilet,
   isOpen,
@@ -39,6 +50,18 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen || !toilet) return null;
+
+  const toggleTag = (tag: string) => {
+    if (comment.includes(tag)) {
+      const cleaned = comment
+        .replace(new RegExp(`(\\s*[、/・]?\\s*${tag})`), '')
+        .replace(/^[、/・]\s*/, '')
+        .trim();
+      setComment(cleaned);
+    } else {
+      setComment((prev) => (prev.trim() ? `${prev.trim()}、${tag}` : tag));
+    }
+  };
 
   const canSubmit = canSubmitReview(rating, comment);
 
@@ -221,9 +244,34 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Review Text */}
           <div>
-            <label className="block text-ink-soft font-semibold mb-1">
-              口コミ・利用した感想 <span className="text-danger">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-ink-soft font-semibold">
+                口コミ・利用した感想 <span className="text-danger">*</span>
+              </label>
+              <span className="text-[10px] text-faint">タップで簡単入力</span>
+            </div>
+
+            {/* Quick tags pills */}
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {QUICK_REVIEW_TAGS.map((tag) => {
+                const isSelected = comment.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className={`px-2 py-1 rounded-full text-[11px] transition-colors ${
+                      isSelected
+                        ? 'bg-accent text-white font-semibold shadow-xs'
+                        : 'bg-surface-2 text-ink-soft border border-line hover:border-line-strong hover:bg-surface'
+                    }`}
+                  >
+                    {isSelected ? `✓ ${tag}` : `+ ${tag}`}
+                  </button>
+                );
+              })}
+            </div>
+
             <textarea
               required
               rows={3}

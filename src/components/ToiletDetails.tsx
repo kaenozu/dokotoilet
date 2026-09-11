@@ -6,6 +6,7 @@ import {
 } from '../types';
 import { displayGrade, evaluationKindLabel, getGradeColor, isEvaluated } from '../lib/grade';
 import { summarizeReviews } from '../lib/scoring';
+import { calculateDistanceMeters, formatDistance, formatWalkingTime } from '../lib/geo';
 import { BdiText } from './BdiText';
 import {
   Sparkles,
@@ -29,6 +30,8 @@ import {
   Store,
   Trees,
   Train,
+  Footprints,
+  PlusCircle,
 } from 'lucide-react';
 
 interface ToiletDetailsProps {
@@ -38,6 +41,9 @@ interface ToiletDetailsProps {
   onVoteHelpful?: (toiletId: string, reviewId: string) => void;
   onReportReview?: (toiletId: string, reviewId: string) => void;
   votedReviewIds?: string[];
+  referenceLocation?: { lat: number; lng: number } | null;
+  isFavorite?: (toiletId: string) => boolean;
+  onToggleFavorite?: (toiletId: string) => void;
 }
 
 /** 設備1項目の3状態セル: あり(✓) / なし(✗) / 未確認(?) — 「ない」と「まだ調べてない」を区別する */
@@ -86,31 +92,35 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   onVoteHelpful,
   onReportReview,
   votedReviewIds = [],
+  referenceLocation,
+  isFavorite,
+  onToggleFavorite,
 }) => {
   // 実測レビュー0件は設備推定値しかないため「未評価」表示にする
   const evaluated = isEvaluated(toilet);
   // 口コミ0件でも調査/推定グレードを表示する（初期状態のマップに意味を持たせる）
   const shown = displayGrade(toilet);
-  // 未スコア（コミュニティ登録直後）: グレードも推定値も無いため「未評価」表示にする
-  const unscored = shown.grade === null || shown.score === null;
   // 外部に口コミがあるが未取込か（例：GoogleにN件）。undefined/0＝不明または無し
   const externalCount = toilet.externalReviewCount ?? 0;
   const hasUnfetched = !evaluated && externalCount > 0;
   const externalSource = toilet.externalReviewSource || 'Google Maps';
   const gradeColor = getGradeColor(shown.grade);
+
+  const distMeters = referenceLocation
+    ? calculateDistanceMeters(referenceLocation.lat, referenceLocation.lng, toilet.lat, toilet.lng)
+    : null;
   // 口コミがある施設は「清潔さ・におい・備品」のバーを口コミ集計値から導出して
   // 上部スコアとの表示不整合を防ぐ（comfort は入力項目が無いため設備推定値を維持）
   const measured =
     evaluated && toilet.reviews.length > 0 ? summarizeReviews(toilet.reviews) : null;
-  const toBarScore = (v: number | null | undefined): number =>
-    typeof v === 'number' && Number.isFinite(v) ? v : 0;
-  // 未スコア登録直後は subScores 自体が null を持ち得るため、バーは 0 扱いに落とす
-  const barScores = {
-    cleanliness: toBarScore(measured?.cleanlinessScore ?? toilet.subScores?.cleanliness),
-    odor: toBarScore(measured?.odorScore ?? toilet.subScores?.odor),
-    supplies: toBarScore(measured?.suppliesScore ?? toilet.subScores?.supplies),
-    comfort: toBarScore(toilet.subScores?.comfort),
-  };
+  const barScores = measured
+    ? {
+        cleanliness: measured.cleanlinessScore,
+        odor: measured.odorScore,
+        supplies: measured.suppliesScore,
+        comfort: toilet.subScores.comfort,
+      }
+    : toilet.subScores;
   // 旧バージョンの保存データ互換（aiSummary → facilityNote 改名対応）
   const legacyNote = (toilet as unknown as { aiSummary?: string }).aiSummary;
   const facilityNote = toilet.facilitySummary || toilet.facilityNote || legacyNote;
@@ -159,28 +169,91 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               {sourceBadge.label}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-faint hover:text-ink p-1 rounded-md transition-colors"
-            aria-label="閉じる"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-1">
+            {onToggleFavorite && isFavorite && (
+              <button
+                type="button"
+                onClick={() => onToggleFavorite(toilet.id)}
+                className={`p-1.5 rounded-md transition-colors ${
+                  isFavorite(toilet.id)
+                    ? 'text-amber-500 bg-amber-50 hover:bg-amber-100'
+                    : 'text-faint hover:text-amber-400 hover:bg-surface-2'
+                }`}
+                title={isFavorite(toilet.id) ? 'お気に入りを解除' : 'お気に入りに保存'}
+                aria-label="お気に入り切り替え"
+              >
+                <Star className={`w-4 h-4 ${isFavorite(toilet.id) ? 'fill-amber-400 text-amber-500' : ''}`} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-faint hover:text-ink p-1.5 rounded-md hover:bg-surface-2 transition-colors"
+              aria-label="閉じる"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         <h2 className="text-lg sm:text-xl font-bold text-ink leading-snug">
           <BdiText text={toilet.name} />
         </h2>
-        {toilet.floorInfo && (
-          <p className="text-xs font-medium text-accent mt-0.5">
-            📍 <BdiText text={toilet.floorInfo} />
-          </p>
-        )}
-        <p className="text-xs text-faint mt-1 flex items-center gap-1">
+
+        {/* Quick Highlights Bar (Distance / Floor / Hours) */}
+        <div className="flex items-center gap-1.5 flex-wrap mt-2 text-xs">
+          {distMeters !== null && (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-sky-50 text-sky-800 font-bold border border-sky-200">
+              <Footprints className="w-3.5 h-3.5 text-sky-600" />
+              <span>{formatWalkingTime(distMeters)} ({formatDistance(distMeters)})</span>
+            </span>
+          )}
+
+          {toilet.floorInfo && (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-accent-soft text-accent font-semibold border border-accent/20">
+              <MapPin className="w-3.5 h-3.5" />
+              <span><BdiText text={toilet.floorInfo} /></span>
+            </span>
+          )}
+
+          {toilet.openingHours ? (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-2 text-ink-soft font-medium border border-line">
+              <Clock className="w-3.5 h-3.5 text-muted" />
+              <span>{toilet.openingHours}</span>
+            </span>
+          ) : toilet.attributes.isOpen24h ? (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 text-amber-800 font-semibold border border-amber-200">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>24時間利用可能</span>
+            </span>
+          ) : null}
+        </div>
+
+        <p className="text-xs text-faint mt-1.5 flex items-center gap-1">
           <MapPin className="w-3.5 h-3.5 shrink-0 text-faint" />
-          <span><BdiText text={toilet.address} /></span>
+          <span className="line-clamp-1"><BdiText text={toilet.address} /></span>
         </p>
+
+        {/* Quick Instant Route & Review Action Buttons */}
+        <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-line">
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${toilet.lat},${toilet.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-accent hover:bg-accent-strong text-white text-xs font-bold rounded-lg shadow-sm transition-all text-center"
+          >
+            <Navigation className="w-3.5 h-3.5 fill-white text-white" />
+            <span>ここへ行く (経路)</span>
+          </a>
+          <button
+            type="button"
+            onClick={onOpenReviewModal}
+            className="inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-surface hover:bg-surface-2 border border-line-strong text-ink-soft text-xs font-semibold rounded-lg shadow-xs transition-all"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-accent" />
+            <span>きれい度を投稿</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Cleanliness Score Card */}
@@ -194,19 +267,17 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               title={
                 evaluated
                   ? gradeColor.label
-                  : unscored
-                    ? '未評価（口コミの投稿で実測評価になります）'
-                    : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
+                  : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
               }
             >
               <span className="text-2xl font-black leading-none">
-                {unscored ? '?' : shown.grade}
+                {shown.grade}
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-ink">
-                  {unscored ? '–' : shown.score.toFixed(1)}
+                  {shown.score.toFixed(1)}
                 </span>
                 <span className="text-xs text-faint">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -214,7 +285,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                     <Star
                       key={i}
                       className={`w-3.5 h-3.5 ${
-                        evaluated && i < Math.round(toilet.cleanlinessScore ?? 0)
+                        evaluated && i < Math.round(toilet.cleanlinessScore)
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-line-strong'
                       }`}
@@ -225,11 +296,9 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               <p className={`text-xs font-medium ${gradeColor.text}`}>
                 {evaluated
                   ? gradeColor.label
-                  : unscored
-                    ? '未評価（口コミの投稿で実測に更新されます）'
-                    : shown.kind === 'survey'
-                      ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
-                      : `推定 ${shown.grade}相当（実測レビューなし）`}
+                  : shown.kind === 'survey'
+                    ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
+                    : `設備推定 ${shown.grade}相当（実測レビューなし）`}
               </p>
               <p className="text-[11px] text-faint mt-0.5">
                 {evaluated
@@ -251,8 +320,20 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           )}
         </div>
 
-        {/* Sub Scores Breakdown Progress Bars（未スコア登録直後は評価値が無いため非表示） */}
-        {!unscored && (
+        {/* Reassurance banner for estimated facilities */}
+        {!evaluated && (
+          <div className="mt-3.5 p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200/80 text-[11px] text-emerald-950 flex items-start gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="flex-1 leading-relaxed">
+              <span className="font-bold">設備仕様からの推定グレード</span>
+              <p className="text-emerald-800 text-[10px] mt-0.5">
+                温水洗浄便座や多機能設備、施設種別のデータから算出しています。実際に利用した感想を投稿すると、実測データへ切り替わります。
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Sub Scores Breakdown Progress Bars */}
         <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
@@ -306,7 +387,6 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
             </div>
           </div>
         </div>
-        )}
       </div>
 
       {/* Equipment & Amenities Matrix */}

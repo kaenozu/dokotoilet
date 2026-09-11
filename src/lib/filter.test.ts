@@ -136,6 +136,37 @@ describe("matchesFilter", () => {
     expect(matchesFilter(evaluated("rated-high", 4.5), baseFilter({ onlyHighCleanliness: true }))).toBe(true);
     expect(matchesFilter(mk("low-estimate", { equipmentScore: 3.0, equipmentGrade: "B" }), baseFilter({ onlyHighCleanliness: true }))).toBe(false);
   });
+
+  it("handles quickPreset correctly", () => {
+    const babyFacility = mk("baby", { attributes: { ...mk("x").attributes, hasBabyTable: true } });
+    const regularFacility = mk("regular");
+    expect(matchesFilter(babyFacility, baseFilter({ quickPreset: "baby" }))).toBe(true);
+    expect(matchesFilter(regularFacility, baseFilter({ quickPreset: "baby" }))).toBe(false);
+
+    const barrierFacility = mk("barrier", { attributes: { ...mk("x").attributes, hasMultipurpose: true } });
+    expect(matchesFilter(barrierFacility, baseFilter({ quickPreset: "barrier_free" }))).toBe(true);
+    expect(matchesFilter(regularFacility, baseFilter({ quickPreset: "barrier_free" }))).toBe(false);
+
+    const femaleFacility = mk("female", {
+      category: "department",
+      attributes: { ...mk("x").attributes, hasPowderRoom: true },
+    });
+    expect(matchesFilter(femaleFacility, baseFilter({ quickPreset: "female_safe" }))).toBe(true);
+    expect(matchesFilter(regularFacility, baseFilter({ quickPreset: "female_safe" }))).toBe(false);
+
+    const open24Facility = mk("open24", { attributes: { ...mk("x").attributes, isOpen24h: true } });
+    expect(matchesFilter(open24Facility, baseFilter({ quickPreset: "night_24h" }))).toBe(true);
+    expect(matchesFilter(regularFacility, baseFilter({ quickPreset: "night_24h" }))).toBe(false);
+  });
+
+  it("filters by onlyFavorites when favoriteIdSet is provided", () => {
+    const favFacility = mk("fav-1");
+    const nonFavFacility = mk("non-fav");
+    const favSet = new Set(["fav-1"]);
+
+    expect(matchesFilter(favFacility, baseFilter({ onlyFavorites: true }), favSet)).toBe(true);
+    expect(matchesFilter(nonFavFacility, baseFilter({ onlyFavorites: true }), favSet)).toBe(false);
+  });
 });
 
 describe("displayScore", () => {
@@ -182,5 +213,15 @@ describe("sortToiletsForDisplay / filterAndSortToilets", () => {
       baseFilter({ onlyHighCleanliness: true, onlyWashlet: true })
     );
     expect(out.map((t) => t.id)).toEqual(["keep-high"]);
+  });
+
+  it("sorts by distance when sortOption is distance and referencePoint is given", () => {
+    const near = mk("near", { lat: 35.6601, lng: 139.7001 });
+    const mid = mk("mid", { lat: 35.6650, lng: 139.7050 });
+    const far = mk("far", { lat: 35.6800, lng: 139.7200 });
+    const ref = { lat: 35.6600, lng: 139.7000 };
+
+    const sorted = filterAndSortToilets([far, near, mid], baseFilter(), "distance", ref);
+    expect(sorted.map((t) => t.id)).toEqual(["near", "mid", "far"]);
   });
 });

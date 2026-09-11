@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import L from 'leaflet';
 import { isViewportAlreadyAt } from '../lib/uiState';
+import { calculateDistanceMeters } from '../lib/geo';
 
 export type MapTileStyle = 'osm' | 'gsi' | 'gsi_pale' | 'osm_dark';
 
@@ -79,6 +80,7 @@ interface ToiletMapProps {
   onSelectToilet: (toilet: ToiletFacility) => void;
   center: { lat: number; lng: number };
   zoom: number;
+  userLocation?: { lat: number; lng: number } | null;
   onFetchOsmNearCenter: (lat: number, lng: number) => void;
   onViewportChange?: (center: { lat: number; lng: number }, zoom: number) => void;
   isLoadingOsm: boolean;
@@ -98,6 +100,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   onSelectToilet,
   center,
   zoom,
+  userLocation,
   onFetchOsmNearCenter,
   onViewportChange,
   isLoadingOsm,
@@ -107,6 +110,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   const leafletContainerRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
   const markersGroupRef = useRef<L.LayerGroup | null>(null);
+  const userLocationGroupRef = useRef<L.LayerGroup | null>(null);
   const currentTileLayerRef = useRef<L.TileLayer | null>(null);
   // 最新のハンドラを ref で保持（マーカー再構築を親の再レンダー毎に走らせない）
   const onSelectToiletRef = useRef(onSelectToilet);
@@ -117,6 +121,23 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   const [currentMapCenter, setCurrentMapCenter] = useState(center);
   const [currentTileStyle, setCurrentTileStyle] = useState<MapTileStyle>('osm');
   const [showTileSelector, setShowTileSelector] = useState(false);
+  const [showMobileLegend, setShowMobileLegend] = useState(false);
+  const [showSearchThisArea, setShowSearchThisArea] = useState(false);
+  const lastSearchedCenterRef = useRef(center);
+
+  // When center prop updates from outside (city selector or emergency navigation), reset search trigger
+  useEffect(() => {
+    lastSearchedCenterRef.current = center;
+    setShowSearchThisArea(false);
+  }, [center.lat, center.lng]);
+
+  const handleSearchThisArea = () => {
+    const c = leafletMapRef.current ? leafletMapRef.current.getCenter() : currentMapCenter;
+    const newCenter = { lat: c.lat, lng: c.lng };
+    lastSearchedCenterRef.current = newCenter;
+    setShowSearchThisArea(false);
+    onFetchOsmNearCenter(newCenter.lat, newCenter.lng);
+  };
 
   // Initialize Leaflet Map
   useEffect(() => {
@@ -130,6 +151,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
       markersGroupRef.current = L.layerGroup().addTo(map);
+      userLocationGroupRef.current = L.layerGroup().addTo(map);
       leafletMapRef.current = map;
 
       map.on('moveend', () => {
@@ -137,6 +159,17 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
         const nextCenter = { lat: c.lat, lng: c.lng };
         setCurrentMapCenter(nextCenter);
         onViewportChangeRef.current?.(nextCenter, map.getZoom());
+
+        // Check distance from last searched center. Show search button if > 350m
+        const dist = calculateDistanceMeters(
+          lastSearchedCenterRef.current.lat,
+          lastSearchedCenterRef.current.lng,
+          nextCenter.lat,
+          nextCenter.lng
+        );
+        if (dist > 350) {
+          setShowSearchThisArea(true);
+        }
       });
     }
 
@@ -145,6 +178,7 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       leafletMapRef.current?.remove();
       leafletMapRef.current = null;
       markersGroupRef.current = null;
+      userLocationGroupRef.current = null;
       currentTileLayerRef.current = null;
     };
   }, []);
@@ -251,6 +285,33 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
     });
   }, [toilets, selectedToilet?.id]);
 
+  // Render User Location Marker (Pulsing GPS dot)
+  useEffect(() => {
+    if (!leafletMapRef.current || !userLocationGroupRef.current) return;
+    userLocationGroupRef.current.clearLayers();
+
+    if (!userLocation) return;
+
+    const userIcon = L.divIcon({
+      className: 'user-location-marker-container',
+      html: `
+        <div class="relative flex items-center justify-center w-8 h-8 pointer-events-none">
+          <div class="absolute w-8 h-8 rounded-full bg-blue-500/30 animate-ping"></div>
+          <div class="relative w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow-md ring-2 ring-blue-400"></div>
+        </div>
+      `,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+    });
+
+    const userMarker = L.marker([userLocation.lat, userLocation.lng], {
+      icon: userIcon,
+      zIndexOffset: 1000,
+      title: '現在地',
+    });
+    userLocationGroupRef.current.addLayer(userMarker);
+  }, [userLocation?.lat, userLocation?.lng]);
+
   // 詳細パネル（drawer）開閉で地図コンテナ幅が変わる → Leaflet にサイズを伝える
   useEffect(() => {
     const map = leafletMapRef.current;
@@ -270,6 +331,22 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
   return (
     <div className="relative w-full h-full min-h-[420px] bg-canvas overflow-hidden isolate z-0">
       <div ref={leafletContainerRef} className="w-full h-full" />
+
+      {/* Search This Area Pill (Google Maps Style) */}
+      {showSearchThisArea && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-200">
+          <button
+            id="btn-search-this-area"
+            type="button"
+            onClick={handleSearchThisArea}
+            disabled={isLoadingOsm}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent text-white font-bold text-xs shadow-xl hover:bg-accent-strong active:scale-95 transition-all cursor-pointer ring-2 ring-white/80"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingOsm ? 'animate-spin' : ''}`} />
+            <span>{isLoadingOsm ? '公衆トイレを取得中...' : 'このエリアを再検索'}</span>
+          </button>
+        </div>
+      )}
 
       {/* Floating Map Controls & Overlays */}
       <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
@@ -362,42 +439,110 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       </div>
 
       {/* Grade Legend in Bottom Left */}
-      <div className="absolute bottom-4 left-3 z-10 pointer-events-auto bg-white/95 backdrop-blur-md border border-line rounded-xl p-2.5 shadow-xl text-xs">
-        <div className="text-[11px] font-bold text-ink-soft mb-1.5 flex items-center justify-between gap-2">
-          <span>きれい度ランク判定</span>
-          <span className="text-[10px] text-faint font-normal">基準</span>
+      <div className="absolute bottom-4 left-3 z-10 pointer-events-auto">
+        {/* Desktop full legend */}
+        <div className="hidden sm:block bg-white/95 backdrop-blur-md border border-line rounded-xl p-2.5 shadow-xl text-xs">
+          <div className="text-[11px] font-bold text-ink-soft mb-1.5 flex items-center justify-between gap-2">
+            <span>きれい度ランク判定</span>
+            <span className="text-[10px] text-faint font-normal">基準</span>
+          </div>
+          <div className="grid grid-cols-5 gap-1.5">
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                S
+              </span>
+              <span className="text-ink-soft text-[11px]">極上 (4.6+)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-sky-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                A
+              </span>
+              <span className="text-ink-soft text-[11px]">清潔 (4.0+)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                B
+              </span>
+              <span className="text-ink-soft text-[11px]">普通 (3.0+)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-orange-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                C
+              </span>
+              <span className="text-ink-soft text-[11px]">要注意 (2.0+)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                D
+              </span>
+              <span className="text-ink-soft text-[11px]">緊急用 (&lt;2.0)</span>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
-              S
-            </span>
-            <span className="text-ink-soft text-[11px]">極上 (4.6+)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-sky-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
-              A
-            </span>
-            <span className="text-ink-soft text-[11px]">清潔 (4.0+)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
-              B
-            </span>
-            <span className="text-ink-soft text-[11px]">普通 (3.0+)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-orange-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
-              C
-            </span>
-            <span className="text-ink-soft text-[11px]">要注意 (2.0+)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
-              D
-            </span>
-            <span className="text-ink-soft text-[11px]">緊急用 (&lt;2.0)</span>
-          </div>
+
+        {/* Mobile compact button & popover */}
+        <div className="sm:hidden relative">
+          <button
+            type="button"
+            onClick={() => setShowMobileLegend(!showMobileLegend)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-line shadow-lg text-[11px] font-semibold text-ink-soft hover:bg-surface-2 transition-all"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>ランク基準</span>
+            <ChevronDown className={`w-3 h-3 text-faint transition-transform ${showMobileLegend ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showMobileLegend && (
+            <div className="absolute bottom-full left-0 mb-1.5 w-64 bg-surface border border-line rounded-xl shadow-2xl p-2.5 text-xs animate-in fade-in slide-in-from-bottom-2 duration-150">
+              <div className="text-[11px] font-bold text-ink-soft mb-2 flex items-center justify-between">
+                <span>きれい度ランク基準</span>
+                <button
+                  type="button"
+                  onClick={() => setShowMobileLegend(false)}
+                  className="text-faint hover:text-ink text-[11px]"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between py-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center">S</span>
+                    <span className="font-semibold text-ink">極上・ホテル級</span>
+                  </div>
+                  <span className="text-muted text-[11px]">4.6以上</span>
+                </div>
+                <div className="flex items-center justify-between py-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-sky-500 text-white font-bold text-[10px] flex items-center justify-center">A</span>
+                    <span className="font-semibold text-ink">清潔・安心</span>
+                  </div>
+                  <span className="text-muted text-[11px]">4.0〜4.5</span>
+                </div>
+                <div className="flex items-center justify-between py-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[10px] flex items-center justify-center">B</span>
+                    <span className="text-muted">普通・使用可</span>
+                  </div>
+                  <span className="text-muted text-[11px]">3.0〜3.9</span>
+                </div>
+                <div className="flex items-center justify-between py-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-orange-500 text-white font-bold text-[10px] flex items-center justify-center">C</span>
+                    <span className="text-muted">要注意・やや汚れ</span>
+                  </div>
+                  <span className="text-muted text-[11px]">2.0〜2.9</span>
+                </div>
+                <div className="flex items-center justify-between py-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center">D</span>
+                    <span className="text-danger font-medium">緊急用のみ</span>
+                  </div>
+                  <span className="text-muted text-[11px]">2.0未満</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,15 @@
+import dns from "node:dns";
 import express, { type NextFunction, type Request, type Response } from "express";
 import rateLimit from "express-rate-limit";
+
+// Cloud Run / コンテナ環境ではIPv6アウトバウンド経路が存在しない場合があり、
+// Node fetchの既定(verbatim=IPv6優先)だと外部Overpass API等への接続がハング・タイムアウトする。
+// IPv4を優先解決することで確実に即時接続できるようにする。
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch {
+  // 古いランタイム等で未サポートの場合は無視
+}
 import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
@@ -172,11 +182,13 @@ async function startServer() {
         return;
       }
 
-      const overpassQuery = `[out:json][timeout:10];nwr["amenity"="toilets"](around:${radius},${lat},${lng});out center 100;`;
+      // node と way を対象にして relation（広域境界等）を除外し、Overpassの再帰負荷とタイムアウトを大幅低減
+      const liveRadius = Math.min(radius, 1200);
+      const overpassQuery = `[out:json][timeout:5];(node["amenity"="toilets"](around:${liveRadius},${lat},${lng});way["amenity"="toilets"](around:${liveRadius},${lat},${lng}););out center 80;`;
       const mirrors = [
-        "https://overpass.kumi.systems/api/interpreter",
+        "https://lz4.overpass-api.de/api/interpreter",
+        "https://z.overpass-api.de/api/interpreter",
         "https://overpass-api.de/api/interpreter",
-        "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
       ];
 
       let rawElements: any[] = [];
@@ -186,7 +198,7 @@ async function startServer() {
       for (const mirrorUrl of mirrors) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          const timeoutId = setTimeout(() => controller.abort(), 3800);
           try {
             const osmResponse = await fetch(mirrorUrl, {
               method: "POST",
@@ -220,8 +232,8 @@ async function startServer() {
       }
 
       if (!upstreamSucceeded) {
-        console.error(
-          "[osm-proxy] All Overpass mirrors failed; falling back to seed:",
+        console.warn(
+          "[osm-proxy] Overpass mirrors unavailable; falling back to seed dataset:",
           lastMirrorError instanceof Error
             ? lastMirrorError.message
             : "(non-200 / malformed responses)"
@@ -445,7 +457,7 @@ async function startServer() {
       }
       res.json(responsePayload);
     } catch (err: any) {
-      console.error("OSM Overpass API error:", err?.message ?? err);
+      console.warn("[osm-proxy] API error:", err?.message ?? err);
       res.status(502).json({
         elements: [],
         toilets: [],

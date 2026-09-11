@@ -447,12 +447,15 @@ export const REAL_OSM_VERIFIED_TOILETS: ToiletFacility[] = [
 export const INITIAL_TOILETS: ToiletFacility[] = REAL_OSM_VERIFIED_TOILETS;
 
 export const CITY_PRESETS: CityPreset[] = [
-  { name: '熊谷 (Kumagaya)', lat: 36.1477, lng: 139.3889, zoom: 13 },
-  { name: '渋谷 (Shibuya)', lat: 35.6590, lng: 139.7006, zoom: 15 },
   { name: '新宿 (Shinjuku)', lat: 35.6900, lng: 139.7005, zoom: 15 },
-  { name: '銀座・東京駅 (Ginza / Tokyo)', lat: 35.6760, lng: 139.7640, zoom: 15 },
+  { name: '東京駅・丸の内 (Tokyo / Marunouchi)', lat: 35.6812, lng: 139.7671, zoom: 15 },
+  { name: '渋谷 (Shibuya)', lat: 35.6590, lng: 139.7006, zoom: 15 },
+  { name: '池袋 (Ikebukuro)', lat: 35.7295, lng: 139.7109, zoom: 15 },
+  { name: '横浜 (Yokohama)', lat: 35.4660, lng: 139.6225, zoom: 15 },
+  { name: '銀座 (Ginza)', lat: 35.6715, lng: 139.7650, zoom: 15 },
   { name: '六本木 (Roppongi)', lat: 35.6628, lng: 139.7313, zoom: 15 },
   { name: '上野 (Ueno)', lat: 35.7126, lng: 139.7745, zoom: 15 },
+  { name: '熊谷 (Kumagaya)', lat: 36.1477, lng: 139.3889, zoom: 13 },
   { name: '大阪・梅田 (Osaka Umeda)', lat: 34.7024, lng: 135.4959, zoom: 15 },
   { name: '京都駅 (Kyoto Station)', lat: 34.9858, lng: 135.7588, zoom: 15 },
 ];

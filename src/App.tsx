@@ -4,12 +4,16 @@ import {
   FilterState,
   CityPreset,
   ToiletReview,
+  ToiletSortOption,
 } from './types';
 import { INITIAL_TOILETS, CITY_PRESETS } from './data/toilets';
 import { GOOGLE_SEED } from './data/googleSeed';
 import { KUMAGAYA_SEED } from './data/kumagayaSeed';
+import { TERMINAL_STATIONS_SEED } from './data/terminalStationsSeed';
 import { filterAndSortToilets } from './lib/filter';
 import { gradeForScore } from './lib/scoring';
+import { displayGrade, getGradeColor } from './lib/grade';
+import { calculateDistanceMeters, formatDistance, formatWalkingTime } from './lib/geo';
 import { adjustHelpfulCount, setHelpfulCount } from './lib/helpfulVote';
 import { overlayExternalReviews } from './lib/externalReviews';
 import { classifyReviewResponse, findSelectedToilet } from './lib/uiState';
@@ -44,23 +48,34 @@ import {
   VOTED_REVIEWS_KEY,
 } from './lib/localDeltas';
 import { Header } from './components/Header';
-import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
 import { ToiletDetails } from './components/ToiletDetails';
 import { DataSourceModal } from './components/DataSourceModal';
 import { ReviewModal } from './components/ReviewModal';
 import { AddToiletModal } from './components/AddToiletModal';
+import { BdiText } from './components/BdiText';
+import { OfflineIndicator } from './components/OfflineIndicator';
+import { useFavorites } from './hooks/useFavorites';
 import {
   List,
   Map as MapIcon,
   Sparkles,
   Info,
+  Footprints,
+  Navigation,
+  ChevronUp,
+  X,
+  Star,
+  Zap,
 } from 'lucide-react';
 
 const RAW_SEED_TOILETS = mergeSeedLists(
-  GOOGLE_SEED,
-  mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
+  TERMINAL_STATIONS_SEED,
+  mergeSeedLists(
+    GOOGLE_SEED,
+    mergeSeedLists(KUMAGAYA_SEED, INITIAL_TOILETS)
+  )
 );
 const SEED_TOILETS = RAW_SEED_TOILETS.map(canonicalizeSeedOsmFacility);
 const SEED_ID_ALIASES = buildFacilityIdAliases(RAW_SEED_TOILETS, SEED_TOILETS);
@@ -208,6 +223,9 @@ export default function App() {
     [toilets, selectedToiletId]
   );
   const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [sortOption, setSortOption] = useState<ToiletSortOption>('cleanliness');
+  const [mobileDetailsExpanded, setMobileDetailsExpanded] = useState<boolean>(false);
   const [isLoadingOsm, setIsLoadingOsm] = useState<boolean>(false);
   const [mobileTab, setMobileTab] = useState<'map' | 'list'>('map');
   const [isDataSourcesModalOpen, setIsDataSourcesModalOpen] = useState(false);
@@ -240,8 +258,12 @@ export default function App() {
     onlyMultipurpose: false,
     onlyPowderRoom: false,
     only24h: false,
+    quickPreset: 'all',
     searchQuery: '',
   });
+
+  const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
+  const favoriteIdSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
 
   useEffect(() => {
     try {
@@ -339,10 +361,62 @@ export default function App() {
     })();
   }, []);
 
-  const filteredToilets = useMemo(
-    () => filterAndSortToilets(toilets, filter),
-    [toilets, filter]
+  const referenceLocation = useMemo(
+    () => userLocation || mapCenter,
+    [userLocation, mapCenter]
   );
+
+  const handleResetFilters = () => {
+    setFilter({
+      dataSource: 'all',
+      onlyHighCleanliness: false,
+      onlyWashlet: false,
+      onlyMultipurpose: false,
+      onlyPowderRoom: false,
+      only24h: false,
+      onlyFavorites: false,
+      quickPreset: 'all',
+      searchQuery: '',
+    });
+  };
+
+  const filteredToilets = useMemo(
+    () => filterAndSortToilets(toilets, filter, sortOption, referenceLocation, favoriteIdSet),
+    [toilets, filter, sortOption, referenceLocation, favoriteIdSet]
+  );
+
+  const handleGoToBestToilet = () => {
+    const origin = userLocation ?? mapCenter;
+    if (toilets.length === 0) return;
+
+    // Score facilities taking into account cleanliness and proximity
+    const scored = toilets.map((t) => {
+      const dist = calculateDistanceMeters(origin.lat, origin.lng, t.lat, t.lng);
+      const gradeInfo = displayGrade(t);
+      const cleanliness = gradeInfo.score;
+      // Proximity penalty: 1km = -0.4 score equivalent
+      const proximityScore = cleanliness - (dist / 1000) * 0.4;
+      return { toilet: t, dist, cleanliness, proximityScore, grade: gradeInfo.grade };
+    });
+
+    // Prefer facilities within 2.5km if any exist, otherwise check closest overall
+    const nearby = scored.filter((item) => item.dist <= 2500);
+    const pool = nearby.length > 0 ? nearby : scored;
+
+    pool.sort((a, b) => b.proximityScore - a.proximityScore);
+    const best = pool[0]?.toilet;
+
+    if (best) {
+      setSelectedToiletId(best.id);
+      setMapCenter({ lat: best.lat, lng: best.lng });
+      setMapZoom(16);
+      setMobileTab('map');
+      const gradeInfo = displayGrade(best);
+      showToast(`最寄りの清潔トイレ「${best.name}」(清潔度: Grade ${gradeInfo.grade}) を案内中`);
+    } else {
+      showToast('最寄りのトイレが見つかりませんでした。');
+    }
+  };
 
   const handleFetchOsmNearCenter = async (
     lat: number,
@@ -445,6 +519,7 @@ export default function App() {
       (pos) => {
         setIsLocating(false);
         const { latitude, longitude } = pos.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
         setMapCenter({ lat: latitude, lng: longitude });
         setMapZoom(16);
         handleFetchOsmNearCenter(latitude, longitude, false);
@@ -645,6 +720,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-canvas text-ink-soft font-sans antialiased">
+      <OfflineIndicator />
       <Header
         filter={filter}
         setFilter={setFilter}
@@ -653,6 +729,9 @@ export default function App() {
         onCitySelect={handleCitySelect}
         onLocateUser={handleLocateUser}
         isLocating={isLocating}
+        onResetFilters={handleResetFilters}
+        onGoToBestToilet={handleGoToBestToilet}
+        favoritesCount={favoriteIds.length}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -661,21 +740,26 @@ export default function App() {
             mobileTab === 'list' ? 'block' : 'hidden md:block'
           }`}
         >
-          <ErrorBoundary region="一覧パネル" resetKey={`${filteredToilets.length}`}>
-            <ToiletList
-              toilets={filteredToilets}
+          <ToiletList
+            toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
               setSelectedToiletId(t.id);
               setMapCenter({ lat: t.lat, lng: t.lng });
               if (mobileTab === 'list') {
                 setMobileTab('map');
+                setMobileDetailsExpanded(false);
               }
             }}
             searchQuery={filter.searchQuery}
             setSearchQuery={(q) => setFilter((prev) => ({ ...prev, searchQuery: q }))}
-            />
-          </ErrorBoundary>
+            sortOption={sortOption}
+            onSortChange={setSortOption}
+            referenceLocation={referenceLocation}
+            onResetFilters={handleResetFilters}
+            isFavorite={isFavorite}
+            onToggleFavorite={toggleFavorite}
+          />
         </div>
 
         <div
@@ -683,12 +767,12 @@ export default function App() {
             mobileTab === 'map' ? 'block' : 'hidden md:block'
           }`}
         >
-          <ErrorBoundary region="地図" resetKey={`${filteredToilets.length}`}>
           <ToiletMap
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
               setSelectedToiletId(t.id);
+              setMobileDetailsExpanded(false);
             }}
             center={mapCenter}
             zoom={mapZoom}
@@ -700,13 +784,104 @@ export default function App() {
             isLoadingOsm={isLoadingOsm}
             detailsOpen={selectedToilet !== null}
             layoutKey={mobileTab + (selectedToilet !== null ? ':open' : ':closed')}
+            userLocation={userLocation}
+            referenceLocation={referenceLocation}
           />
-          </ErrorBoundary>
+
+          {/* Mobile Bottom Sheet Preview Card (when map is active and details not fully expanded) */}
+          {selectedToilet && mobileTab === 'map' && !mobileDetailsExpanded && (
+            <div className="md:hidden absolute bottom-3 left-3 right-3 z-20 bg-surface/95 backdrop-blur-md border border-line-strong rounded-2xl p-3.5 shadow-2xl animate-in slide-in-from-bottom duration-200">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[11px] font-semibold text-accent bg-accent-soft px-2 py-0.5 rounded-md">
+                    {selectedToilet.facilityType}
+                  </span>
+                  {selectedToilet.floorInfo && (
+                    <span className="text-[11px] text-muted font-medium bg-surface-2 px-1.5 py-0.5 rounded-md">
+                      <BdiText text={selectedToilet.floorInfo} />
+                    </span>
+                  )}
+                  {referenceLocation && (
+                    <span className="text-[11px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                      <Footprints className="w-3 h-3 text-sky-600" />
+                      {formatWalkingTime(calculateDistanceMeters(referenceLocation.lat, referenceLocation.lng, selectedToilet.lat, selectedToilet.lng))}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleFavorite(selectedToilet.id)}
+                    className={`p-1 rounded-md transition-colors ${
+                      isFavorite(selectedToilet.id)
+                        ? 'text-amber-500 bg-amber-50'
+                        : 'text-faint hover:text-amber-400'
+                    }`}
+                    title={isFavorite(selectedToilet.id) ? 'お気に入りを解除' : 'お気に入りに保存'}
+                  >
+                    <Star className={`w-4 h-4 ${isFavorite(selectedToilet.id) ? 'fill-amber-400 text-amber-500' : ''}`} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedToiletId(null)}
+                    className="text-faint hover:text-ink p-1 rounded-md"
+                    aria-label="閉じる"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className="flex items-center justify-between gap-3 cursor-pointer select-none py-0.5"
+                onClick={() => setMobileDetailsExpanded(true)}
+              >
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold text-ink truncate">
+                    <BdiText text={selectedToilet.name} />
+                  </h3>
+                  <p className="text-[11px] text-faint line-clamp-1 mt-0.5">
+                    <BdiText text={selectedToilet.address} />
+                  </p>
+                </div>
+
+                {(() => {
+                  const shown = displayGrade(selectedToilet);
+                  const gradeColor = getGradeColor(shown.grade);
+                  return (
+                    <div className={`stamp-plate w-10 h-10 shrink-0 ${gradeColor.bg} text-white font-black text-sm`}>
+                      {shown.grade}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-line">
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedToilet.lat},${selectedToilet.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 py-2 px-3 bg-accent hover:bg-accent-strong text-white text-xs font-bold rounded-lg shadow-sm text-center"
+                >
+                  <Navigation className="w-3.5 h-3.5 fill-white text-white" />
+                  <span>ここへ行く</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setMobileDetailsExpanded(true)}
+                  className="inline-flex items-center justify-center gap-1 py-2 px-3 bg-surface hover:bg-surface-2 border border-line-strong text-ink-soft text-xs font-semibold rounded-lg shadow-xs text-center"
+                >
+                  <ChevronUp className="w-3.5 h-3.5 text-accent" />
+                  <span>詳細・口コミ ({selectedToilet.reviewCount})</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* Desktop Side Panel */}
         {selectedToilet && (
-          <div className="fixed md:static inset-y-0 right-0 z-[1000] md:z-auto w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
-            <ErrorBoundary region="詳細パネル" resetKey={selectedToilet.id}>
+          <div className="hidden md:block w-96 lg:w-[420px] shrink-0 h-full border-l border-line bg-surface">
             <ToiletDetails
               toilet={selectedToilet}
               onClose={() => setSelectedToiletId(null)}
@@ -714,8 +889,45 @@ export default function App() {
               onVoteHelpful={handleVoteHelpful}
               onReportReview={handleReportReview}
               votedReviewIds={votedReviewIds}
+              referenceLocation={referenceLocation}
+              isFavorite={isFavorite}
+              onToggleFavorite={toggleFavorite}
             />
-            </ErrorBoundary>
+          </div>
+        )}
+
+        {/* Mobile Fullscreen / Expanded Bottom Sheet */}
+        {selectedToilet && mobileDetailsExpanded && (
+          <div className="md:hidden fixed inset-0 z-40 flex flex-col justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+            <div
+              className="flex-1 w-full"
+              onClick={() => setMobileDetailsExpanded(false)}
+            />
+            <div className="bg-surface rounded-t-2xl shadow-2xl border-t border-line flex flex-col h-[84vh] max-h-[84vh] overflow-hidden animate-in slide-in-from-bottom duration-200">
+              <div
+                className="pt-2.5 pb-2 flex flex-col items-center justify-center cursor-pointer border-b border-line/60 bg-surface shrink-0 hover:bg-surface-2 transition-colors"
+                onClick={() => setMobileDetailsExpanded(false)}
+              >
+                <div className="w-10 h-1.5 bg-line-strong rounded-full mb-1" />
+                <span className="text-[10px] text-faint font-medium">タップしてマップに戻る</span>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <ToiletDetails
+                  toilet={selectedToilet}
+                  onClose={() => {
+                    setMobileDetailsExpanded(false);
+                    setSelectedToiletId(null);
+                  }}
+                  onOpenReviewModal={() => setIsReviewModalOpen(true)}
+                  onVoteHelpful={handleVoteHelpful}
+                  onReportReview={handleReportReview}
+                  votedReviewIds={votedReviewIds}
+                  referenceLocation={referenceLocation}
+                  isFavorite={isFavorite}
+                  onToggleFavorite={toggleFavorite}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -113,6 +113,14 @@ export interface ToiletFacility {
   officialOpenDataId?: string;
 }
 
+export type QuickPresetType =
+  | 'all'
+  | 'baby'
+  | 'barrier_free'
+  | 'female_safe'
+  | 'night_24h'
+  | 'favorites';
+
 export interface FilterState {
   dataSource: DataSourceType | 'all';
   onlyHighCleanliness: boolean; // Grade S & A (score >= 4.0)。実測口コミあり（reviewCount > 0）のみ対象
@@ -120,8 +128,12 @@ export interface FilterState {
   onlyMultipurpose: boolean;
   onlyPowderRoom: boolean;
   only24h: boolean;
+  onlyFavorites?: boolean;
+  quickPreset?: QuickPresetType;
   searchQuery: string;
 }
+
+export type ToiletSortOption = 'cleanliness' | 'distance' | 'reviews';
 
 export interface CityPreset {
   name: string;
