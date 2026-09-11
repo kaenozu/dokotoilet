@@ -105,6 +105,13 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   const hasUnfetched = !evaluated && externalCount > 0;
   const externalSource = toilet.externalReviewSource || 'Google Maps';
   const gradeColor = getGradeColor(shown.grade);
+  // 未スコア（コミュニティ登録直後）は grade/score が null。数値表示・バー幅は
+  // フォールバックし、「未評価」表示にする（ToiletList / ToiletMap と同じ扱い）
+  const unscored = shown.grade === null || shown.score === null;
+  const fmtScore = (v: number | null | undefined): string =>
+    typeof v === 'number' && Number.isFinite(v) ? v.toFixed(1) : '–';
+  const barWidthPct = (v: number | null | undefined): number =>
+    typeof v === 'number' && Number.isFinite(v) ? (v / 5) * 100 : 0;
 
   const distMeters = referenceLocation
     ? calculateDistanceMeters(referenceLocation.lat, referenceLocation.lng, toilet.lat, toilet.lng)
@@ -267,17 +274,19 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               title={
                 evaluated
                   ? gradeColor.label
-                  : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
+                  : unscored
+                    ? '未評価・口コミ募集中'
+                    : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
               }
             >
               <span className="text-2xl font-black leading-none">
-                {shown.grade}
+                {unscored ? '?' : shown.grade}
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-ink">
-                  {shown.score.toFixed(1)}
+                  {fmtScore(shown.score)}
                 </span>
                 <span className="text-xs text-faint">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -296,7 +305,9 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               <p className={`text-xs font-medium ${gradeColor.text}`}>
                 {evaluated
                   ? gradeColor.label
-                  : shown.kind === 'survey'
+                  : unscored
+                    ? '未評価'
+                    : shown.kind === 'survey'
                     ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
                     : `設備推定 ${shown.grade}相当（実測レビューなし）`}
               </p>
@@ -338,12 +349,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>便器・床の清潔感</span>
-              <span className="font-semibold text-ink">{barScores.cleanliness.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{fmtScore(barScores.cleanliness)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-accent h-1.5 rounded-full"
-                style={{ width: `${(barScores.cleanliness / 5) * 100}%` }}
+                style={{ width: `${barWidthPct(barScores.cleanliness)}%` }}
               />
             </div>
           </div>
@@ -351,12 +362,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>におい・換気状態</span>
-              <span className="font-semibold text-ink">{barScores.odor.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{fmtScore(barScores.odor)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#0284c7] h-1.5 rounded-full"
-                style={{ width: `${(barScores.odor / 5) * 100}%` }}
+                style={{ width: `${barWidthPct(barScores.odor)}%` }}
               />
             </div>
           </div>
@@ -364,12 +375,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>石鹸・ペーパー・除菌</span>
-              <span className="font-semibold text-ink">{barScores.supplies.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{fmtScore(barScores.supplies)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#6366f1] h-1.5 rounded-full"
-                style={{ width: `${(barScores.supplies / 5) * 100}%` }}
+                style={{ width: `${barWidthPct(barScores.supplies)}%` }}
               />
             </div>
           </div>
@@ -377,12 +388,12 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
               <span>広さ・快適性・明るさ</span>
-              <span className="font-semibold text-ink">{barScores.comfort.toFixed(1)}</span>
+              <span className="font-semibold text-ink">{fmtScore(barScores.comfort)}</span>
             </div>
             <div className="w-full bg-line rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-[#f59e0b] h-1.5 rounded-full"
-                style={{ width: `${(barScores.comfort / 5) * 100}%` }}
+                style={{ width: `${barWidthPct(barScores.comfort)}%` }}
               />
             </div>
           </div>
