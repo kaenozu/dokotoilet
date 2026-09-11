@@ -1,0 +1,86 @@
+[
+  {
+    "name": "駒形公園",
+    "category": "park",
+    "lat": 36.1266196423093,
+    "lng": 139.326646606307,
+    "address": "日本, 〒360-0116 埼玉県熊谷市三本１００１−１ 園内北側",
+    "openingHours": null,
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "Google Mapsのトイレ単体listingはOD座標から約1mで一致し、口コミ総数は6件。直近口コミ6件について本文を取得できなかったため、清潔さへの肯定・否定件数および傾向は判定不能。listingの総合評価3.2は清潔さ評価と同一視せず、cleanlinessScoreには使用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "odor": null,
+      "supplies": null,
+      "comfort": null
+    },
+    "surveyedAt": "2026-09-11",
+    "externalReviewCount": 6,
+    "externalReviewSource": "Google Maps",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": null
+    },
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A7%92%E5%BD%A2%E5%85%AC%E5%9C%92%20%E5%85%AC%E8%A1%86%E3%83%88%E3%82%A4%E3%83%AC&query_place_id=ChIJDaPrhvPXHmARDFRS6aJDQB8"
+  },
+  {
+    "name": "利根川総合運動公園",
+    "category": "park",
+    "lat": 36.2203705896474,
+    "lng": 139.40637323647,
+    "address": null,
+    "openingHours": null,
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "OD座標から約76mの位置にGoogle Mapsの公衆トイレ単体listingを確認。listingには評価・口コミ件数の表示がなく、口コミ総数0件として確認した。直近口コミ0件中、清潔さへの肯定0件・否定0件で傾向判定不能。",
+    "subScores": {
+      "cleanliness": null,
+      "odor": null,
+      "supplies": null,
+      "comfort": null
+    },
+    "surveyedAt": "2026-09-11",
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": null
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJy5TrHAAnH2ARXUCnexwqpZ8"
+  },
+  {
+    "name": "利根川総合運動公園",
+    "category": "park",
+    "lat": 36.2042780807761,
+    "lng": 139.427729011105,
+    "address": null,
+    "openingHours": null,
+    "cleanlinessScore": null,
+    "confidence": "low",
+    "scoreBasis": "Google Mapsの「葛和田サッカー場 公衆トイレ」単体listingがOD座標から約5mで一致し、口コミ総数は2件。直近口コミ2件の本文を取得できなかったため、清潔さへの肯定・否定件数および傾向は判定不能。listingの総合評価2.0は清潔さ評価と同一視せず、cleanlinessScoreには使用していない。",
+    "subScores": {
+      "cleanliness": null,
+      "odor": null,
+      "supplies": null,
+      "comfort": null
+    },
+    "surveyedAt": "2026-09-11",
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "equipment": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasPowderRoom": null,
+      "isOpen24h": null
+    },
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJq7IFdQApH2ARgdqP50JPRDw"
+  }
+]
