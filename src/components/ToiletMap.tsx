@@ -206,7 +206,9 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
       // 実測以外は少し薄くして出所の違いが分かるようにする
       const shown = displayGrade(toilet);
       const colorInfo = getGradeColor(shown.grade);
-      const gradeLetter = shown.grade;
+      // 未スコア（コミュニティ登録直後）はグレード無し。 plate には「?」を出す
+      const unscored = shown.grade === null || shown.score === null;
+      const gradeLetter = unscored ? '?' : shown.grade;
       const dimmed = shown.kind !== 'measured' ? 'opacity-80 saturate-[.65]' : '';
 
       const customIcon = L.divIcon({
@@ -237,7 +239,9 @@ export const ToiletMap: React.FC<ToiletMapProps> = ({
 
       const marker = L.marker([toilet.lat, toilet.lng], {
         icon: customIcon,
-        title: `${toilet.name}（${evaluationKindLabel(shown.kind)} ${gradeLetter}級）`,
+        title: unscored
+          ? `${toilet.name}（未評価・口コミ募集中）`
+          : `${toilet.name}（${evaluationKindLabel(shown.kind)} ${gradeLetter}級）`,
       });
       marker.on('click', () => {
         // 最新のハンドラを使う（ref経由。effectの再実行を防ぐため deps に入れない）

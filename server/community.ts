@@ -16,6 +16,7 @@ import type {
 } from "../src/types";
 import { gradeForScore, summarizeReviews } from "../src/lib/scoring";
 import { atomicWriteFile, withFileLock } from "./shared/persistence";
+import { normalizeDedupText, normalizeReportReason } from "./shared/dedup";
 import { sanitizeText } from "../src/lib/textPolicy";
 import {
   TEXT_FIELDS,
@@ -250,10 +251,6 @@ export interface ListReportsOptions {
   status?: ReportStatus | "all";
   limit?: number;
   offset?: number;
-}
-
-function normalizeText(v: string): string {
-  return v.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 export interface ReviewKey {
@@ -565,13 +562,13 @@ export class CommunityStore {
     ipHash: string
   ): boolean {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    const norm = normalizeText(comment);
+    const norm = normalizeDedupText(comment);
     return reviews.some((r) => {
       const key = db.reviewKeys[r.id];
       return (
         key !== undefined &&
         key.ipHash === ipHash &&
-        normalizeText(String((r as { comment?: unknown }).comment ?? "")) ===
+        normalizeDedupText(String((r as { comment?: unknown }).comment ?? "")) ===
           norm &&
         key.at >= dayAgo
       );
@@ -691,11 +688,11 @@ export class CommunityStore {
       }
       const now = Date.now();
       const dayAgo = now - 24 * 60 * 60 * 1000;
-      const normReason = normalizeText(reason);
+      const normReason = normalizeReportReason(reason);
       const dup = db.reports.some(
         (r) =>
           r.reviewId === reviewId &&
-          normalizeText(r.reason ?? "") === normReason &&
+          normalizeReportReason(r.reason ?? "") === normReason &&
           (typeof r.at === "number" ? r.at : Date.parse(r.createdAt) || 0) >=
             dayAgo &&
           r.status !== "resolved"

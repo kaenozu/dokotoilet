@@ -91,6 +91,8 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   const evaluated = isEvaluated(toilet);
   // 口コミ0件でも調査/推定グレードを表示する（初期状態のマップに意味を持たせる）
   const shown = displayGrade(toilet);
+  // 未スコア（コミュニティ登録直後）: グレードも推定値も無いため「未評価」表示にする
+  const unscored = shown.grade === null || shown.score === null;
   // 外部に口コミがあるが未取込か（例：GoogleにN件）。undefined/0＝不明または無し
   const externalCount = toilet.externalReviewCount ?? 0;
   const hasUnfetched = !evaluated && externalCount > 0;
@@ -100,14 +102,15 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
   // 上部スコアとの表示不整合を防ぐ（comfort は入力項目が無いため設備推定値を維持）
   const measured =
     evaluated && toilet.reviews.length > 0 ? summarizeReviews(toilet.reviews) : null;
-  const barScores = measured
-    ? {
-        cleanliness: measured.cleanlinessScore,
-        odor: measured.odorScore,
-        supplies: measured.suppliesScore,
-        comfort: toilet.subScores.comfort,
-      }
-    : toilet.subScores;
+  const toBarScore = (v: number | null | undefined): number =>
+    typeof v === 'number' && Number.isFinite(v) ? v : 0;
+  // 未スコア登録直後は subScores 自体が null を持ち得るため、バーは 0 扱いに落とす
+  const barScores = {
+    cleanliness: toBarScore(measured?.cleanlinessScore ?? toilet.subScores?.cleanliness),
+    odor: toBarScore(measured?.odorScore ?? toilet.subScores?.odor),
+    supplies: toBarScore(measured?.suppliesScore ?? toilet.subScores?.supplies),
+    comfort: toBarScore(toilet.subScores?.comfort),
+  };
   // 旧バージョンの保存データ互換（aiSummary → facilityNote 改名対応）
   const legacyNote = (toilet as unknown as { aiSummary?: string }).aiSummary;
   const facilityNote = toilet.facilitySummary || toilet.facilityNote || legacyNote;
@@ -191,17 +194,19 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               title={
                 evaluated
                   ? gradeColor.label
-                  : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
+                  : unscored
+                    ? '未評価（口コミの投稿で実測評価になります）'
+                    : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当`
               }
             >
               <span className="text-2xl font-black leading-none">
-                {shown.grade}
+                {unscored ? '?' : shown.grade}
               </span>
             </div>
             <div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-ink">
-                  {shown.score.toFixed(1)}
+                  {unscored ? '–' : shown.score.toFixed(1)}
                 </span>
                 <span className="text-xs text-faint">/ 5.0</span>
                 <div className="flex items-center text-amber-400 ml-1">
@@ -209,7 +214,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
                     <Star
                       key={i}
                       className={`w-3.5 h-3.5 ${
-                        evaluated && i < Math.round(toilet.cleanlinessScore)
+                        evaluated && i < Math.round(toilet.cleanlinessScore ?? 0)
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-line-strong'
                       }`}
@@ -220,9 +225,11 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
               <p className={`text-xs font-medium ${gradeColor.text}`}>
                 {evaluated
                   ? gradeColor.label
-                  : shown.kind === 'survey'
-                    ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
-                    : `推定 ${shown.grade}相当（実測レビューなし）`}
+                  : unscored
+                    ? '未評価（口コミの投稿で実測に更新されます）'
+                    : shown.kind === 'survey'
+                      ? `調査評価 ${shown.grade}相当（実測レビューなし${toilet.surveyedAt ? `・調査日 ${toilet.surveyedAt}` : ''}）`
+                      : `推定 ${shown.grade}相当（実測レビューなし）`}
               </p>
               <p className="text-[11px] text-faint mt-0.5">
                 {evaluated
@@ -244,7 +251,8 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
           )}
         </div>
 
-        {/* Sub Scores Breakdown Progress Bars */}
+        {/* Sub Scores Breakdown Progress Bars（未スコア登録直後は評価値が無いため非表示） */}
+        {!unscored && (
         <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
           <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs">
             <div className="flex justify-between text-muted mb-1">
@@ -298,6 +306,7 @@ export const ToiletDetails: React.FC<ToiletDetailsProps> = ({
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Equipment & Amenities Matrix */}

@@ -27,20 +27,25 @@ export const evaluationKind = (toilet?: EvaluationSource | null): EvaluationKind
 };
 
 export interface GradeDisplay {
-  grade: CleanlinessGrade;
-  score: number;
+  grade: CleanlinessGrade | null;
+  score: number | null;
   kind: EvaluationKind;
 }
 
-/** 一覧・地図・詳細で共通の「表示用グレード」。実測が無ければ調査/推定値を出す */
+/**
+ * 一覧・地図・詳細で共通の「表示用グレード」。実測が無ければ調査/推定値を出す。
+ * 未スコアのコミュニティ登録トイレ（登録直後。AddToiletModal と server POST /toilets が
+ * cleanliness/equipment を null のまま生成する）は grade/score が null になる。
+ * 呼び出し側は必ず null を「未評価」表示として扱うこと（各コンポーネントでガード済み）。
+ */
 export const displayGrade = (toilet: {
   reviewCount: number;
   dataSource: string;
   externalReviewCount?: number;
-  cleanlinessGrade: CleanlinessGrade;
-  cleanlinessScore: number;
-  equipmentGrade: CleanlinessGrade;
-  equipmentScore: number;
+  cleanlinessGrade: CleanlinessGrade | null;
+  cleanlinessScore: number | null;
+  equipmentGrade: CleanlinessGrade | null;
+  equipmentScore: number | null;
 }): GradeDisplay => {
   const kind = evaluationKind(toilet);
   if (kind === 'measured')

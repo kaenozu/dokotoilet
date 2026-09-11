@@ -107,6 +107,21 @@ describe("matchesFilter", () => {
     expect(matchesFilter(evaluated("a", 3.9), baseFilter({ onlyHighCleanliness: true }))).toBe(false);
   });
 
+  it("onlyHighCleanliness drops unscored community registrations (null score must not leak through)", () => {
+    // 回帰: null < 4.0 は false のため、未スコア施設がS・A級フィルタを素通ししていた。
+    // スコアが無い（=未評価）施設はグレード判定の対象外として除外する。
+    const unscored = mk("unscored", {
+      dataSource: "community",
+      cleanlinessGrade: null as never,
+      cleanlinessScore: null as never,
+      equipmentGrade: null as never,
+      equipmentScore: null as never,
+    });
+    expect(matchesFilter(unscored, baseFilter({ onlyHighCleanliness: true }))).toBe(false);
+    // フィルタ無しでは通常通り表示される（消えてはならない）
+    expect(matchesFilter(unscored, baseFilter())).toBe(true);
+  });
+
   it("onlyHighCleanliness keeps un-reviewed facilities with a high survey/estimate grade", () => {
     // 口コミ0件でも表示グレード（調査/推定）で判定する。初期状態でフィルタが
     // 全件除外になるのを防ぐため、実測・調査・推定を区別せずスコアで通す

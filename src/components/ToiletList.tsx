@@ -73,6 +73,8 @@ export const ToiletList: React.FC<ToiletListProps> = ({
             const evaluated = isEvaluated(toilet);
             // 口コミ0件でも調査/推定グレードを表示する。実測以外は出所タグを添える
             const shown = displayGrade(toilet);
+            // 未スコア（コミュニティ登録直後）はグレード自体が無いため「未評価」表示
+            const unscored = shown.grade === null || shown.score === null;
             const gradeColor = getGradeColor(shown.grade);
             const isSelected = selectedToilet?.id === toilet.id;
             const attrs = toilet.attributes || ({} as any);
@@ -117,16 +119,18 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                       title={
                         evaluated
                           ? gradeColor.label
-                          : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当（口コミ募集中）`
+                          : unscored
+                            ? '未評価（口コミ募集中）'
+                            : `${evaluationKindLabel(shown.kind)} ${shown.grade}相当（口コミ募集中）`
                       }
                     >
                       <span className="text-base font-black leading-none">
-                        {shown.grade}
+                        {unscored ? '?' : shown.grade}
                       </span>
                     </div>
                     {!evaluated && (
                       <span className="text-[9px] font-medium text-faint leading-none">
-                        {evaluationKindLabel(shown.kind)}
+                        {unscored ? '未評価' : evaluationKindLabel(shown.kind)}
                       </span>
                     )}
                   </div>
@@ -139,7 +143,9 @@ export const ToiletList: React.FC<ToiletListProps> = ({
                     <span className="font-bold">
                       {evaluated
                         ? (toilet.cleanlinessScore != null ? Number(toilet.cleanlinessScore).toFixed(1) : '–')
-                        : `${evaluationKindLabel(shown.kind)} ${Number(shown.score).toFixed(1)}`}
+                        : unscored
+                          ? '未評価'
+                          : `${evaluationKindLabel(shown.kind)} ${Number(shown.score).toFixed(1)}`}
                     </span>
                     <span className="text-faint">({toilet.reviewCount ?? 0})</span>
                   </div>

@@ -97,3 +97,40 @@ describe('ToiletDetails renders user-provided text inside bidi isolates', () => 
     expect(html).toContain('たろう\u202E</bdi>');
   });
 });
+
+// 回帰テスト（ホワイトアウト防止）: AddToiletModal / server POST /toilets が生成する
+// 「未スコアのコミュニティ登録トイレ」を表示しても React ツリー全体が落ちないこと。
+// 旧実装は shown.score.toFixed(1) で TypeError を投げ、ErrorBoundary も無いため
+// 画面全体が真っ白になっていた。
+const unscoredToilet: ToiletFacility = {
+  ...fixtureToilet,
+  reviewCount: 0,
+  reviews: [],
+  cleanlinessGrade: null as unknown as ToiletFacility['cleanlinessGrade'],
+  cleanlinessScore: null as unknown as number,
+  equipmentGrade: null as unknown as ToiletFacility['equipmentGrade'],
+  equipmentScore: null as unknown as number,
+  subScores: { cleanliness: null, odor: null, supplies: null, comfort: null } as unknown as ToiletFacility['subScores'],
+  lastCleaned: undefined,
+};
+
+describe('ToiletDetails renders unscored community registrations without crashing', () => {
+  const html = renderToStaticMarkup(
+    <ToiletDetails toilet={unscoredToilet} onClose={() => {}} onOpenReviewModal={() => {}} />
+  );
+
+  it('renders at all (no TypeError from null scores)', () => {
+    expect(html).toContain('テストトイレ');
+  });
+
+  it('shows the 未評価 display instead of a fabricated score', () => {
+    expect(html).toContain('未評価');
+    expect(html).toContain('–');
+    expect(html).not.toContain('0.0');
+  });
+
+  it('never leaks the literal "null" into the UI', () => {
+    expect(html).not.toContain('>null<');
+    expect(html).not.toContain('null相当');
+  });
+});

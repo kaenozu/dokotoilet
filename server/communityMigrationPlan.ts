@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import type { ToiletReview } from "../src/types";
 import type { CommunityDB, ReviewKey } from "./community";
 import { assertCommunitySnapshotValid, communitySnapshotDigest } from "./communitySnapshot";
+import { dedupCommentHash, reviewDedupId } from "./shared/dedup";
 
 export interface PlannedDocument {
   collection: string;
@@ -43,15 +44,16 @@ function dedupDoc(
   key: ReviewKey | undefined
 ): PlannedDocument | null {
   if (!key) return null;
-  const id = sha(`${facilityId}|${key.ipHash}|${review.comment}`);
+  // キーはレビュー本文の「正規形」（trim + 空白圧縮 + 小文字化）から導出する。
+  // Firestore 本番経路（FirestoreCommunityStore）と同一式。docs 参照。
   return {
     collection: "review_dedup",
-    id,
+    id: reviewDedupId(facilityId, key.ipHash, review.comment),
     data: {
       facilityId,
       ipHash: key.ipHash,
       reviewId: review.id,
-      commentHash: sha(review.comment),
+      commentHash: dedupCommentHash(review.comment),
       createdAt: new Date(key.at).toISOString(),
       validUntil: key.at + 24 * 60 * 60 * 1000,
     },
@@ -60,7 +62,7 @@ function dedupDoc(
 
 export function buildFirestoreMigrationPlan(db: CommunityDB): FirestoreMigrationPlan {
   assertCommunitySnapshotValid(db);
-  const documents: PlannedDocument[] = [];
+  let documents: PlannedDocument[] = [];
 
   for (const toilet of db.toilets) {
     const { reviews, ...facility } = toilet;
@@ -132,6 +134,27 @@ export function buildFirestoreMigrationPlan(db: CommunityDB): FirestoreMigration
       },
     });
   }
+
+  // 正規形コメントが同一の旧レビュー（正規化導入以前の大文字小文字・空白違い）は
+  // 同じ review_dedup ドキュメント ID に衝突する。1つに畳み、validUntil が最も新しい
+  // ものを残す（ガード窓が最も長くなる。commentHash は同一正規形から導出されるため一致）。
+  // 残らなかった側の reviewId は dedup ドキュメントを持たないが、ガードの性質上
+  // 「同一正規形の新しい投稿」で兼用されるため 24h 重複防止は維持される。
+  const dedupById = new Map<string, PlannedDocument>();
+  for (const doc of documents) {
+    if (doc.collection !== "review_dedup") continue;
+    const prev = dedupById.get(doc.id);
+    if (!prev) {
+      dedupById.set(doc.id, doc);
+      continue;
+    }
+    const prevUntil = Number((prev.data as { validUntil?: unknown }).validUntil ?? 0);
+    const nextUntil = Number((doc.data as { validUntil?: unknown }).validUntil ?? 0);
+    if (nextUntil > prevUntil) dedupById.set(doc.id, doc);
+  }
+  documents = documents.filter(
+    (doc) => doc.collection !== "review_dedup" || dedupById.get(doc.id) === doc
+  );
 
   documents.sort((a, b) =>
     `${a.collection}/${a.id}`.localeCompare(`${b.collection}/${b.id}`)

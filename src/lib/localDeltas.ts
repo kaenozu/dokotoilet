@@ -238,6 +238,23 @@ export function extractDelta(
   return { v: 1, userToilets, reviewDeltas };
 }
 
+/**
+ * ErrorBoundary の「端末データを初期化して再読み込み」から呼ぶ最終手段。
+ * ユーザー生成データ（ローカルデルタ・OSM キャッシュ・投票済み印）を消す。
+ * サーバー同期済みデータはバックエンドに残るため、失うのは
+ * 「この端末のみの未同期分」（オフライン投稿・OSM 取得キャッシュ）だけ。
+ * localStorage 自体は消さない（他アプリとの共存のため）。
+ */
+export function clearStoredUserData(): void {
+  try {
+    localStorage.removeItem(LOCAL_DELTA_KEY);
+    localStorage.removeItem(OSM_CACHE_KEY);
+    localStorage.removeItem(VOTED_REVIEWS_KEY);
+  } catch {
+    // localStorage が使えない環境（プライベートモード等）では何もしない
+  }
+}
+
 /** 起動時: 最新シードへユーザーデルタを重ねる（存在しない施設の差分は捨てる） */
 export function applyDeltaToSeeds(
   seeds: ToiletFacility[],

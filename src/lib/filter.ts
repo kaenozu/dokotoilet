@@ -32,14 +32,22 @@ export function matchesFilter(t: ToiletFacility, f: FilterState): boolean {
   // High cleanliness (Grade S & A, score >= 4.0): 表示グレード基準。
   // 口コミ0件の施設も調査/推定グレードで判定する（初期状態でフィルタが全件除外に
   // なるのを防ぐ。実測・調査・推定の区別はグレード表示の出所タグで行う）。
-  if (f.onlyHighCleanliness && displayGrade(t).score < 4.0) return false;
+  // 未スコア（コミュニティ登録直後）はスコア自体が無いため除外する
+  //（null < 4.0 は false になり、未評価施設がS・A級に紛れ込むのを防ぐ）。
+  if (f.onlyHighCleanliness) {
+    const shown = displayGrade(t);
+    if (shown.score === null || shown.score < 4.0) return false;
+  }
 
   // Equipment attributes: 「あり」を明示（true）した施設のみ一致。
-  // 未確認（null）は「なし」同様に候補から外す（不明を「あり」と断定しない）
-  if (f.onlyWashlet && t.attributes.hasWashlet !== true) return false;
-  if (f.onlyMultipurpose && t.attributes.hasMultipurpose !== true) return false;
-  if (f.onlyPowderRoom && t.attributes.hasPowderRoom !== true) return false;
-  if (f.only24h && t.attributes.isOpen24h !== true) return false;
+  // 未確認（null）は「なし」同様に候補から外す（不明を「あり」と断定しない）。
+  // attributes 欠落（旧 localStorage・不正なサーバー応答）でも落とさず、
+  // 「設備は未確認」扱いで一覧に残す（ErrorBoundary に落とされる前にここで防御）。
+  const attrs = t.attributes ?? ({} as Partial<ToiletFacility["attributes"]>);
+  if (f.onlyWashlet && attrs.hasWashlet !== true) return false;
+  if (f.onlyMultipurpose && attrs.hasMultipurpose !== true) return false;
+  if (f.onlyPowderRoom && attrs.hasPowderRoom !== true) return false;
+  if (f.only24h && attrs.isOpen24h !== true) return false;
 
   // Data source
   if (f.dataSource !== "all" && t.dataSource !== f.dataSource) return false;
