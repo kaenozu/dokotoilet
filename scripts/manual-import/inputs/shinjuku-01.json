@@ -1,0 +1,429 @@
+{
+  "center": [
+    35.69,
+    139.7005
+  ],
+  "maxKm": 5,
+  "items": [
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿３丁目１４−１",
+      "category": "department",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 24996,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ9ztrpduMGGARte1BM8ccdIs",
+      "lat": 35.6919952,
+      "lng": 139.7044836,
+      "name": "伊勢丹 新宿店",
+      "openingHours": "10:00-20:00",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数24,996件があるが、トイレの清潔さに限定した口コミを新しい順・評価順の両方で十分な件数抽出できず、肯定・否定件数を算出できないため判定保留。公式案内では館内各階にトイレ・多機能化粧室等があることを確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-8321 東京都新宿区西新宿１丁目１−４",
+      "category": "department",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 13942,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ_zhzEkONGGARch8hW-wHRzg",
+      "lat": null,
+      "lng": null,
+      "name": "京王百貨店 新宿店",
+      "openingHours": "月〜土 10:00-20:30、日 10:00-20:00",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数13,942件があるが、トイレ清潔さに限定した直近口コミの新しい順・評価順双方の十分なサンプルを取得できず、清潔さの肯否比率を算出できないため判定保留。公式フロア案内で多目的トイレ、オストメイト設備、ベビー用設備を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒151-8580 東京都渋谷区千駄ケ谷５丁目２４−２",
+      "category": "department",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": null,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 18412,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJt6SGdMWMGGARQcuMekzvpYY",
+      "lat": null,
+      "lng": null,
+      "name": "新宿髙島屋",
+      "openingHours": "10:30-19:30",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数18,412件があるが、トイレに限定した清潔さ口コミを新しい順・評価順で十分に確認できず、肯否件数を算出できないため判定保留。設備の詳細も今回取得できた公式情報だけでは確定できなかった。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-8001 東京都新宿区西新宿１丁目５−１",
+      "category": "department",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": null,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 3818,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ8YZAzg2NGGARNiagN7D6leY",
+      "lat": null,
+      "lng": null,
+      "name": "小田急百貨店 新宿店",
+      "openingHours": "月〜土 10:00-20:30、日 10:00-20:00",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数3,818件があるが、トイレ清潔さを対象に新しい順・評価順双方の十分な口コミを取得できず、清潔さの傾向を数値化できないため判定保留。公式フロア案内ではベビー用おむつ交換設備を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿３丁目３８−１",
+      "category": "station",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": true
+      },
+      "externalReviewCount": 3,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJTdvjSgCNGGAReRyrFH9NyMc",
+      "lat": 35.689571613793,
+      "lng": 139.7015395123,
+      "name": "公衆トイレ（JR新宿駅東南口広場）",
+      "openingHours": "24時間",
+      "scoreBasis": "Google Mapsのトイレ単体listingは口コミ総数3件、平均評価4.3だが、清潔さに関する口コミ本文を新しい順・評価順双方で十分に比較できないため、平均評価のみから清潔さを推定せず判定保留。公的施設情報で終日利用とバリアフリートイレ等を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0023 東京都新宿区西新宿１丁目５−９",
+      "category": "station",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": true
+      },
+      "externalReviewCount": 6,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ8-yVArSNGGARNhppsEkhXNY",
+      "lat": 35.691892399678,
+      "lng": 139.69931626257,
+      "name": "新宿区立新宿西口地下公衆トイレ",
+      "openingHours": "24時間",
+      "scoreBasis": "Google Mapsのトイレ単体listingは口コミ総数6件、平均評価4.0だが、清潔さに限定した口コミを新しい順・評価順で十分に抽出できず、平均評価のみを清潔度へ転用しないため判定保留。新宿区の現行案内では2023年9月以降24時間利用可能。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒151-0051 東京都新宿区新宿３丁目３８−１ JR 新宿駅",
+      "category": "station",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 19,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHRD0JgCNGGARL09RJb3a2yE",
+      "lat": null,
+      "lng": null,
+      "name": "バスタ新宿4F多機能トイレ",
+      "openingHours": "03:30-01:00",
+      "scoreBasis": "Google Mapsのlistingは口コミ総数19件、平均評価3.9だが、清潔さに関する本文を新しい順・評価順双方で十分な件数比較できず、清潔度の肯否割合を算出できないため判定保留。バスタ新宿公式案内で4階の多機能トイレ、オストメイト対応、おむつ交換設備等を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿２丁目９−９",
+      "category": "park",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 30,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ4aWn18KMGGAR_e6G-V57U3w",
+      "lat": null,
+      "lng": null,
+      "name": "新宿公園 お手洗",
+      "openingHours": "4月〜9月 07:00-19:45、10月〜3月 07:00-19:00",
+      "scoreBasis": "Google Mapsのトイレ単体listingは口コミ総数30件、平均評価3.7だが、トイレ清潔さに関する新しい順・評価順双方のレビュー本文を十分に取得できず、肯定・否定件数を算出できないため判定保留。新宿区公園情報でトイレとだれでもトイレを確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0021 東京都新宿区歌舞伎町２丁目４３−４３",
+      "category": "park",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 18,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJHycmGECNGGARHSiaBpjS6WE",
+      "lat": null,
+      "lng": null,
+      "name": "大久保公園 公衆トイレ",
+      "openingHours": "09:00-18:00",
+      "scoreBasis": "Google Mapsのトイレ単体listingは口コミ総数18件、平均評価3.8だが、清潔さに限定したレビュー本文を新しい順・評価順の両方で十分に比較できないため判定保留。新宿区公式情報で男女トイレおよびバリアフリー洋式トイレ1基を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿１丁目２１−２１",
+      "category": "park",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 11,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJqSqUvemMGGARp4l5sHGXEl8",
+      "lat": null,
+      "lng": null,
+      "name": "花園公園 公衆トイレ",
+      "openingHours": "4月〜9月 07:00-19:30、10月〜3月 07:00-19:00",
+      "scoreBasis": "Google Mapsのトイレ単体listingは口コミ総数11件、平均評価3.6だが、清潔さについて新しい順・評価順双方の本文サンプルを十分に取得できず、平均星評価だけでは清潔度を決められないため判定保留。新宿区公式情報で通常トイレと車椅子対応トイレを確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0023 東京都新宿区西新宿３丁目２−４ １階",
+      "category": "convenience",
+      "cleanlinessScore": 2.5,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": false,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": true
+      },
+      "externalReviewCount": 93,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJM7XrrNOMGGARtW6hw6G91RE",
+      "lat": 35.6868,
+      "lng": 139.694158,
+      "name": "セブン-イレブン 西新宿新和ビル店",
+      "openingHours": "24時間",
+      "scoreBasis": "Google Mapsの口コミ総数は93件。取得できたGoogle由来のトイレ清潔さ言及4件では肯定的1件、否定的または不満寄り3件だったため低めに評価。ただし確認できた清潔さ言及は主に2017〜2019年で、直近傾向を確認できていないためconfidenceはlow。",
+      "subScores": {
+        "cleanliness": 2.5,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒151-0053 東京都渋谷区代々木２丁目６−３",
+      "category": "convenience",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": null,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": true
+      },
+      "externalReviewCount": 65,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJgbn2tNGMGGARZnUvi2Ex_r8",
+      "lat": 35.687842,
+      "lng": 139.698622,
+      "name": "ローソン 大江戸線新宿駅前店",
+      "openingHours": "24時間",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数65件がある。トイレを利用できること自体は外部情報でも確認できたが、Google Maps上のトイレ清潔さに関する直近口コミを新しい順・評価順双方で十分に取得できず、肯否件数を算出できないため判定保留。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿４丁目１−６ NEWoMan SHINJUKU 1F",
+      "category": "cafe",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 4357,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ_5TAt9qMGGARjg9wMPqgimo",
+      "lat": 35.6887927,
+      "lng": 139.7021152,
+      "name": "ブルーボトルコーヒー新宿カフェ",
+      "openingHours": "月〜土 08:00-21:00、日 08:00-20:30",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数4,357件がある。店舗全体の清潔感に関する評価は確認できるものの、利用するNEWoMan共用トイレそのものの清潔さを新しい順・評価順双方で十分に抽出できないため判定保留。NEWoMan公式案内で館内共用トイレ、多機能トイレ、ベビー関連設備を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒151-0051 東京都渋谷区千駄ケ谷５丁目２４−５５ NEWoMan 新宿 ２Ｆ",
+      "category": "cafe",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": true,
+        "hasMultipurpose": true,
+        "hasPowderRoom": null,
+        "hasWashlet": null,
+        "isOpen24h": false
+      },
+      "externalReviewCount": 1610,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJRTalcMWMGGARlThRGi6TE1w",
+      "lat": 35.6883844,
+      "lng": 139.7012194,
+      "name": "VERVE COFFEE ROASTERS NEWoMan SHINJUKU",
+      "openingHours": "07:00-22:00",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数1,610件がある。店舗についての清潔感への言及は確認できるが、NEWoMan共用トイレの清潔さに限定した直近口コミを新しい順・評価順双方で十分に確認できず、清潔度は判定保留。施設公式案内で共用トイレと多機能・ベビー関連設備を確認。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    },
+    {
+      "address": "日本、〒160-0022 東京都新宿区新宿３丁目２−４",
+      "category": "cafe",
+      "cleanlinessScore": null,
+      "confidence": "low",
+      "equipment": {
+        "hasBabyTable": null,
+        "hasMultipurpose": false,
+        "hasPowderRoom": null,
+        "hasWashlet": true,
+        "isOpen24h": true
+      },
+      "externalReviewCount": 1859,
+      "externalReviewSource": "Google Maps",
+      "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJt_gWX9uMGGARWdvJVMz9JwU",
+      "lat": null,
+      "lng": null,
+      "name": "珈琲貴族エジンバラ",
+      "openingHours": "24時間",
+      "scoreBasis": "Google Mapsのlistingには口コミ総数1,859件がある。公式サイトで男女別の洋式トイレがあることは確認できたが、Google Maps上でトイレ清潔さに限定した口コミを新しい順・評価順双方から十分に抽出できず、肯否比率を算出できないため判定保留。",
+      "subScores": {
+        "cleanliness": null,
+        "comfort": null,
+        "odor": null,
+        "supplies": null
+      },
+      "surveyedAt": "2026-09-11"
+    }
+  ]
+}
