@@ -1,5 +1,5 @@
-// 自動生成: bun scripts/manual-import/run.ts --in shibuya-01.json --in kumagaya-manual-01.json --in kumagaya-02.json --in reevaluate-osm-seed-01.json --in reevaluate-od-batch1.json --in reevaluate-od-batch2.json --in reevaluate-od-batch3.json --in reevaluate-od-batch4.json --in reevaluate-od-batch5.json --in reevaluate-od-batch6.json --in reevaluate-od-batch7.json --in reevaluate-od-batch8a.json --in reevaluate-od-batch8b.json
-// 生成日: 2026-09-10
+// 自動生成: bun scripts/manual-import/run.ts --in shibuya-01.json --in kumagaya-manual-01.json --in kumagaya-02.json --in reevaluate-osm-seed-01.json --in reevaluate-od-batch1.json --in reevaluate-od-batch2.json --in reevaluate-od-batch3.json --in reevaluate-od-batch4.json --in reevaluate-od-batch5.json --in reevaluate-od-batch6.json --in reevaluate-od-batch7.json --in reevaluate-od-batch8a.json --in reevaluate-od-batch8b.json --in reevaluate-od-final-a.json
+// 生成日: 2026-09-11
 // 由来: ChatGPT手動調査（Google Maps掲載情報の要約・自治体調査）。座標欠落分はNominatimで補完。
 // 規約: 口コミ本文（ユーザー投稿の転載）は取り込まない。件数と要約のみ（README「データ方針」参照）。
 // 設備の不明値は null（未確認）として格納。信頼度lowは中立値3.0＋要確認メモ。
@@ -4623,5 +4623,137 @@ export const GOOGLE_SEED: ToiletFacility[] = [
     "surveyedAt": "2026-09-10",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%B8%8B%E5%A2%97%E7%94%B0%E5%85%AC%E5%9C%92%20%E5%85%AC%E8%A1%86%E3%83%88%E3%82%A4%E3%83%AC&query_place_id=ChIJFz-Q5CvZHmARWZO9X0TZHBk",
     "officialOpenDataId": "gmaps-下増田公園"
+  },
+  {
+    "id": "google-駒形公園",
+    "name": "駒形公園",
+    "facilityType": "公衆トイレ",
+    "category": "park",
+    "dataSource": "google",
+    "lat": 36.1266196423093,
+    "lng": 139.326646606307,
+    "address": "日本, 〒360-0116 埼玉県熊谷市三本１００１−１ 園内北側",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
+    "subScores": {
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
+    },
+    "attributes": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasNursingRoom": null,
+      "hasPowderRoom": null,
+      "hasOstomate": null,
+      "isFree": null,
+      "isOpen24h": null,
+      "hasSoap": null,
+      "hasAlcohol": null,
+      "hasPaperTowelOrDryer": null,
+      "toiletStyle": null
+    },
+    "openingHours": "営業時間不明",
+    "description": "Google Mapsのトイレ単体listingはOD座標から約1mで一致し、口コミ総数は6件。直近口コミ6件について本文を取得できなかったため、清潔さへの肯定・否定件数および傾向は判定不能。listingの総合評価3.2は清潔さ評価と同一視せず、cleanlinessScoreには使用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 0,
+    "reviews": [],
+    "externalReviewCount": 6,
+    "externalReviewSource": "Google Maps",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-11",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%A7%92%E5%BD%A2%E5%85%AC%E5%9C%92%20%E5%85%AC%E8%A1%86%E3%83%88%E3%82%A4%E3%83%AC&query_place_id=ChIJDaPrhvPXHmARDFRS6aJDQB8",
+    "officialOpenDataId": "gmaps-駒形公園"
+  },
+  {
+    "id": "google-ChIJy5TrHAAnH2ARXUCnexwqpZ8",
+    "name": "利根川総合運動公園",
+    "facilityType": "公衆トイレ",
+    "category": "park",
+    "dataSource": "google",
+    "lat": 36.2203705896474,
+    "lng": 139.40637323647,
+    "address": "住所不明",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
+    "subScores": {
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
+    },
+    "attributes": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasNursingRoom": null,
+      "hasPowderRoom": null,
+      "hasOstomate": null,
+      "isFree": null,
+      "isOpen24h": null,
+      "hasSoap": null,
+      "hasAlcohol": null,
+      "hasPaperTowelOrDryer": null,
+      "toiletStyle": null
+    },
+    "openingHours": "営業時間不明",
+    "description": "OD座標から約76mの位置にGoogle Mapsの公衆トイレ単体listingを確認。listingには評価・口コミ件数の表示がなく、口コミ総数0件として確認した。直近口コミ0件中、清潔さへの肯定0件・否定0件で傾向判定不能。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 0,
+    "reviews": [],
+    "externalReviewCount": 0,
+    "externalReviewSource": "Google Maps",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-11",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJy5TrHAAnH2ARXUCnexwqpZ8",
+    "officialOpenDataId": "gmaps-ChIJy5TrHAAnH2ARXUCnexwqpZ8"
+  },
+  {
+    "id": "google-ChIJq7IFdQApH2ARgdqP50JPRDw",
+    "name": "利根川総合運動公園",
+    "facilityType": "公衆トイレ",
+    "category": "park",
+    "dataSource": "google",
+    "lat": 36.2042780807761,
+    "lng": 139.427729011105,
+    "address": "住所不明",
+    "cleanlinessGrade": "B",
+    "cleanlinessScore": 3,
+    "equipmentGrade": "B",
+    "equipmentScore": 3,
+    "subScores": {
+      "cleanliness": 3,
+      "odor": 3,
+      "supplies": 3,
+      "comfort": 3
+    },
+    "attributes": {
+      "hasWashlet": null,
+      "hasMultipurpose": null,
+      "hasBabyTable": null,
+      "hasNursingRoom": null,
+      "hasPowderRoom": null,
+      "hasOstomate": null,
+      "isFree": null,
+      "isOpen24h": null,
+      "hasSoap": null,
+      "hasAlcohol": null,
+      "hasPaperTowelOrDryer": null,
+      "toiletStyle": null
+    },
+    "openingHours": "営業時間不明",
+    "description": "Google Mapsの「葛和田サッカー場 公衆トイレ」単体listingがOD座標から約5mで一致し、口コミ総数は2件。直近口コミ2件の本文を取得できなかったため、清潔さへの肯定・否定件数および傾向は判定不能。listingの総合評価2.0は清潔さ評価と同一視せず、cleanlinessScoreには使用していない。（清潔さは判定不能のため中立値。要現地確認）",
+    "reviewCount": 0,
+    "reviews": [],
+    "externalReviewCount": 2,
+    "externalReviewSource": "Google Maps",
+    "facilityNote": "Google Maps掲載情報の手動調査データ（口コミ本文は未取込。信頼度:low）。",
+    "surveyedAt": "2026-09-11",
+    "googleMapsUrl": "https://www.google.com/maps/place/?q=place_id:ChIJq7IFdQApH2ARgdqP50JPRDw",
+    "officialOpenDataId": "gmaps-ChIJq7IFdQApH2ARgdqP50JPRDw"
   }
 ]
