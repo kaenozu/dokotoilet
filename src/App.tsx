@@ -44,6 +44,7 @@ import {
   VOTED_REVIEWS_KEY,
 } from './lib/localDeltas';
 import { Header } from './components/Header';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToiletMap } from './components/ToiletMap';
 import { ToiletList } from './components/ToiletList';
 import { ToiletDetails } from './components/ToiletDetails';
@@ -660,8 +661,9 @@ export default function App() {
             mobileTab === 'list' ? 'block' : 'hidden md:block'
           }`}
         >
-          <ToiletList
-            toilets={filteredToilets}
+          <ErrorBoundary region="一覧パネル" resetKey={`${filteredToilets.length}`}>
+            <ToiletList
+              toilets={filteredToilets}
             selectedToilet={selectedToilet}
             onSelectToilet={(t) => {
               setSelectedToiletId(t.id);
@@ -672,7 +674,8 @@ export default function App() {
             }}
             searchQuery={filter.searchQuery}
             setSearchQuery={(q) => setFilter((prev) => ({ ...prev, searchQuery: q }))}
-          />
+            />
+          </ErrorBoundary>
         </div>
 
         <div
@@ -680,6 +683,7 @@ export default function App() {
             mobileTab === 'map' ? 'block' : 'hidden md:block'
           }`}
         >
+          <ErrorBoundary region="地図" resetKey={`${filteredToilets.length}`}>
           <ToiletMap
             toilets={filteredToilets}
             selectedToilet={selectedToilet}
@@ -697,10 +701,12 @@ export default function App() {
             detailsOpen={selectedToilet !== null}
             layoutKey={mobileTab + (selectedToilet !== null ? ':open' : ':closed')}
           />
+          </ErrorBoundary>
         </div>
 
         {selectedToilet && (
           <div className="fixed md:static inset-y-0 right-0 z-[1000] md:z-auto w-full sm:w-96 md:w-96 lg:w-[420px] shrink-0 h-full shadow-2xl md:shadow-none border-l border-line bg-surface">
+            <ErrorBoundary region="詳細パネル" resetKey={selectedToilet.id}>
             <ToiletDetails
               toilet={selectedToilet}
               onClose={() => setSelectedToiletId(null)}
@@ -709,6 +715,7 @@ export default function App() {
               onReportReview={handleReportReview}
               votedReviewIds={votedReviewIds}
             />
+            </ErrorBoundary>
           </div>
         )}
       </div>

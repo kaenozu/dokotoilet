@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import crypto from "node:crypto";
+import { reviewDedupId } from "./shared/dedup";
 import type { CommunityDB } from "./community";
 import { buildFirestoreMigrationPlan, migrationPlanDigest } from "./communityMigrationPlan";
 
@@ -111,5 +113,47 @@ describe("buildFirestoreMigrationPlan", () => {
     const second = buildFirestoreMigrationPlan(db());
     expect(second.documents).toEqual(first.documents);
     expect(migrationPlanDigest(second)).toBe(migrationPlanDigest(first));
+  });
+
+  it("derives review_dedup ids from the normalized comment (production key formula)", () => {
+    const plan = buildFirestoreMigrationPlan(db());
+    const dedupIds = plan.documents
+      .filter((d) => d.collection === "review_dedup")
+      .map((d) => d.id);
+    // reviewDedupId は正規形（trim + 空白圧縮 + 小文字化）から導出する。生コメント
+    // ベースの旧式 ID（"CLEAN" をそのままハッシュ）とは必ず異なる。
+    expect(dedupIds).toContain(reviewDedupId("toilet-user-a", "ip-1", "clean"));
+    expect(dedupIds).not.toContain(
+      crypto.createHash("sha256").update("toilet-user-a|ip-1|CLEAN").digest("hex")
+    );
+  });
+
+  it("collapses legacy reviews whose normalized comments share one dedup id", () => {
+    const snapshot = db();
+    // 正規化以前のレガシー行: 同一 facility + 同一 IP + 大文字小文字違いの本文。
+    // 生コメント式の旧キーでは 2 ドキュメントだったのが、正規形キーでは 1 つに畳まれる。
+    snapshot.toilets[0].reviews = [
+      { ...snapshot.toilets[0].reviews[0], id: "rev-a", comment: "clean" },      {
+        ...snapshot.toilets[0].reviews[0],
+        id: "rev-c",
+        comment: "CLEAN  ",
+        helpfulCount: 0,
+      },
+    ];
+    snapshot.toilets[0].reviewCount = 2;
+    snapshot.reviewKeys["rev-c"] = { ipHash: "ip-1", at: 5000 };
+
+    const plan = buildFirestoreMigrationPlan(snapshot);
+    // rev-a/rev-c（同一正規形）は 1 つに、異なる IP の rev-b はそのまま残る → 計 2
+    const dedupDocs = plan.documents.filter((d) => d.collection === "review_dedup");
+    expect(dedupDocs).toHaveLength(2);
+    const collapsed = dedupDocs.find((d) => d.id === reviewDedupId("toilet-user-a", "ip-1", "clean"));
+    // validUntil が新しい方（rev-c, at: 5000）を残す
+    expect(collapsed?.data.reviewId).toBe("rev-c");
+    expect(collapsed?.data.validUntil).toBe(5000 + 24 * 60 * 60 * 1000);
+    // 異なる IP の rev-b は影響を受けない
+    expect(dedupDocs.map((d) => d.id)).toContain(
+      reviewDedupId("osm-node-1", "ip-2", "great")
+    );
   });
 });

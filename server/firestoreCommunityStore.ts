@@ -2,6 +2,11 @@ import crypto from "node:crypto";
 import type { ToiletFacility, ToiletReview } from "../src/types";
 import { gradeForScore } from "../src/lib/scoring";
 import type { ReviewInput, StoredReport } from "./community";
+import {
+  dedupCommentHash,
+  normalizeReportReason,
+  reviewDedupId,
+} from "./shared/dedup";
 import type {
   AddReviewResult,
   CommunityRepository,
@@ -11,9 +16,6 @@ import type {
   ResolveReportResult,
 } from "./communityRepository";
 
-function normalizeReportText(v: string): string {
-  return v.trim().replace(/\s+/g, " ").toLowerCase();
-}
 
 function reportAtOf(data: Record<string, any>): number {
   if (typeof data.at === "number" && Number.isFinite(data.at)) return data.at;
@@ -171,12 +173,6 @@ export class FirestoreCommunityStore implements CommunityRepository {
     };
   }
 
-  private dedupId(facilityId: string, ipHash: string, comment: string): string {
-    return crypto
-      .createHash("sha256")
-      .update(`${facilityId}|${ipHash}|${comment}`)
-      .digest("hex");
-  }
 
   private voteId(reviewId: string, ipHash: string): string {
     return crypto.createHash("sha256").update(`${reviewId}|${ipHash}`).digest("hex");
@@ -248,7 +244,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
   ): Promise<AddReviewResult> {
     const facilityRef = this.col("community_toilets").doc(facilityId);
     const externalRef = this.col("external_facilities").doc(facilityId);
-    const dedupRef = this.col("review_dedup").doc(this.dedupId(facilityId, ipHash, input.comment));
+    const dedupRef = this.col("review_dedup").doc(reviewDedupId(facilityId, ipHash, input.comment));
     const aggregateRef = this.col("facility_aggregates").doc(facilityId);
     const reviewId = this.reviewId();
     const reviewRef = this.col("reviews").doc(reviewId);
@@ -280,7 +276,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
         facilityId,
         ipHash,
         reviewId,
-        commentHash: crypto.createHash("sha256").update(input.comment).digest("hex"),
+        commentHash: dedupCommentHash(input.comment),
         createdAt: new Date(now).toISOString(),
         validUntil: now + 24 * 60 * 60 * 1000,
       });
@@ -354,7 +350,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
     const reviewRef = this.col("reviews").doc(reviewId);
     const now = Date.now();
     const dayAgo = now - 24 * 60 * 60 * 1000;
-    const normReason = normalizeReportText(reason);
+    const normReason = normalizeReportReason(reason);
     const reportId = `report-${crypto.randomUUID()}`;
     const reportRef = this.col("reports").doc(reportId);
     return this.db.runTransaction(async (tx) => {
@@ -368,7 +364,7 @@ export class FirestoreCommunityStore implements CommunityRepository {
       const dup = existing.docs.some((d) => {
         const data = (d.data() ?? {}) as Record<string, any>;
         return data.status !== "resolved" &&
-          normalizeReportText(String(data.reason ?? "")) === normReason &&
+          normalizeReportReason(String(data.reason ?? "")) === normReason &&
           reportAtOf(data) >= dayAgo;
       });
       if (dup) return { ok: false, found: true, duplicate: true };

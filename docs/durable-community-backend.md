@@ -124,7 +124,9 @@ Migration and moderation must maintain these sums exactly. Removing a review mus
 
 Enforces the current 24-hour duplicate-review guard without scanning every review.
 
-`dedupKey = sha256(facilityId + "|" + ipHash + "|" + exactComment)`
+`dedupKey = sha256(facilityId + "|" + ipHash + "|" + normalizedComment)`
+
+`normalizedComment = trim(comment) + collapse whitespace runs to a single ASCII space + lowercase` — the same rule the JSON backend has always used for its 24h duplicate guard (`server/shared/dedup.ts` is the single shared implementation; never re-derive the key elsewhere). The review pipeline sanitizes comments before this point, so normalization only ever collapses cosmetic case/whitespace variants.
 
 Fields:
 

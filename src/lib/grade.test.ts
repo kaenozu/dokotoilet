@@ -63,6 +63,21 @@ describe('displayGrade', () => {
   it('falls back to the equipment estimate otherwise', () => {
     expect(displayGrade(base)).toEqual({ grade: 'B', score: 3.4, kind: 'estimated' });
   });
+
+  it('returns null grade/score for unscored community registrations (regression: white-screen)', () => {
+    // AddToiletModal / server POST /toilets が生成する「登録直後」の形。
+    // cleanliness/equipment が両方 null のため displayGrade も null を返す。
+    // 呼び出し側（ToiletMap/List/Details）は null を「未評価」表示として扱うこと。
+    const unscored = {
+      ...base,
+      dataSource: 'community',
+      cleanlinessGrade: null,
+      cleanlinessScore: null,
+      equipmentGrade: null,
+      equipmentScore: null,
+    };
+    expect(displayGrade(unscored)).toEqual({ grade: null, score: null, kind: 'estimated' });
+  });
 });
 
 describe('getGradeColor', () => {

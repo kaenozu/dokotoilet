@@ -224,6 +224,9 @@ describe("FirestoreCommunityStore", () => {
     ]);
     expect((await store.addReview("osm-node-1", review("clean"), "ip-a")).error).toBeUndefined();
     expect((await store.addReview("osm-node-1", review("clean"), "ip-a")).error).toBe("duplicate");
+    // 正規化ガード（JSON バックエンドと同一規約）: 大文字小文字・空白違いも重複扱い
+    expect((await store.addReview("osm-node-1", review("  CLEAN  "), "ip-a")).error).toBe("duplicate");
+    expect((await store.addReview("osm-node-1", review("Clean\t"), "ip-a")).error).toBe("duplicate");
     expect((await store.addReview("osm-node-1", review("different"), "ip-a")).error).toBeUndefined();
     expect((await store.getExternalReviews())["osm-node-1"]).toHaveLength(2);
   });
