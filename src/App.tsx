@@ -785,7 +785,6 @@ export default function App() {
             detailsOpen={selectedToilet !== null}
             layoutKey={mobileTab + (selectedToilet !== null ? ':open' : ':closed')}
             userLocation={userLocation}
-            referenceLocation={referenceLocation}
           />
 
           {/* Mobile Bottom Sheet Preview Card (when map is active and details not fully expanded) */}

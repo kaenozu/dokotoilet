@@ -25,6 +25,10 @@ export default defineConfig(() => {
       testTimeout: 15_000,
       hookTimeout: 15_000,
       pool: 'forks',
+      // シェルが NODE_ENV=production を export している環境でも、テストは
+      // test 環境で実行する（production ビルドの React には act() が無い等、
+      // テストが環境依存で落ちるのを防ぐ。CI とローカルの挙動を一致させる）。
+      env: { NODE_ENV: 'test' },
     },
   };
 });
