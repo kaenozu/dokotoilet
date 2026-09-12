@@ -1,0 +1,50 @@
+name: patch soft-deleted helpful vote guard
+
+on:
+  push:
+    branches:
+      - fix/helpful-softdeleted-firestore
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/helpful-softdeleted-firestore
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Apply focused source and test patch
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('server/firestoreCommunityStore.ts')
+          text = source.read_text()
+          old = '''      const review = await tx.get(reviewRef);\n      if (!review.exists) return { helpfulCount: 0, voted: false, found: false };\n      const vote = await tx.get(voteRef);'''
+          new = '''      const review = await tx.get(reviewRef);\n      if (!review.exists || review.data()?.deleted === true) {\n        return { helpfulCount: 0, voted: false, found: false };\n      }\n      const vote = await tx.get(voteRef);'''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one source match, found {text.count(old)}')
+          source.write_text(text.replace(old, new))
+
+          test = Path('server/firestoreCommunityStore.test.ts')
+          text = test.read_text()
+          old = '''    const reviewId = added.toilet!.reviews[0].id;\n    expect((await store.deleteReview(reviewId)).reviewCount).toBe(0);\n    expect(db.bucket("facility_aggregates").get("toilet-user-a")).toMatchObject({ reviewCount: 0 });'''
+          new = '''    const reviewId = added.toilet!.reviews[0].id;\n    expect((await store.deleteReview(reviewId)).reviewCount).toBe(0);\n    expect(await store.voteHelpful(reviewId, "after-delete")).toEqual({\n      helpfulCount: 0,\n      voted: false,\n      found: false,\n    });\n    expect(db.bucket("facility_aggregates").get("toilet-user-a")).toMatchObject({ reviewCount: 0 });'''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one test match, found {text.count(old)}')
+          test.write_text(text.replace(old, new))
+          PY
+      - run: bun test server/firestoreCommunityStore.test.ts
+      - run: bun run lint
+      - name: Commit focused patch
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server/firestoreCommunityStore.ts server/firestoreCommunityStore.test.ts
+          git commit -m "fix: reject helpful votes for deleted Firestore reviews"
+          git push origin HEAD:fix/helpful-softdeleted-firestore
